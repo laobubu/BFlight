@@ -77,7 +77,7 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
     int16_t Roll  = roll_angle_PID.Output;
     int16_t Yaw   = yaw_angle_PID.Output; 
     
-   if((pitch>10)|(pitch<-10)){
+  if((pitch>50)|(pitch<-50)){
 	  Motor_Out[1] = 0;    //M1  
     Motor_Out[2] = 0;    //M2 
     Motor_Out[3] = 0;    //M3  
@@ -86,10 +86,15 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
 	 }
 	 //将输出值融合到四个电机 
 	 else{
-    Motor_Out[1] = (int16_t)(Thro + Pitch -Roll - Yaw );    //M1  
+    /*Motor_Out[1] = (int16_t)(Thro + Pitch -Roll - Yaw );    //M1  
     Motor_Out[2] = (int16_t)(Thro + Pitch +Roll + Yaw );    //M2 
     Motor_Out[3] = (int16_t)(Thro - Pitch +Roll - Yaw );    //M3  
-    Motor_Out[0] = (int16_t)(Thro - Pitch -Roll + Yaw );    //M4
+    Motor_Out[0] = (int16_t)(Thro - Pitch -Roll + Yaw );    //M4*/
+		 
+		  Motor_Out[1] = (int16_t)(Thro - Pitch  + Yaw );  
+		  Motor_Out[3] = (int16_t)(Thro + Pitch  + Yaw );  //P 调 2和4
+		  Motor_Out[0] = (int16_t)(Thro -Roll + Yaw );
+		  Motor_Out[2] = (int16_t)(Thro +Roll + Yaw );   // P调 1和3
 	 }
 	
 	#define Motor_Macro_Limiter(x) if(x>100)x=100;else if(x<0)x=0;
@@ -119,13 +124,15 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
  	}
 		/*		if(fabs(PID->Output) < Thro )		//比油门还大时不积分
 			{
-				termI=(PID->Integ) + (PID->Error) ;
+				termI=(PID->													Integ) + (PID->Error) ;
 				if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)
 						PID->Integ=termI;
 			}*/
-	PID->Integ = PID->Integ + termI*PID->Error;
+	PID->Integ = PID->Error+PID->PreError+PID->PrePreError;
   PID->Output=PID->P*PID->Error+PID->I*PID->Integ+PID->D * PID->Deriv;
-  PID->PreError=PID->Error;
+	PID->PrePreError =  PID->PreError;
+  PID->PreError = PID->Error;
+
 	//仅用于角度环和角速度环的
 	//if(FLY_ENABLE && offLandFlag)
 	//{
