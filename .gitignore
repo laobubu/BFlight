@@ -1,0 +1,4 @@
+MDK-ARM/*/**
+MDK-ARM/JLinkLog.txt
+Package/*
+Drivers/**
