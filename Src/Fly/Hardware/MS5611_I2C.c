@@ -7,10 +7,10 @@
 
 ///////////////////////////////////////
 
-#define OSR  256  // 0.60 mSec conversion time (1666.67 Hz)
+//#define OSR  256  // 0.60 mSec conversion time (1666.67 Hz)
 //#define OSR  512  // 1.17 mSec conversion time ( 854.70 Hz)
 //#define OSR 1024  // 2.28 mSec conversion time ( 357.14 Hz)
-//#define OSR 2048  // 4.54 mSec conversion time ( 220.26 Hz)
+#define OSR 2048  // 4.54 mSec conversion time ( 220.26 Hz)
 //#define OSR 4096  // 9.04 mSec conversion time ( 110.62 Hz)
 
 ///////////////////////////////////////
@@ -215,35 +215,21 @@ void MS5611_Init(void)
 	MS5611_Read();
 }
 
-void MS5611_Read(void) {
-	uint8_t data[3];
-	
-	readTemperatureRequestPressure();
-	delay_ms(1);
 
-	// Request pressure read
-	IICreadBytes( MS5611Address, 0x00, 3, data);
-	d1.bytes[2] = data[0];
-	d1.bytes[1] = data[1];
-	d1.bytes[0] = data[2];
-
-	d1Value = d1.value;
-	d2Value = d2.value;
-
-	calculateTemperature();
-	calculatePressureAltitude();
-	
-	#if   (OSR ==  256)
-	IICwriteOneByte( MS5611Address, 0x50);  // Request temperature conversion
-	#elif (OSR ==  512)
-	IICwriteOneByte( MS5611Address, 0x52);
-	#elif (OSR == 1024)
-	IICwriteOneByte( MS5611Address, 0x54);
-	#elif (OSR == 2048)
-	IICwriteOneByte( MS5611Address, 0x56);
-	#elif (OSR == 4096)
-	IICwriteOneByte( MS5611Address, 0x58);
-	#endif
+//读取函数，务必5ms运行一次
+void MS5611_Read(void) {	
+	// 0 读温度
+	// 1 读气压并计算
+	static char LASTREAD = 0;
+	if (LASTREAD == 0) {
+		readTemperatureRequestPressure();
+		calculateTemperature();
+		LASTREAD = 1;
+	} else if (LASTREAD == 1) {
+		readPressureRequestTemperature();
+		calculatePressureAltitude();
+		LASTREAD = 0;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

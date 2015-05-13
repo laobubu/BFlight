@@ -77,25 +77,26 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
     int16_t Roll  = roll_angle_PID.Output;
     int16_t Yaw   = yaw_angle_PID.Output; 
     
-  if((pitch>50)|(pitch<-50)){
-	  Motor_Out[1] = 0;    //M1  
-    Motor_Out[2] = 0;    //M2 
-    Motor_Out[3] = 0;    //M3  
-    Motor_Out[0] = 0;    //M4
-	
-	 }
-	 //将输出值融合到四个电机 
-	 else{
-    /*Motor_Out[1] = (int16_t)(Thro + Pitch -Roll - Yaw );    //M1  
-    Motor_Out[2] = (int16_t)(Thro + Pitch +Roll + Yaw );    //M2 
-    Motor_Out[3] = (int16_t)(Thro - Pitch +Roll - Yaw );    //M3  
-    Motor_Out[0] = (int16_t)(Thro - Pitch -Roll + Yaw );    //M4*/
-		 
-		  Motor_Out[1] = (int16_t)(Thro - Pitch  + Yaw );  
-		  Motor_Out[3] = (int16_t)(Thro + Pitch  + Yaw );  //P 调 2和4
-		  Motor_Out[0] = (int16_t)(Thro -Roll + Yaw );
-		  Motor_Out[2] = (int16_t)(Thro +Roll + Yaw );   // P调 1和3
-	 }
+	if((pitch>35)||(pitch<-35)){
+		Motor_Out[1] = 0;    //M1  
+		Motor_Out[2] = 0;    //M2 
+		Motor_Out[3] = 0;    //M3  
+		Motor_Out[0] = 0;    //M4
+	} else {
+		//将输出值融合到四个电机 
+		/* 
+		//X飞行
+		Motor_Out[1] = (int16_t)(Thro + Pitch -Roll - Yaw );    //M1  
+		Motor_Out[2] = (int16_t)(Thro + Pitch +Roll + Yaw );    //M2 
+		Motor_Out[3] = (int16_t)(Thro - Pitch +Roll - Yaw );    //M3  
+		Motor_Out[0] = (int16_t)(Thro - Pitch -Roll + Yaw );    //M4
+		*/
+		//+飞行
+		Motor_Out[0] = (int16_t)(Thro - Roll + Yaw );
+		Motor_Out[1] = (int16_t)(Thro - Pitch  + Yaw );  
+		Motor_Out[2] = (int16_t)(Thro + Roll + Yaw );   // P调 1和3
+		Motor_Out[3] = (int16_t)(Thro + Pitch  + Yaw );  //P 调 2和4
+	}
 	
 	#define Motor_Macro_Limiter(x) if(x>100)x=100;else if(x<0)x=0;
 	Motor_Macro_Limiter(Motor_Out[0]);
