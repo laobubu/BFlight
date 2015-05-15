@@ -12,6 +12,7 @@
 #include "Hardware/HMC5883L.h"
 #include "Hardware/MS5611_I2C.h"
 #include "Hardware/XRotor.h"
+#include "Hardware/Ultrasonic.h"
 
 #include "DataPacker.h"
 
@@ -25,6 +26,7 @@ void Init_Navigator(void) {
 	//MPU6050_initialize();
 	MS5611_Init();
 	//HMC58X3_Init();	//这个必须放到MPU6050以后，因为 GY-86 的连接关系比较恶心
+	Ultrasonic_Init();
 	
 	PID_Init_All();
 }
@@ -46,12 +48,16 @@ void Do_Navigator(void) {
 PT_THREAD(TNavigator(struct pt *pt)) {
 	PT_BEGIN(pt);
 	
+	printf("hello\n");
+	
 	while(1) {
 		PT_TIMER_INTERVAL(pt, 1000/200);  //控制程序频率为 200 Hz
 		
+		//超声波传感器 采样
+		Ultrasonic_Trig();
 		
 		//读取气压计
-		MS5611_Read();
+		//MS5611_Read();
 		//printf("MS5611: Temp %d\t Pres %d \r\n", MS5611.Temperature, MS5611.Pressure);
 		
 		
