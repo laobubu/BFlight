@@ -27,6 +27,8 @@ void Ultrasonic_Trig(void) {
 }
 
 void Ultrasonic_Echo(char high){
+	if (Ultrasonic.status == USS_IDLE) return;
+	
 	if (high) { //超声波开始
 		HAL_TIM_Base_Start(&htim4);
 		Ultrasonic.status = USS_TIMING;

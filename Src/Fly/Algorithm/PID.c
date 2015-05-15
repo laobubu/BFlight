@@ -92,9 +92,9 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
 		Motor_Out[0] = (int16_t)(Thro - Pitch -Roll + Yaw );    //M4
 		*/
 		//+飞行
-		Motor_Out[0] = (int16_t)(Thro - Roll + Yaw );
+		Motor_Out[0] = (int16_t)(Thro - Roll - Yaw );
 		Motor_Out[1] = (int16_t)(Thro - Pitch  + Yaw );  
-		Motor_Out[2] = (int16_t)(Thro + Roll + Yaw );   // P调 1和3
+		Motor_Out[2] = (int16_t)(Thro + Roll - Yaw );   // P调 1和3
 		Motor_Out[3] = (int16_t)(Thro + Pitch  + Yaw );  //P 调 2和4
 	}
 	
