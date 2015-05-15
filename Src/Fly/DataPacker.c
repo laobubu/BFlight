@@ -101,6 +101,9 @@ void DataPacker_Pack(float yaw, float pitch, float roll) {
 	uint8_t j, *pd = PackData+3;
 	int16_t tmp;
 	
+	if (huart1.State == HAL_UART_STATE_BUSY_TX || huart1.State == HAL_UART_STATE_BUSY_TX_RX)
+		return;
+	
 	#define PUSH_INT16(x) tmp = x;  *pd++ = tmp >> 8;	*pd++ = tmp & 0xFF;
 	
 	PUSH_INT16(pitch + 500);
@@ -121,5 +124,5 @@ void DataPacker_Pack(float yaw, float pitch, float roll) {
 	PUSH_INT16(MS5611.Pressure>>16);
 	PUSH_INT16(MS5611.Pressure);
 	*/
-	HAL_UART_Transmit(&huart1, PackData, sizeof(PackData), HAL_MAX_DELAY);
+	HAL_UART_Transmit_IT(&huart1, PackData, sizeof(PackData));
 }
