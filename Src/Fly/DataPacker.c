@@ -94,7 +94,7 @@ void DataPacker_ProcessRecvPack(unsigned char *pack) {
 
 
 
-static uint8_t PackData[32] = {0x88, 0xAF, 0x1C};
+static uint8_t PackData[18] = {0x88, 0xAF, 0x1C};
 extern int16_t Motor_Out[4];
 extern UART_HandleTypeDef huart1;
 void DataPacker_Pack(float yaw, float pitch, float roll) {
@@ -115,11 +115,11 @@ void DataPacker_Pack(float yaw, float pitch, float roll) {
 	PackData[17] = 0;
 	for ( j = 3; j < 17; j++)
 		PackData[17] += PackData[j];
-	
+	/*
 	pd = PackData + 18;	//EXTEND 
 	
 	PUSH_INT16(MS5611.Pressure>>16);
 	PUSH_INT16(MS5611.Pressure);
-	
+	*/
 	HAL_UART_Transmit(&huart1, PackData, sizeof(PackData), HAL_MAX_DELAY);
 }
