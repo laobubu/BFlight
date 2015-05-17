@@ -4,7 +4,7 @@
 extern TIM_HandleTypeDef htim4;
 
 Ultrasonic_Typedef Ultrasonic;
-float Ultrasonic_SpeedFactor = 58.0f; // us / 58 => cm
+float Ultrasonic_SpeedFactor = 58.0 / 4.0; // us / 58 => cm
 
 void Ultrasonic_Init(void) {
 	HAL_TIM_Base_Stop(&htim4);

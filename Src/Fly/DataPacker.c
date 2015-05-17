@@ -115,13 +115,11 @@ void DataPacker_Pack(float yaw, float pitch, float roll) {
 	PUSH_INT16(Motor_Out[2]);
 	PUSH_INT16(Motor_Out[3]);
 	
-	PackData[17] = 0;
-	for ( j = 3; j < 17; j++)
-		PackData[17] += PackData[j];
-	
-	pd = PackData + 18;	//EXTEND 
-	
 	PUSH_INT16(Ultrasonic.altitude);
+	
+	PackData[sizeof(PackData)-1] = 0;
+	for ( j = 3; j < sizeof(PackData)-2; j++)
+		PackData[sizeof(PackData)-1] += PackData[j];
 	
 	HAL_UART_Transmit_IT(&huart1, PackData, sizeof(PackData));
 }

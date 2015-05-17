@@ -1,8 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
-#Fri May 15 15:32:41 CST 2015
+#Fri May 15 16:19:15 CST 2015
 ADC1.Channel-8\#ChannelRegularConversion=ADC_CHANNEL_2
-ADC1.IPParameters=Rank-8\#ChannelRegularConversion,NbrOfConversionFlag,master,Channel-8\#ChannelRegularConversion,SamplingTime-8\#ChannelRegularConversion
-ADC1.NbrOfConversionFlag=1
+ADC1.IPParameters=Rank-8\#ChannelRegularConversion,Channel-8\#ChannelRegularConversion,SamplingTime-8\#ChannelRegularConversion,master
 ADC1.Rank-8\#ChannelRegularConversion=1
 ADC1.SamplingTime-8\#ChannelRegularConversion=ADC_SAMPLETIME_1CYCLE_5
 ADC1.master=1
@@ -212,6 +211,6 @@ TIM3.Period=1999
 TIM3.Prescaler=179
 TIM4.IPParameters=Prescaler,Period
 TIM4.Period=65535
-TIM4.Prescaler=71
+TIM4.Prescaler=287
 VP_TIM4_VS_ClockSourceINT.Mode=Internal
 VP_TIM4_VS_ClockSourceINT.Signal=TIM4_VS_ClockSourceINT
