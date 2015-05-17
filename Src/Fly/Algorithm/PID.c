@@ -32,7 +32,7 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
     PID_Postion_Cal(&roll_PID,	ExpectedAngle[0], roll,	LastGyroX());
     PID_Postion_Cal(&pitch_PID, ExpectedAngle[1], pitch,LastGyroY());
     PID_Postion_Cal(&yaw_PID,	ExpectedAngle[2], yaw,	LastGyroZ());
-    PID_Postion_Cal(&alt_PID,	ExpectedAltitude, Ultrasonic.altitude ,	LastGyroZ());
+    PID_Postion_Cal(&alt_PID,	ExpectedAltitude, Ultrasonic.altitude ,	0xFFFFFF);
     
     int16_t Pitch = pitch_PID.Output;
     int16_t Roll  = roll_PID.Output;
@@ -72,29 +72,34 @@ void PID_Init(PID_Typedef * PID) {
 }
 
 //-----------仅用于角度环和角速度环的位置式PID-----------
-void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
+void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t delta)
 {
-	float termI=1;
+	float termI = PID->Error + PID->PreError + PID->PrePreError;
+	
 	//-----------位置式PID-----------
 	//误差=期望值-测量值
 	PID->Error=target-measure;
 	
-	//PID->Deriv= PID->Error-PID->PreError;
-	PID->Deriv = dertT ;   // 第一层D直接用角速度，效果不错；
-	if ((PID->Error>25)|(PID->Error<-25))
+	if (0xFFFFFF != delta) {
+		PID->Deriv = delta ;   // 第一层D直接用角速度，效果不错；
+	} else {
+		PID->Deriv = PID->Error-PID->PreError;
+	}
+	
+	//if ((PID->Error>25.)||(PID->Error<-25.)){
+	//	termI =  0; 
+	//}
+	/*		if(fabs(PID->Output) < Thro )		//比油门还大时不积分
 	{
-		termI =  0;//角度变大不积分；
- 	}
-		/*		if(fabs(PID->Output) < Thro )		//比油门还大时不积分
-			{
-				termI=(PID->													Integ) + (PID->Error) ;
-				if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)
-						PID->Integ=termI;
-			}*/
-	PID->Integ = PID->Error+PID->PreError+PID->PrePreError;
-  PID->Output=PID->P*PID->Error+PID->I*PID->Integ+PID->D * PID->Deriv;
-	PID->PrePreError =  PID->PreError;
-  PID->PreError = PID->Error;
+	termI=(PID->													Integ) + (PID->Error) ;
+	if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)
+		PID->Integ=termI;
+	}*/
+	
+	PID->Integ = termI;
+	PID->Output = PID->P * PID->Error + PID->I * PID->Integ + PID->D * PID->Deriv;
+	PID->PrePreError = PID->PreError;
+	PID->PreError = PID->Error;
 
 	//仅用于角度环和角速度环的
 	//if(FLY_ENABLE && offLandFlag)

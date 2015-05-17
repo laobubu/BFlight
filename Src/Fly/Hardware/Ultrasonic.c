@@ -6,6 +6,27 @@ extern TIM_HandleTypeDef htim4;
 Ultrasonic_Typedef Ultrasonic;
 float Ultrasonic_SpeedFactor = 58.0 / 4.0; // us / 58 => cm
 
+#define USE_US_FILTER1
+#ifdef USE_US_FILTER1
+static const float filter_a = 0.35;
+static const float filter_acom = 0.65;
+#define US_UPDATE(val) Ultrasonic.altitude = filter_a * (val) + filter_acom * Ultrasonic.altitude;
+
+#elif defined(USE_US_FILTER2)
+static float filter_valhold[4];
+static uint8_t filter_valindex = 0;
+void US_UPDATE(float val) {
+	filter_valhold[filter_valindex++] = val; 
+	if (filter_valindex>=4) filter_valindex=0;
+	Ultrasonic.altitude = 0;	
+	for (uint8_t xxaa = 0; xxaa<4;xxaa++)
+		if (Ultrasonic.altitude < filter_valhold[xxaa])
+			Ultrasonic.altitude = filter_valhold[xxaa];
+}
+#else
+#define US_UPDATE(val) Ultrasonic.altitude = val
+#endif
+
 void Ultrasonic_Init(void) {
 	HAL_TIM_Base_Stop(&htim4);
 	GPIOE->BRR  |= 1 << 6;
@@ -34,7 +55,7 @@ void Ultrasonic_Echo(char high){
 		Ultrasonic.status = USS_TIMING;
 	} else { //超声波结束
 		HAL_TIM_Base_Stop(&htim4);
-		Ultrasonic.altitude = htim4.Instance->CNT / Ultrasonic_SpeedFactor;
+		US_UPDATE(htim4.Instance->CNT / Ultrasonic_SpeedFactor);
 		Ultrasonic.status = USS_IDLE;
 	}
 }
