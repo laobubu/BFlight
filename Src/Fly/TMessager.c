@@ -36,34 +36,38 @@ static enum {
 } BufferStatus = BS_NOTBEGAN;
 static uint8_t *tmp;
 
-#define BufferReadByte(x)   messager_buffer[(x+messager_buffer_length)%messager_buffer_length]
+uint8_t BufferReadByte(int32_t index) {
+	index = index%messager_buffer_length;
+	while(index<0) index+=messager_buffer_length;
+	return messager_buffer[index];
+}
 
+static uint8_t currentByte;
 PT_THREAD(TMessagerThread(struct pt *pt)) {
 	PT_BEGIN(pt);
 	
 	while(1) {
 		DMATransmitted = DMATransmitted_Base + messager_buffer_length - DMA1_Channel5->CNDTR;
-		while (BufferSolveIndex <= DMATransmitted) {
+		while (BufferSolveIndex < DMATransmitted) {
+			currentByte = BufferReadByte(BufferSolveIndex);
 			if (BufferStatus == BS_NOTBEGAN) {
-				if  (
-						BufferReadByte(BufferSolveIndex - 1) 	== 0xAA/* &&
-						BufferReadByte(BufferSolveIndex) 		== 0xBB*/
-					) 
+				if  (currentByte == 0xAA) 
 				{	//收到包头
-					BufferBegin = BufferSolveIndex - 1;
+					BufferBegin = BufferSolveIndex;
 					BufferStatus = BS_BEGAN;
+					//开始构建一个包了
+					message_recv_pack[0] = 0xAA;
+					tmp = &message_recv_pack[1];
 				}
 			} else if (BufferStatus == BS_BEGAN) {
+				*tmp++ = currentByte;
 				if ( 
-					(BufferReadByte(BufferBegin+1) == 0xBB && (BufferSolveIndex - BufferBegin + 1) == 32) ||	//Crazepony 格式，0xAA 0xBB 32byte 一个包 
-					(BufferReadByte(BufferBegin+1) == 0xCC &&  BufferReadByte(BufferSolveIndex) == 0x00) ||		//我们自己的格式，0xAA 0xCC 开头，0x00结束
-					((BufferSolveIndex - BufferBegin + 1) == sizeof(message_recv_pack))							//出意外了
+					(message_recv_pack[1] == 0xBB && (BufferSolveIndex - BufferBegin + 1) == 32) ||	//Crazepony 格式，0xAA 0xBB 32byte 一个包 
+					(message_recv_pack[1] == 0xCC &&  currentByte == 0x00) 					     ||	//我们自己的格式，0xAA 0xCC 开头，0x00结束
+					((BufferSolveIndex - BufferBegin + 1) == sizeof(message_recv_pack))			 || //达到包最大大小
+					(message_recv_pack[1] != 0xBB && message_recv_pack[1] != 0xCC)					//不认识的类型的包
 				)
 				{
-					tmp = message_recv_pack;
-					for (; BufferBegin <= BufferSolveIndex; BufferBegin++) {
-						*tmp++ = BufferReadByte(BufferBegin);
-					}
 					DataPacker_ProcessRecvPack(message_recv_pack);
 					BufferStatus = BS_NOTBEGAN;
 				}
