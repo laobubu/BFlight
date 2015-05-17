@@ -23,6 +23,8 @@ typedef union {
 extern int16_t Motor_Out[4];	//电机输出
 extern int16_t Thro;			//油门
 extern float ExpectedAngle[3]; 	//期望角度
+extern float ExpectedAltitude;  //期望高度
+
 extern char Flight_Working;
 
 /****** 多进程系统 ******/

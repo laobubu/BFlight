@@ -2,80 +2,42 @@
 #include "AlgorithmBasic.h"
 #include "string.h"
 
-
 #include "Hardware/MPU6050_DMP.h"
 #include "Hardware/XRotor.h"
+#include "Hardware/Ultrasonic.h"
+
 #define LastGyroX() DMP_DATA.GYROx
 #define LastGyroY() DMP_DATA.GYROy
+#define LastGyroZ() DMP_DATA.GYROz
 
 #include "FlyBasic.h"
 
-PID_Typedef pitch_angle_PID;
-PID_Typedef pitch_rate_PID;
-
-PID_Typedef roll_angle_PID;
-PID_Typedef roll_rate_PID;
-
-PID_Typedef yaw_angle_PID;
-PID_Typedef yaw_rate_PID;
-
+PID_Typedef pitch_PID;
+PID_Typedef roll_PID;
+PID_Typedef yaw_PID;
 PID_Typedef alt_PID;
-PID_Typedef alt_vel_PID;
-
 
 float ExpectedAngle[3] = {0.,0.,0.}; //roll pitch yaw
-
+float ExpectedAltitude = 6.0;
 
 void PID_Init_All(void) {
-	PID_Init(&pitch_angle_PID);
-	//PID_Init(&pitch_rate_PID);
-	PID_Init(&roll_angle_PID);
-	//PID_Init(&roll_rate_PID);
-	PID_Init(&yaw_angle_PID);
-	PID_Init(&yaw_rate_PID);
+	PID_Init(&pitch_PID);
+	PID_Init(&roll_PID);
+	PID_Init(&yaw_PID);
 	PID_Init(&alt_PID);
-	PID_Init(&alt_vel_PID);
 }
 
 void PID_Calc_All(float yaw, float pitch, float roll) {
-	/*********************************************************
-     PID核心算法部分
-    *********************************************************/
-  //------------俯仰控制------------
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    //外环控制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    PID_Postion_Cal(&pitch_angle_PID, ExpectedAngle[1], pitch,LastGyroY());
+	
+    PID_Postion_Cal(&roll_PID,	ExpectedAngle[0], roll,	LastGyroX());
+    PID_Postion_Cal(&pitch_PID, ExpectedAngle[1], pitch,LastGyroY());
+    PID_Postion_Cal(&yaw_PID,	ExpectedAngle[2], yaw,	LastGyroZ());
+    PID_Postion_Cal(&alt_PID,	ExpectedAltitude, Ultrasonic.altitude ,	LastGyroZ());
     
-    //内环控制，输入为角速度，输出为PWM增量
-    //PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output, LastGyroY() ,0); 
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    
-    
-    //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    PID_Postion_Cal(&roll_angle_PID,ExpectedAngle[0], roll, LastGyroX());
-    
-    //内环控制，输入为角速度，输出为PWM增量
-   //PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output, LastGyroX() ,0);
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    
-
-    //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    //PID_Postion_Cal(&yaw_angle_PID,ExpectedAngle[2], yaw,0);		//-----Problem
-    
-    //内环控制，输入为角速度，输出为PWM增量
-    //PID_Postion_Cal(&yaw_rate_PID,-2*EXP_ANGLE.Z,DMP_DATA.GYROz,0);		//--------Problem tobe tested
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    
-    
-    //基础油门动力
-    //Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;   //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
-    //Thro = RC_DATA.THROTTLE;
-    //Thro -=  80*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
-	//	Thr = Thr / (cosf(Q_ANGLE.Pitch*M_PI_F/180.0f)*cosf(Q_ANGLE.Roll*M_PI_F/180.0f));	//对倾斜做补偿
-    
-    int16_t Pitch = pitch_angle_PID.Output;
-    int16_t Roll  = roll_angle_PID.Output;
-    int16_t Yaw   = yaw_angle_PID.Output; 
+    int16_t Pitch = pitch_PID.Output;
+    int16_t Roll  = roll_PID.Output;
+    int16_t Yaw   = yaw_PID.Output; 
+    int16_t Alt   = alt_PID.Output; 
     
 	if((pitch>35)||(pitch<-35)){
 		Motor_Out[1] = 0;    //M1  
@@ -92,10 +54,10 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
 		Motor_Out[0] = (int16_t)(Thro - Pitch -Roll + Yaw );    //M4
 		*/
 		//+飞行
-		Motor_Out[0] = (int16_t)(Thro - Roll - Yaw );
-		Motor_Out[1] = (int16_t)(Thro - Pitch  + Yaw );  
-		Motor_Out[2] = (int16_t)(Thro + Roll - Yaw );   // P调 1和3
-		Motor_Out[3] = (int16_t)(Thro + Pitch  + Yaw );  //P 调 2和4
+		Motor_Out[0] = (int16_t)(Thro + Alt - Roll - Yaw );
+		Motor_Out[1] = (int16_t)(Thro + Alt - Pitch  + Yaw );  
+		Motor_Out[2] = (int16_t)(Thro + Alt + Roll - Yaw );   // P调 1和3
+		Motor_Out[3] = (int16_t)(Thro + Alt + Pitch  + Yaw );  //P 调 2和4
 	}
 	
 	#define Motor_Macro_Limiter(x) if(x>100)x=100;else if(x<0)x=0;

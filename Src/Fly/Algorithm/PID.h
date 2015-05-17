@@ -26,5 +26,9 @@ void PID_Postion_Cal(PID_Typedef *PID,float target,float measure, int dertT);
 void PID_Init_All(void); 
 void PID_Calc_All(float yaw, float pitch, float roll) ;
 
+extern PID_Typedef pitch_PID;
+extern PID_Typedef roll_PID;
+extern PID_Typedef yaw_PID;
+extern PID_Typedef alt_PID;
 
 #endif

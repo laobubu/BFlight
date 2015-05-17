@@ -12,18 +12,6 @@
 
 #include "Algorithm/PID.h"
 
-extern PID_Typedef pitch_angle_PID;
-extern PID_Typedef pitch_rate_PID;
-
-extern PID_Typedef roll_angle_PID;
-extern PID_Typedef roll_rate_PID;
-
-extern PID_Typedef yaw_angle_PID;
-extern PID_Typedef yaw_rate_PID;
-
-extern PID_Typedef alt_PID;
-extern PID_Typedef alt_vel_PID;
-
 //处理 32byte 的收到的包
 void DataPacker_ProcessRecvPack(unsigned char *pack) {
 	static union {
@@ -46,25 +34,24 @@ void DataPacker_ProcessRecvPack(unsigned char *pack) {
 	if (pack[1] == 0xCC) {
 		strsolve:
 		tmp.pid.pid = 0;
-			 if (pack[2] == 'y' && pack[3] == '1')	tmp.pid.pid = &yaw_angle_PID;
-		else if (pack[2] == 'y' && pack[3] == '2')	tmp.pid.pid = &yaw_rate_PID;
-		else if (pack[2] == 'r' && pack[3] == '1')	tmp.pid.pid = &roll_angle_PID;
-		else if (pack[2] == 'r' && pack[3] == '2')	tmp.pid.pid = &roll_rate_PID;
-		else if (pack[2] == 'p' && pack[3] == '1')	tmp.pid.pid = &pitch_angle_PID;
-		else if (pack[2] == 'p' && pack[3] == '2')	tmp.pid.pid = &pitch_rate_PID;
+			 if (pack[2] == 'y')	tmp.pid.pid = &yaw_PID;
+		else if (pack[2] == 'r')	tmp.pid.pid = &roll_PID;
+		else if (pack[2] == 'p')	tmp.pid.pid = &pitch_PID;
+		else if (pack[2] == 'a')	tmp.pid.pid = &alt_PID;
 		
 		if (tmp.pid.pid) {	//this is a PID control CMD
-				 if (pack[4] == 'p')	tmp.pid.number = &tmp.pid.pid->P;
-			else if (pack[4] == 'i')	tmp.pid.number = &tmp.pid.pid->I;
-			else if (pack[4] == 'd')	tmp.pid.number = &tmp.pid.pid->D;
-			else if (pack[4] == 'e')	tmp.pid.number = &tmp.pid.pid->Desired;
+				 if (pack[3] == 'p')	tmp.pid.number = &tmp.pid.pid->P;
+			else if (pack[3] == 'i')	tmp.pid.number = &tmp.pid.pid->I;
+			else if (pack[3] == 'd')	tmp.pid.number = &tmp.pid.pid->D;
+			else if (pack[3] == 'e')	tmp.pid.number = &tmp.pid.pid->Desired;
 			
-			sscanf((const char*)(pack+5),"%f", tmp.pid.number);
+			sscanf((const char*)(pack+4),"%f", tmp.pid.number);
 			
-			if (pack[4] == 'e') {
-				if (pack[2] == 'r') ExpectedAngle[0] = *tmp.pid.number;
-				if (pack[2] == 'p') ExpectedAngle[1] = *tmp.pid.number;
-				if (pack[2] == 'y') ExpectedAngle[2] = *tmp.pid.number;
+			if (pack[3] == 'e') {
+					 if (pack[2] == 'r') ExpectedAngle[0] = *tmp.pid.number;
+				else if (pack[2] == 'p') ExpectedAngle[1] = *tmp.pid.number;
+				else if (pack[2] == 'y') ExpectedAngle[2] = *tmp.pid.number;
+				else if (pack[2] == 'a') ExpectedAltitude = *tmp.pid.number;
 			}
 		} else {
 			if (pack[2] == 's') {		//停止并重置
@@ -84,6 +71,7 @@ void DataPacker_ProcessRecvPack(unsigned char *pack) {
 		
 		tmp.pChar = strchr((const char*)(pack+2), ';');
 		if (tmp.pChar) {
+			while(tmp.pChar[1] == ' ') tmp.pChar++;
 			pack = (unsigned char*)tmp.pChar-1;
 			goto strsolve;
 		}
