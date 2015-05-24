@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : stm32f1xx_hal_msp.c
-  * Date               : 15/05/2015 14:48:38
+  * Date               : 24/05/2015 13:23:24
   * Description        : This file provides code for the MSP Initialization 
   *                      and de-Initialization codes.
   ******************************************************************************
@@ -56,9 +56,9 @@ void HAL_MspInit(void)
 /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 
-    /**NOJTAG: JTAG-DP Disabled and SW-DP Enabled 
+    /**ENABLE: Full SWJ (JTAG-DP + SW-DP): Reset State 
     */
-  __HAL_AFIO_REMAP_SWJ_NOJTAG();
+  __HAL_AFIO_REMAP_SWJ_ENABLE();
 
   /* USER CODE BEGIN MspInit 1 */
 

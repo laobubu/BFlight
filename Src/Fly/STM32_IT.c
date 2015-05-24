@@ -17,3 +17,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM4)
 		Ultrasonic_TimeoutCallback();
 }
+
+//重新实现的delay
+void HAL_Delay(__IO uint32_t Delay)
+{
+  uint32_t tickend = HAL_GetTick() + Delay;
+  while(HAL_GetTick() < tickend);
+}
