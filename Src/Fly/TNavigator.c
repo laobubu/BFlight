@@ -48,10 +48,8 @@ void Do_Navigator(void) {
 PT_THREAD(TNavigator(struct pt *pt)) {
 	PT_BEGIN(pt);
 	
-	printf("hello\n");
-	
 	while(1) {
-		PT_TIMER_INTERVAL(pt, 1000/200);  //控制程序频率为 200 Hz
+		PT_TIMER_INTERVAL(pt, 5);  //控制程序频率为 200 Hz
 		
 		//超声波传感器 采样
 		Ultrasonic_Trig();

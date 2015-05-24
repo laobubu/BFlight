@@ -8,7 +8,7 @@ extern UART_HandleTypeDef huart1;
 
 #define messager_buffer_length 256
 static uint8_t messager_buffer[messager_buffer_length];
-static uint8_t message_recv_pack[100];
+static uint8_t message_recv_pack[200];
 
 struct pt ptMessagerThread;
 PT_THREAD(TMessagerThread(struct pt *pt));

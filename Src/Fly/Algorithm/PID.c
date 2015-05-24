@@ -27,6 +27,11 @@ void PID_Init_All(void) {
 	PID_Init(&alt_PID);
 }
 
+void PID_Limiter(int16_t *data, int16_t range) {
+	if (*data >  range)  *data =  range;
+	if (*data < -range)  *data = -range;
+}
+
 void PID_Calc_All(float yaw, float pitch, float roll) {
 	
     PID_Postion_Cal(&roll_PID,	ExpectedAngle[0], roll,	LastGyroX());
@@ -38,12 +43,15 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
     int16_t Roll  = roll_PID.Output;
     int16_t Yaw   = yaw_PID.Output; 
     int16_t Alt   = alt_PID.Output; 
+	
+	PID_Limiter(&Yaw, 10);
+	PID_Limiter(&Alt, 10);
     
 	if((pitch>35)||(pitch<-35)){
-		Motor_Out[1] = 0;    //M1  
-		Motor_Out[2] = 0;    //M2 
-		Motor_Out[3] = 0;    //M3  
-		Motor_Out[0] = 0;    //M4
+//		Motor_Out[1] = 0;    //M1  
+//		Motor_Out[2] = 0;    //M2 
+//		Motor_Out[3] = 0;    //M3  
+//		Motor_Out[0] = 0;    //M4
 	} else {
 		//将输出值融合到四个电机 
 		/* 

@@ -16,8 +16,9 @@
 extern I2C_HandleTypeDef hi2c1;
 
 void delay_us(unsigned short us) {
-	unsigned char lnc = 20 // SystemCoreClock / 1000000
+	unsigned char lnc = 1 // SystemCoreClock / 1000000
 		, t;
+	us >>= 1;
 	while(us--) {
 		t = lnc;
 		while(--t) ;
