@@ -44,6 +44,8 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
     int16_t Yaw   = yaw_PID.Output; 
     int16_t Alt   = alt_PID.Output; 
 	
+	if (Ultrasonic.altitude == 0) Alt = 0;
+	
 	PID_Limiter(&Yaw, 10);
 	PID_Limiter(&Alt, 10);
     
@@ -73,6 +75,16 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
 	Motor_Macro_Limiter(Motor_Out[1]);
 	Motor_Macro_Limiter(Motor_Out[2]);
 	Motor_Macro_Limiter(Motor_Out[3]);
+	
+	/*
+	if (Flight_Working > 1) {
+		Motor_Out[0] /= Flight_Working;
+		Motor_Out[1] /= Flight_Working;
+		Motor_Out[2] /= Flight_Working;
+		Motor_Out[3] /= Flight_Working;
+		Flight_Working--;
+	}
+	*/
 }
 
 void PID_Init(PID_Typedef * PID) {

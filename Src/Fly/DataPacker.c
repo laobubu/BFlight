@@ -60,7 +60,8 @@ void DataPacker_ProcessRecvPack(unsigned char *pack) {
 				Motor_SetAllSpeed(0,0,0,0);
 			} else 
 			if (pack[2] == 'g') {
-				Flight_Working = 1;
+				#warning 慢慢地提高电机速度的设置（分频数）（为1表示不动手脚）
+				Flight_Working = 10;
 			} else 
 			if (pack[2] == 't') {
 				sscanf((const char*)(pack+3),"%d", &tmp.integer);
