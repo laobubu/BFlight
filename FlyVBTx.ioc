@@ -1,9 +1,12 @@
 #MicroXplorer Configuration settings - do not modify
-#Sun May 24 13:23:22 CST 2015
-ADC1.Channel-8\#ChannelRegularConversion=ADC_CHANNEL_2
-ADC1.IPParameters=Rank-8\#ChannelRegularConversion,Channel-8\#ChannelRegularConversion,SamplingTime-8\#ChannelRegularConversion,master
-ADC1.Rank-8\#ChannelRegularConversion=1
-ADC1.SamplingTime-8\#ChannelRegularConversion=ADC_SAMPLETIME_1CYCLE_5
+#Tue May 26 20:53:31 CST 2015
+ADC1.Channel-12\#ChannelRegularConversion=ADC_CHANNEL_2
+ADC1.ContinuousConvMode=ENABLE
+ADC1.IPParameters=Rank-12\#ChannelRegularConversion,NbrOfConversionFlag,SamplingTime-12\#ChannelRegularConversion,Channel-12\#ChannelRegularConversion,NbrOfConversion,master,ContinuousConvMode
+ADC1.NbrOfConversion=1
+ADC1.NbrOfConversionFlag=1
+ADC1.Rank-12\#ChannelRegularConversion=1
+ADC1.SamplingTime-12\#ChannelRegularConversion=ADC_SAMPLETIME_1CYCLE_5
 ADC1.master=1
 Dma.Request0=USART1_RX
 Dma.RequestsNb=1
