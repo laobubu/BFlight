@@ -25,7 +25,7 @@ void Init_Navigator(void) {
 	MPU6050_DMP_Initialize();
 	//MPU6050_initialize();
 	MS5611_Init();
-	//HMC58X3_Init();	//这个必须放到MPU6050以后，因为 GY-86 的连接关系比较恶心
+	HMC58X3_Init();	//这个必须放到MPU6050以后，因为 GY-86 的连接关系比较恶心
 	Ultrasonic_Init();
 	
 	PID_Init_All();
@@ -51,6 +51,8 @@ PT_THREAD(TNavigator(struct pt *pt)) {
 	while(1) {
 		PT_TIMER_INTERVAL(pt, 5);  //控制程序频率为 200 Hz
 		
+		GPIOA->ODR ^= 1<<3;
+		
 		//超声波传感器 采样
 		Ultrasonic_Trig();
 		
@@ -62,7 +64,7 @@ PT_THREAD(TNavigator(struct pt *pt)) {
 		//读取HMC58X3磁力计
 		//if (HMC58X3_IsDRDY()) {	//Check if ready 
 			//其实 5ms 就可以完成采样，我们的控制频率给他的时间绰绰有余，所以可以不需要判断DRDY
-			//HMC58X3_ReadSensor();
+			HMC58X3_ReadSensor();
 			//printf("HMC58X3: %d\t%d\t%d\r\n", HMC58X3.X, HMC58X3.Y, HMC58X3.Z);
 			//HMC58X3_ClearDRDY();
 		//}
@@ -103,6 +105,9 @@ PT_THREAD(TNavigator(struct pt *pt)) {
 				Motor_SetAllSpeed(Motor_Out[0],Motor_Out[1],Motor_Out[2],Motor_Out[3]);
 			//}
 		}
+		
+		//把磁力计的数据替换到DMP_DATA里面
+		DMP_DATA.dmp_yaw = atan2((double)HMC58X3.Y,(double)HMC58X3.X) * (180 / 3.14159265);
 		
 		//仅供调试用
 		DataPacker_Pack(DMP_DATA.dmp_yaw, DMP_DATA.dmp_pitch, DMP_DATA.dmp_roll);
