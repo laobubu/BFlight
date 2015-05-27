@@ -110,5 +110,5 @@ void DataPacker_Pack(float yaw, float pitch, float roll) {
 	for ( j = 3; j < sizeof(PackData)-2; j++)
 		PackData[sizeof(PackData)-1] += PackData[j];
 	
-	HAL_UART_Transmit_IT(&huart1, PackData, sizeof(PackData));
+	HAL_UART_Transmit_DMA(&huart1, PackData, sizeof(PackData));
 }

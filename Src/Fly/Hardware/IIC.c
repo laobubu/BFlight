@@ -13,8 +13,6 @@
 #define SDA_IN()  {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x80000000;}
 #define SDA_OUT() {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x30000000;}
 
-extern I2C_HandleTypeDef hi2c1;
-
 void delay_us(unsigned short us) {
 	unsigned char lnc = 1 // SystemCoreClock / 1000000
 		, t;
@@ -27,8 +25,6 @@ void delay_us(unsigned short us) {
 
 void IICinit(void) {
 	GPIO_InitTypeDef GPIO_InitStruct;
-	
-	HAL_I2C_DeInit(&hi2c1);
 	
 	__GPIOB_CLK_ENABLE();
 	GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
