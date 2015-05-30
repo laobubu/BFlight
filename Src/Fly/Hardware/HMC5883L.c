@@ -78,6 +78,7 @@ void HMC58X3_ReadSensor(void) {
 *******************************************************************************/
 void  HMC58X3_newValues(int16_t x,int16_t y,int16_t z)
 {
+	/*
 	HMC58X3._FIFOSum[0] -= HMC58X3._FIFO[HMC58X3._FIFOIndex][0];
 	HMC58X3._FIFOSum[1] -= HMC58X3._FIFO[HMC58X3._FIFOIndex][1];
 	HMC58X3._FIFOSum[2] -= HMC58X3._FIFO[HMC58X3._FIFOIndex][2];
@@ -88,4 +89,11 @@ void  HMC58X3_newValues(int16_t x,int16_t y,int16_t z)
 	HMC58X3.X = HMC58X3._FIFOSum[0] / HMC58X3_LENGTH;
 	HMC58X3.Y = HMC58X3._FIFOSum[1] / HMC58X3_LENGTH;
 	HMC58X3.Z = HMC58X3._FIFOSum[2] / HMC58X3_LENGTH;
+	*/
+	#define LUCKY 0.7
+	HMC58X3.X = HMC58X3.X * (1-LUCKY) + LUCKY * x;
+	HMC58X3.Y = HMC58X3.Y * (1-LUCKY) + LUCKY * y;
+	HMC58X3.Z = HMC58X3.Z * (1-LUCKY) + LUCKY * z;
+	
+	HMC58X3.Yaw = atan2((double)HMC58X3.Y,(double)HMC58X3.X) * (180 / 3.14159265);
 }

@@ -13,6 +13,7 @@ typedef struct{
 	int16_t _FIFO[HMC58X3_LENGTH][3];
 	uint8_t _FIFOIndex;
 	int32_t _FIFOSum[3];
+	float Yaw;
 } HMC58X3_TypeDef;
 
 extern HMC58X3_TypeDef HMC58X3;

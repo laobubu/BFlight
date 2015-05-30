@@ -12,6 +12,7 @@
 #include "Hardware/MS5611_I2C.h"
 
 #include "Algorithm/PID.h"
+#include "Algorithm/StatusCalc.h"
 
 //处理 32byte 的收到的包
 void DataPacker_ProcessRecvPack(unsigned char *pack) {
@@ -61,7 +62,7 @@ void DataPacker_ProcessRecvPack(unsigned char *pack) {
 				Motor_SetAllSpeed(0,0,0,0);
 			} else 
 			if (pack[2] == 'g') {
-				#warning 慢慢地提高电机速度的设置（分频数）（为1表示不动手脚）
+				//慢慢地提高电机速度的设置（分频数）（为1表示不动手脚）
 				Flight_Working = 40;
 			} else 
 			if (pack[2] == 't') {
@@ -87,7 +88,7 @@ void DataPacker_ProcessRecvPack(unsigned char *pack) {
 static uint8_t PackData[20] = {0x88, 0xAF, 0x1C};
 extern int16_t Motor_Out[4];
 extern UART_HandleTypeDef huart1;
-void DataPacker_Pack(float yaw, float pitch, float roll) {
+void DataPacker_Pack(void) {
 	uint8_t j, *pd = PackData+3;
 	int16_t tmp;
 	
@@ -97,17 +98,16 @@ void DataPacker_Pack(float yaw, float pitch, float roll) {
 	#define PUSH_INT16(x) tmp = x;  *pd++ = tmp >> 8;	*pd++ = tmp & 0xFF;
 	#define PUSH_FLOAT(x) *pd++=((char*)(&x))[0];*pd++=((char*)(&x))[1];*pd++=((char*)(&x))[2];*pd++=((char*)(&x))[3];
 	
-	PUSH_INT16(pitch + 500);
-	PUSH_INT16(roll + 500);
-	PUSH_INT16(yaw + 500);
+	PUSH_INT16(status.Pitch + 500);
+	PUSH_INT16(status.Roll + 500);
+	PUSH_INT16(status.Yaw + 500);
 	
 	PUSH_INT16(Motor_Out[0]);
 	PUSH_INT16(Motor_Out[1]);
 	PUSH_INT16(Motor_Out[2]);
 	PUSH_INT16(Motor_Out[3]);
 	
-	PUSH_INT16((uint16_t)Ultrasonic.altitude);
-	//PUSH_INT16((uint16_t)MS5611.Pressure);
+	PUSH_INT16(status.Altitude);
 	
 	PackData[sizeof(PackData)-1] = 0;
 	for ( j = 3; j < sizeof(PackData)-2; j++)

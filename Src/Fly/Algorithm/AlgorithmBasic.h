@@ -12,4 +12,7 @@ float InvSqrt(float x);
 // Safe Functions
 float asin_s(float v);
 
+//将角度限制为 0°-360°
+float angleNorm(float angle);
+
 #endif

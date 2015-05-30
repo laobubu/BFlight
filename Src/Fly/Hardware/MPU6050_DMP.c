@@ -495,14 +495,12 @@ void DMP_Covert_Data(void){
 	 // we let safe_asin() handle the singularities near 90/-90 in pitch
 	DMP_DATA.dmp_pitch = asin_s(2.0*(q[0]*q[2] - q[3]*q[1]))* 180/PI;
 	//注意：此处计算反了，非右手系。
-	/* //现在使用指南针来完成Yaw的获取，因此该程序无效了
 	DMP_DATA.dmp_yaw = -atan2(2.0*(q[0]*q[3] + q[1]*q[2]),
 	                     1 - 2.0*(q[2]*q[2] + q[3]*q[3]))* 180/PI;
   #ifdef YAW_CORRECT
  //纠正
 	DMP_DATA.dmp_yaw=-DMP_DATA.dmp_yaw;
 	#endif
-	*/
 	
 //  gyroxGloble=0.0f*gyrox_val+1.0f*(float)DMP_DATA.GYROx;
 //  gyrox_val=gyroxGloble;
