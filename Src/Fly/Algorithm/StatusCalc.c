@@ -9,6 +9,11 @@
 
 Status_Typedef status;
 
+const	float halfT = 0.0025f;		//采样周期的一半，单位是秒
+const 	float fullT = 0.005f;		//完整采样时间
+const	float yaw_fuse_k_d = 0.9;	//Yaw DMP 的权重
+static	float yaw_delta_dm = 0; 	//Yaw DMP - 磁力计
+
 void SC_Init_All(void) {
 	MPU6050_DMP_Initialize();
 	//MPU6050_initialize();
@@ -18,20 +23,26 @@ void SC_Init_All(void) {
 }
 
 void SC_PreSample(void) {
-	//MS5611_Read();	//读气压计
+	//MS5611_Read();		//读气压计
 	HMC58X3_ReadSensor();	//读磁力计
-	DMP_Routing();	//读mpu6050
+	DMP_Routing();			//读mpu6050
 }
 
 void SC_PreSample_End(void) {
-	
+	yaw_delta_dm = DMP_DATA.dmp_yaw - HMC58X3.Yaw;
 }
 
 //生成新的姿态数据
 void SC_Generate(void) {
+	float fix_dmp_yaw;
+	
 	status.Pitch = DMP_DATA.dmp_pitch;
 	status.Roll = DMP_DATA.dmp_roll;
-	status.Yaw = DMP_DATA.dmp_yaw;
+	
+	fix_dmp_yaw = angleNorm(DMP_DATA.dmp_yaw - yaw_delta_dm + 180.0) - 180.0;
+	status.Yaw = 
+		yaw_fuse_k_d * fix_dmp_yaw + (1-yaw_fuse_k_d) * (HMC58X3.Yaw + DMP_DATA.GYROz * fullT);
+	
 	status.Altitude = Ultrasonic.altitude;
 }
 

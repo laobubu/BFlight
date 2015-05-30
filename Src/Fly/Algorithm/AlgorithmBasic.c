@@ -26,7 +26,7 @@ float asin_s(float v)
 
 
 float angleNorm(float angle) { //将角度限制为 0°-360°
-	while (angle<0) angle+=360.;
-	angle -= (((unsigned int)angle)%360) * 360.0;
+	while (angle<0) 	angle+=360.0;
+	while (angle>360.0)	angle-=360.0;
 	return angle;
 }

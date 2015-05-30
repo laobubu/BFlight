@@ -3,6 +3,8 @@
 #include "string.h"
 #include "stdio.h"
 
+#include "Algorithm/AlgorithmBasic.h"
+
 #define HMC58X3_writeReg(addr, data) IICwriteByte(HMC58X3_ADDR, addr, data)
 
 HMC58X3_TypeDef HMC58X3;
