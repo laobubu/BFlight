@@ -4,9 +4,10 @@
 extern TIM_HandleTypeDef htim4;
 
 Ultrasonic_Typedef Ultrasonic;
-float Ultrasonic_SpeedFactor = 58.0 / 4.0; // us / 58 => cm
+const float Ultrasonic_SpeedFactor = 58.0 / 4.0; // us / 58 => cm
 
 #define USE_US_FILTER1
+
 #ifdef USE_US_FILTER1
 static const float filter_a = 0.35;
 static const float filter_acom = 0.65;
