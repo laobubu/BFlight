@@ -9,6 +9,7 @@
 
 #include "Hardware/XRotor.h"
 #include "Hardware/Ultrasonic.h"
+#include "Hardware/MS5611_I2C.h"
 
 #include "Algorithm/PID.h"
 
@@ -61,7 +62,7 @@ void DataPacker_ProcessRecvPack(unsigned char *pack) {
 			} else 
 			if (pack[2] == 'g') {
 				#warning 慢慢地提高电机速度的设置（分频数）（为1表示不动手脚）
-				Flight_Working = 10;
+				Flight_Working = 40;
 			} else 
 			if (pack[2] == 't') {
 				sscanf((const char*)(pack+3),"%d", &tmp.integer);
@@ -94,6 +95,7 @@ void DataPacker_Pack(float yaw, float pitch, float roll) {
 		return;
 	
 	#define PUSH_INT16(x) tmp = x;  *pd++ = tmp >> 8;	*pd++ = tmp & 0xFF;
+	#define PUSH_FLOAT(x) *pd++=((char*)(&x))[0];*pd++=((char*)(&x))[1];*pd++=((char*)(&x))[2];*pd++=((char*)(&x))[3];
 	
 	PUSH_INT16(pitch + 500);
 	PUSH_INT16(roll + 500);
@@ -104,7 +106,8 @@ void DataPacker_Pack(float yaw, float pitch, float roll) {
 	PUSH_INT16(Motor_Out[2]);
 	PUSH_INT16(Motor_Out[3]);
 	
-	PUSH_INT16(Ultrasonic.altitude);
+	PUSH_INT16((uint16_t)Ultrasonic.altitude);
+	//PUSH_INT16((uint16_t)MS5611.Pressure);
 	
 	PackData[sizeof(PackData)-1] = 0;
 	for ( j = 3; j < sizeof(PackData)-2; j++)

@@ -5,6 +5,8 @@
 
 #define SQR(x) ((x)*(x))
 
+#define MS5611_FILTER_RATION 0.7
+
 ///////////////////////////////////////
 
 //#define OSR  256  // 0.60 mSec conversion time (1666.67 Hz)
@@ -28,10 +30,8 @@ ms5611出厂时已经确定的6个系数：
 uint16andUint8_t c1, c2, c3, c4, c5, c6;
 
 uint32andUint8_t d1;
-uint32_t d1Value;
 
 uint32andUint8_t d2;
-uint32_t d2Value;
 
 int32_t dT;
 
@@ -40,18 +40,21 @@ MS5611_TypeDef MS5611;
 uint8_t newPressureReading = 0;
 uint8_t newTemperatureReading = 0;
 
-///////////////////////////////////////////////////////////////////////////////
-// Read Temperature Request Pressure
-///////////////////////////////////////////////////////////////////////////////
+void pushNewPressure(uint32_t v) {/*
+	static uint8_t curi = 0;
+	static uint32_t sum[8] = {0,0,0,0,0,0,0,0};
+	static uint64_t sum2 = 0;
+	sum2 += v;
+	sum2 -= sum[curi];
+	sum[curi] = v;
+	if (++curi == 8) curi = 0;
+	MS5611.Pressure = sum2 / 8.0;*/
+	
+	MS5611.Pressure = MS5611.Pressure * 0.5 + 0.5 * v;
+}
 
-void readTemperatureRequestPressure(void)
+void requestPressure(void)
 {
-	uint8_t data[3];
-	IICreadBytes( MS5611Address, 0x00, 3, data);    // Request temperature read
-	d2.bytes[2] = data[0];
-	d2.bytes[1] = data[1];
-	d2.bytes[0] = data[2];
-
 	#if   (OSR ==  256)
 	IICwriteOneByte( MS5611Address, 0x40);  // Request pressure conversion
 	#elif (OSR ==  512)
@@ -65,45 +68,19 @@ void readTemperatureRequestPressure(void)
 	#endif
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// ReadPressureRequestPressure
-///////////////////////////////////////////////////////////////////////////////
-
-void readPressureRequestPressure(void)
+void readPressure(void)
 {
 	uint8_t data[3];
+
 	IICreadBytes( MS5611Address, 0x00, 3, data);    // Request pressure read
+
 	d1.bytes[2] = data[0];
 	d1.bytes[1] = data[1];
 	d1.bytes[0] = data[2];
-
-	#if(OSR ==  256)
-	IICwriteOneByte( MS5611Address, 0x40);  // Request pressure conversion
-	#elif (OSR ==  512)
-	IICwriteOneByte( MS5611Address, 0x42);
-	#elif (OSR == 1024)
-	IICwriteOneByte( MS5611Address, 0x44);
-	#elif (OSR == 2048)
-	IICwriteOneByte( MS5611Address, 0x46);
-	#elif (OSR == 4096)
-	IICwriteOneByte( MS5611Address, 0x48);
-	#endif
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Read Pressure Request Temperature
-///////////////////////////////////////////////////////////////////////////////
-
-void readPressureRequestTemperature(void)
+void requestTemperature(void)
 {
-	uint8_t data[3];
-
-	IICreadBytes( MS5611Address, 0x00, 3, data);    // Request pressure read
-
-	d1.bytes[2] = data[0];
-	d1.bytes[1] = data[1];
-	d1.bytes[0] = data[2];
-
 	#if   (OSR ==  256)
 	IICwriteOneByte( MS5611Address, 0x50);   // Request temperature converison
 	#elif (OSR ==  512)
@@ -117,13 +94,22 @@ void readPressureRequestTemperature(void)
 	#endif
 }
 
+void readTemperature(void)
+{
+	uint8_t data[3];
+	IICreadBytes( MS5611Address, 0x00, 3, data);    // Request temperature read
+	d2.bytes[2] = data[0];
+	d2.bytes[1] = data[1];
+	d2.bytes[0] = data[2];
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Calculate Temperature
 ///////////////////////////////////////////////////////////////////////////////
 
 void calculateTemperature(void)
 {
-	dT = (int32_t)d2Value - ((int32_t)c5.value << 8);
+	dT = d2.value - ((int32_t)c5.value << 8);
 	MS5611.Temperature = 2000 + (int32_t)(((int64_t)dT * c6.value) >> 23);
 }
 
@@ -167,11 +153,11 @@ void calculatePressureAltitude(void)
 		sensitivity -= sensitivity2;
 	}
 
-	MS5611.Pressure = (((d1Value * sensitivity) >> 21) - offset) >> 15;
+	pushNewPressure((((d1.value * sensitivity) >> 21) - offset) >> 15);
 
-	//DBG_PRINT("PRESS : %d",p);
-
-	MS5611.Altitude = 44330.0f * (1.0f - pow((float)MS5611.Pressure / 101325.0f, 1.0f / 5.255f));
+	float newalt = (44330.0f * (1.0f - pow((float)MS5611.Pressure / 101325.0f, 1.0f / 5.255f)));
+	MS5611.Altitude = MS5611.Altitude * (1.0-MS5611_FILTER_RATION) + MS5611_FILTER_RATION * newalt;
+	MS5611.deltaAltitude = MS5611.Altitude - MS5611.floorAltitude;
 
 	//DBG_PRINT("calculate Pressure Altitude : %f\n",pressureAlt50Hz);
 }
@@ -183,6 +169,10 @@ void calculatePressureAltitude(void)
 void MS5611_Init(void)
 {
 	uint8_t data[2];
+	
+	MS5611.Temperature = 0;
+	MS5611.Altitude = 0.0f;
+	MS5611.floorAltitude = 0.0f;
 
 	IICwriteOneByte( MS5611Address, 0x1E);      // Reset Device
 
@@ -222,14 +212,19 @@ void MS5611_Read(void) {
 	// 1 读气压并计算
 	static char LASTREAD = 0;
 	if (LASTREAD == 0) {
-		readTemperatureRequestPressure();
+		readTemperature();
+		requestPressure();
 		calculateTemperature();
 		LASTREAD = 1;
 	} else if (LASTREAD == 1) {
-		readPressureRequestTemperature();
+		readPressure();
+		requestTemperature();
 		calculatePressureAltitude();
 		LASTREAD = 0;
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
+void MS5611_SetFloor(void) {
+	MS5611.floorAltitude = MS5611.Altitude;
+	MS5611.deltaAltitude = MS5611.Altitude - MS5611.floorAltitude;
+}

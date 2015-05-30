@@ -4,6 +4,7 @@
 
 #include "Hardware/MPU6050_DMP.h"
 #include "Hardware/XRotor.h"
+#include "Hardware/MS5611_I2C.h"
 #include "Hardware/Ultrasonic.h"
 
 #define LastGyroX() DMP_DATA.GYROx
@@ -48,6 +49,14 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
 	
 	PID_Limiter(&Yaw, 10);
 	PID_Limiter(&Alt, 10);
+	
+	Alt += Thro;
+	
+	if (Flight_Working > 1) {
+		Alt /= Flight_Working;
+		Flight_Working--;
+	}
+	
     
 	if((pitch>35)||(pitch<-35)){
 //		Motor_Out[1] = 0;    //M1  
@@ -64,10 +73,10 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
 		Motor_Out[0] = (int16_t)(Thro - Pitch -Roll + Yaw );    //M4
 		*/
 		//+飞行
-		Motor_Out[0] = (int16_t)(Thro + Alt - Roll - Yaw );
-		Motor_Out[1] = (int16_t)(Thro + Alt - Pitch  + Yaw );  
-		Motor_Out[2] = (int16_t)(Thro + Alt + Roll - Yaw );   // P调 1和3
-		Motor_Out[3] = (int16_t)(Thro + Alt + Pitch  + Yaw );  //P 调 2和4
+		Motor_Out[0] = (int16_t)(Alt - Roll - Yaw );
+		Motor_Out[1] = (int16_t)(Alt - Pitch  + Yaw );  
+		Motor_Out[2] = (int16_t)(Alt + Roll - Yaw );   // P调 1和3
+		Motor_Out[3] = (int16_t)(Alt + Pitch  + Yaw );  //P 调 2和4
 	}
 	
 	#define Motor_Macro_Limiter(x) if(x>100)x=100;else if(x<0)x=0;
@@ -76,15 +85,6 @@ void PID_Calc_All(float yaw, float pitch, float roll) {
 	Motor_Macro_Limiter(Motor_Out[2]);
 	Motor_Macro_Limiter(Motor_Out[3]);
 	
-	/*
-	if (Flight_Working > 1) {
-		Motor_Out[0] /= Flight_Working;
-		Motor_Out[1] /= Flight_Working;
-		Motor_Out[2] /= Flight_Working;
-		Motor_Out[3] /= Flight_Working;
-		Flight_Working--;
-	}
-	*/
 }
 
 void PID_Init(PID_Typedef * PID) {

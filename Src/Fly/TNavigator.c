@@ -24,7 +24,7 @@ void Init_Navigator(void) {
 	
 	MPU6050_DMP_Initialize();
 	//MPU6050_initialize();
-	MS5611_Init();
+	//MS5611_Init();
 	HMC58X3_Init();	//这个必须放到MPU6050以后，因为 GY-86 的连接关系比较恶心
 	Ultrasonic_Init();
 	
@@ -45,13 +45,30 @@ void Do_Navigator(void) {
 //#define DMP_Last_HasError(item) (fabs(DMP_Last.item - DMP_DATA.dmp_##item )>DMP_Last_Tolerance) //判断一个项，比如 yaw,pitch,roll
 //#define DMP_Last_Update(item) DMP_Last.item = DMP_DATA.dmp_##item
 
+static pt_timer init_until;
+
 PT_THREAD(TNavigator(struct pt *pt)) {
 	PT_BEGIN(pt);
 	
+	 //十秒之内是用于陀螺仪的数据稳定的，可以用来做其他事情
+	init_until = millis() + 1000;
+	
+	while (millis() <= init_until) {
+		PT_TIMER_INTERVAL(pt, 50);
+		
+		//MS5611_Read();	//读气压计
+		HMC58X3_ReadSensor();	//读磁力计
+		
+		PT_YIELD(pt);
+	}
+	MS5611_SetFloor();
+	
+	
+	//等到稳定下来以后，进入以下程序
 	while(1) {
 		PT_TIMER_INTERVAL(pt, 5);  //控制程序频率为 200 Hz
 		
-		GPIOA->ODR ^= 1<<3;
+		//GPIOA->ODR ^= 1<<3;
 		
 		//超声波传感器 采样
 		Ultrasonic_Trig();
