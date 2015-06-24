@@ -67,7 +67,7 @@ void PX4Flow_FeedByte(char byte)
 				PX4Flow_Package_Typedef *d1 = (PX4Flow_Package_Typedef*) px4_msg.payload64;
 				if (PX4Flow.lastUpdate != 0)
 				{
-					float timeSpan = PX4Flow.ratio * (d1->time_usec - PX4Flow.lastUpdate) / 1000000.0f;
+					const float timeSpan = PX4Flow.ratio / 100.0;// * (d1->time_usec - PX4Flow.lastUpdate) / 1000000.0f;
 					PX4Flow.x += d1->flow_x * timeSpan;
 					PX4Flow.y += d1->flow_y * timeSpan;
 				}
