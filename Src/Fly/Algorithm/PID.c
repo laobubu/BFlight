@@ -94,8 +94,7 @@ void PID_Init(PID_Typedef * PID) {
 //-----------仅用于角度环和角速度环的位置式PID-----------
 void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t delta)
 {
-	float termI = PID->Error + PID->PreError + PID->PrePreError;
-	
+
 	//-----------位置式PID-----------
 	//误差=期望值-测量值
 	PID->Error=target-measure;
@@ -104,19 +103,14 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t delta)
 		PID->Deriv = delta ;   // 第一层D直接用角速度，效果不错；
 	} else {
 		PID->Deriv = PID->Error-PID->PreError;
+	}	
+	PID->Integ = PID->Integ + PID->Error;
+  if (PID->Integ>50){
+	    PID->Integ = 50; 
 	}
-	
-	//if ((PID->Error>25.)||(PID->Error<-25.)){
-	//	termI =  0; 
-	//}
-	/*		if(fabs(PID->Output) < Thro )		//比油门还大时不积分
-	{
-	termI=(PID->													Integ) + (PID->Error) ;
-	if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)
-		PID->Integ=termI;
-	}*/
-	
-	PID->Integ = termI;
+	 if (PID->Integ<-50){
+	    PID->Integ = -50; 
+	 }//PID I项累加，上下限幅正负50
 	PID->Output = PID->P * PID->Error + PID->I * PID->Integ + PID->D * PID->Deriv;
 	PID->PrePreError = PID->PreError;
 	PID->PreError = PID->Error;
