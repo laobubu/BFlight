@@ -14,6 +14,8 @@
         <TargetCommonOption>
           <Device>STM32F103VB</Device>
           <Vendor>STMicroelectronics</Vendor>
+          <PackID>Keil.STM32F1xx_DFP.1.0.5</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -143,7 +145,6 @@
             <RestoreToolbox>1</RestoreToolbox>
             <RestoreTracepoints>0</RestoreTracepoints>
             <RestoreSysVw>1</RestoreSysVw>
-            <UsePdscDebugDescription>1</UsePdscDebugDescription>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
           <TargetSelection>6</TargetSelection>
@@ -611,6 +612,11 @@
               <FileName>CCD.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\Hardware\CCD.c</FilePath>
+            </File>
+            <File>
+              <FileName>PX4Flow.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Fly\Hardware\PX4Flow.c</FilePath>
             </File>
           </Files>
         </Group>

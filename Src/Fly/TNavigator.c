@@ -2,14 +2,15 @@
 
 #include "TNavigator.h"
 #include "FlyBasic.h"
+
 #include "Algorithm/PID.h"
+#include "Hardware/PX4Flow.h"
 
 extern float ExpectedAngle[3];
 
 PID_Typedef X_PID;
 PID_Typedef Y_PID;
 float ExpectedPos[2] = {0.,0.}; //X,Y
-
 
 struct pt ptNavigator;
 PT_THREAD(TNavigator(struct pt *pt));
@@ -18,13 +19,16 @@ void Init_Navigator(void) {
 	PT_INIT(&ptNavigator);
 	PID_Init(&X_PID);
 	PID_Init(&Y_PID);
+	PX4Flow_Init();
 }
 
 void Do_Navigator(void) {
 	TNavigator(&ptNavigator);
 }
 
-float currentX, currentY;
+//float currentX, currentY;
+#define currentX PX4Flow.x
+#define currentY PX4Flow.y
 
 PT_THREAD(TNavigator(struct pt *pt)) {
 	PT_BEGIN(pt);
