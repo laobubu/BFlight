@@ -112,7 +112,6 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t delta)
 	    PID->Integ = -50; 
 	 }//PID I项累加，上下限幅正负50
 	PID->Output = PID->P * PID->Error + PID->I * PID->Integ + PID->D * PID->Deriv;
-	PID->PrePreError = PID->PreError;
 	PID->PreError = PID->Error;
 
 	//仅用于角度环和角速度环的
