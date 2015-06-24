@@ -1,4 +1,6 @@
-MDK-ARM/*/**
-MDK-ARM/JLinkLog.txt
+MDK-ARM/**
+!MDK-ARM/*.uvoptx
+!MDK-ARM/*.uvprojx
+!MDK-ARM/JLinkSettings.ini
 Package/*
 Drivers/**
