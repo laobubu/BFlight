@@ -10,7 +10,7 @@
 #include "Hardware/USART.h"
 
 int16_t Motor_Out[4] = {0,0,0,0};
-int16_t Thro = 0;
+int16_t Thro = 50;
 char Flight_Working = 1;
 
 void Mode1Main(void);

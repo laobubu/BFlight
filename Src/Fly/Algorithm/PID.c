@@ -18,37 +18,51 @@ PID_Typedef roll_PID;
 PID_Typedef yaw_PID;
 PID_Typedef alt_PID;
 
-float ExpectedAngle[3] = {0.,0.,0.}; //roll pitch yaw
-float ExpectedAltitude = 6.0;
+float ExpectedAngle[3] = {-3.,-8.,0.}; //roll pitch yaw
+float ExpectedAltitude = 30;
 
 void PID_Init_All(void) {
 	PID_Init(&pitch_PID);
 	PID_Init(&roll_PID);
 	PID_Init(&yaw_PID);
 	PID_Init(&alt_PID);
+	pitch_PID.P = -0.39;
+	pitch_PID.D = 0.14; 
+	pitch_PID.I = 0 ;
+	roll_PID.P = 0.39;
+	roll_PID.D = -0.1;
+  roll_PID.I = 0;
+	yaw_PID.P = -0.4;
+	yaw_PID.D = 0.01;
+	yaw_PID.I = 0;
+	alt_PID.P = 0.2;
+	alt_PID.D = 25;
+	alt_PID.I = 0;
+	
+	
 }
 
-void PID_Limiter(int16_t *data, int16_t range) {
+void PID_Limiter(float *data, float range) {
 	if (*data >  range)  *data =  range;
 	if (*data < -range)  *data = -range;
 }
 
 void PID_Calc_All() {
 	
-    PID_Postion_Cal(&roll_PID,	ExpectedAngle[0], status.Roll 	,	LastGyroX());
-    PID_Postion_Cal(&pitch_PID, ExpectedAngle[1], status.Pitch	,	LastGyroY());
-    PID_Postion_Cal(&yaw_PID,	ExpectedAngle[2], status.Yaw	,	LastGyroZ());
-    PID_Postion_Cal(&alt_PID,	ExpectedAltitude, status.Altitude,	0xFFFFFF);
-    
-    int16_t Pitch = pitch_PID.Output;
-    int16_t Roll  = roll_PID.Output;
-    int16_t Yaw   = yaw_PID.Output; 
-    int16_t Alt   = alt_PID.Output; 
+	PID_Postion_Cal(&roll_PID,	ExpectedAngle[0], status.Roll 	,	LastGyroX());
+	PID_Postion_Cal(&pitch_PID, ExpectedAngle[1], status.Pitch	,	LastGyroY());
+	PID_Postion_Cal(&yaw_PID,	ExpectedAngle[2], status.Yaw	,	LastGyroZ());
+	PID_Postion_Cal(&alt_PID,	ExpectedAltitude, status.Altitude,	0xFFFFFF);
+
+	PID_Limiter(&yaw_PID.Output, 10);
+	PID_Limiter(&alt_PID.Output, 10);
+
+	int16_t Pitch = pitch_PID.Output;
+	int16_t Roll  = roll_PID.Output;
+	int16_t Yaw   = yaw_PID.Output; 
+	int16_t Alt   = alt_PID.Output; 
 	
 	if (status.Altitude < 0) Alt = 0;
-	
-	PID_Limiter(&Yaw, 10);
-	PID_Limiter(&Alt, 10);
 	
 	Alt += Thro;
 	
