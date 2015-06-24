@@ -81,6 +81,7 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 	PT_END(pt);
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+
+void TMessager_CpltCallback(void) {
 	DMATransmitted_Base += messager_buffer_length;
 }

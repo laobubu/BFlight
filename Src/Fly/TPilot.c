@@ -59,6 +59,8 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		if (Flight_Working) {
 			PID_Calc_All();
 			Motor_SetAllSpeed(Motor_Out[0],Motor_Out[1],Motor_Out[2],Motor_Out[3]);
+		} else {
+			Motor_SetAllSpeed(0,0,0,0);
 		}
 		
 		//发送数据到上位机

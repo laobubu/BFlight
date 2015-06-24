@@ -36,7 +36,7 @@
 #include "stm32f1xx_it.h"
 
 /* USER CODE BEGIN 0 */
-#include "Hardware/PX4Flow.h"
+void PX4Flow_FeedByte(char byte);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -148,16 +148,10 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-	
-  uint32_t tmp_flag = 0, tmp_it_source = 0;
-  tmp_flag = USART2->SR & UART_FLAG_RXNE;
-  tmp_it_source = USART2->CR1 & (1<<5);
-  if((tmp_flag!=0) && (tmp_it_source!=0))
-  {
+  if (USART2->SR & USART_SR_RXNE) {
 	  PX4Flow_FeedByte(USART2->DR);
-	  return;
-  }
-  
+	  USART2->SR &= ~ USART_SR_RXNE;
+  } else
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */

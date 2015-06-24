@@ -609,11 +609,6 @@
               <FilePath>..\Src\Fly\Hardware\Ultrasonic.c</FilePath>
             </File>
             <File>
-              <FileName>CCD.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Fly\Hardware\CCD.c</FilePath>
-            </File>
-            <File>
               <FileName>PX4Flow.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\Hardware\PX4Flow.c</FilePath>

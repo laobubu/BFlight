@@ -14,6 +14,9 @@
 #include "Algorithm/PID.h"
 #include "Algorithm/StatusCalc.h"
 
+extern PID_Typedef X_PID;
+extern PID_Typedef Y_PID;
+
 //处理 32byte 的收到的包
 void DataPacker_ProcessRecvPack(unsigned char *pack) {
 	static union {
@@ -40,6 +43,8 @@ void DataPacker_ProcessRecvPack(unsigned char *pack) {
 		else if (pack[2] == 'r')	tmp.pid.pid = &roll_PID;
 		else if (pack[2] == 'p')	tmp.pid.pid = &pitch_PID;
 		else if (pack[2] == 'a')	tmp.pid.pid = &alt_PID;
+		else if (pack[2] == 'X')	tmp.pid.pid = &X_PID;
+		else if (pack[2] == 'Y')	tmp.pid.pid = &Y_PID;
 		
 		if (tmp.pid.pid) {	//this is a PID control CMD
 				 if (pack[3] == 'p')	tmp.pid.number = &tmp.pid.pid->P;

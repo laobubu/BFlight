@@ -35,24 +35,25 @@ extern UART_HandleTypeDef huart2;
 #define uart huart2
 
 PX4Flow_Typedef PX4Flow;
+uint8_t byte;
 
 void PX4Flow_Init(void)
 {
 	//PX4Flow is using UART
-	uart.Instance->CR1 |= 1<<2;	//RE
-	
 	memset(&PX4Flow, 0, sizeof(PX4Flow_Typedef));
 	PX4Flow.ratio = 1.0f;
+	
+	HAL_UART_Receive_IT(&uart, &byte, 1);
 }
 
-static mavlink_message_t msg;
-static mavlink_status_t status;
+static mavlink_message_t px4_msg;
+static mavlink_status_t px4_status;
 
-void PX4Flow_FeedByte(const char byte)
+void PX4Flow_FeedByte(char byte)
 {
-	if(mavlink_parse_char(MAVLINK_COMM_0, byte, &msg, &status))
+	if(mavlink_parse_char(MAVLINK_COMM_0, byte, &px4_msg, &px4_status))
 	{
-		switch(msg.msgid)
+		switch(px4_msg.msgid)
 		{
 			case MAVLINK_MSG_ID_HEARTBEAT:
 			{
@@ -63,7 +64,7 @@ void PX4Flow_FeedByte(const char byte)
 			
 			case MAVLINK_MSG_ID_OPTICAL_FLOW:
 			{
-				PX4Flow_Package_Typedef *d1 = (PX4Flow_Package_Typedef*) msg.payload64;
+				PX4Flow_Package_Typedef *d1 = (PX4Flow_Package_Typedef*) px4_msg.payload64;
 				if (PX4Flow.lastUpdate != 0)
 				{
 					float timeSpan = PX4Flow.ratio * (d1->time_usec - PX4Flow.lastUpdate) / 1000000.0f;
@@ -76,7 +77,7 @@ void PX4Flow_FeedByte(const char byte)
 			
 			case MAVLINK_MSG_ID_OPTICAL_FLOW_RAD:
 			{
-				PX4Flow_Package_RAD_Typedef *d2 = (PX4Flow_Package_RAD_Typedef*) msg.payload64;
+				PX4Flow_Package_RAD_Typedef *d2 = (PX4Flow_Package_RAD_Typedef*) px4_msg.payload64;
 			}
 			break;
 		}
