@@ -16,8 +16,6 @@
 #include "Hardware/XRotor.h"
 #include "Hardware/Ultrasonic.h"
 
-#include "DataPacker.h"
-
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
 
@@ -62,9 +60,6 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		} else {
 			Motor_SetAllSpeed(0,0,0,0);
 		}
-		
-		//发送数据到上位机
-		DataPacker_Pack();
 		
 		PT_YIELD(pt);
 	}

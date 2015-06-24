@@ -1,5 +1,4 @@
 #include "stm32f1xx_hal.h"
-#include "Hardware/PX4Flow.h"
 
 extern char HMC58X3_DRDY;
 
@@ -19,12 +18,5 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		Ultrasonic_TimeoutCallback();
 }
 
-void TMessager_CpltCallback(void);
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if (huart->Instance == USART2) {
-		//PX4Flow_FeedByte(); //this shall not work due to stm32f1xx_it.c handling it.
-	} else {
-		TMessager_CpltCallback();
-	}
-}
+///WARNING! TO MAKE THINGS MORE EFFECTIVE,
+/// THINGS ABOUT USART RX ARE WRITTEN IN `stm32f1xx_it.c`
