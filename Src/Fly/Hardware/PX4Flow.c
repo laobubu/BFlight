@@ -35,7 +35,7 @@ extern UART_HandleTypeDef huart2;
 #define uart huart2
 
 PX4Flow_Typedef PX4Flow;
-uint8_t byte;
+static uint8_t byte;
 
 void PX4Flow_Init(void)
 {
@@ -44,6 +44,7 @@ void PX4Flow_Init(void)
 	PX4Flow.ratio = 1.0f;
 	
 	HAL_UART_Receive_IT(&uart, &byte, 1);
+	USART2->CR1 |= USART_CR1_RXNEIE;
 }
 
 static mavlink_message_t px4_msg;

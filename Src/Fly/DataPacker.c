@@ -14,7 +14,7 @@ extern PID_Typedef Y_PID;
 
 #define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
 
-void DP_HandleParamUpdate(const char name[4], const float value)
+void DP_HandleParamUpdate(char name[4], float value)
 {
 	static union {
 		struct {
@@ -91,7 +91,7 @@ typedef enum {
 #define DP_PARAM_NAME_LEN 4
 
 #pragma anon_unions
-static struct {
+static volatile struct {
 	uint8_t byteLeft;
 	uint8_t paramLeft;
 	DP_Status_t status;
@@ -107,10 +107,12 @@ const char DP_Header[] = {0xFE, 0xFC};
 
 void DP_Feed(char byte)	//shall be called by interrupt function
 {
+	uint16_t temp1;
 	switch (DP_RECV.status) {
 		case DP_S_HEAD:
 		{
-			if (DP_Header[(sizeof(DP_Header) - DP_RECV.byteLeft)] == byte) {
+			temp1 = (sizeof(DP_Header) - DP_RECV.byteLeft);
+			if (DP_Header[temp1] == byte) {
 				DP_RECV.byteLeft--;
 				if (DP_RECV.byteLeft == 0) 
 					DP_RECV.status = DP_S_COUNT;
@@ -134,15 +136,12 @@ void DP_Feed(char byte)	//shall be called by interrupt function
 		
 		case DP_S_PARAM_NAME:
 		{
-			if (DP_RECV.paramLeft == 0) {
-				DP_RECV_Reset();
-				DP_Feed(byte);
-			} else {
-				DP_RECV.paramName[DP_PARAM_NAME_LEN - (DP_RECV.byteLeft--)] = byte;
-				if (DP_RECV.byteLeft == 0) {
-					DP_RECV.byteLeft = 4;
-					DP_RECV.status = DP_S_PARAM_VALUE;
-				}
+			temp1 = DP_PARAM_NAME_LEN - DP_RECV.byteLeft;
+			DP_RECV.byteLeft--;
+			DP_RECV.paramName[temp1] = byte;
+			if (DP_RECV.byteLeft == 0) {
+				DP_RECV.byteLeft = 4;
+				DP_RECV.status = DP_S_PARAM_VALUE;
 			}
 		}
 		break;
@@ -152,7 +151,8 @@ void DP_Feed(char byte)	//shall be called by interrupt function
 			DP_RECV.paramValue_char[4 - (DP_RECV.byteLeft--)] = byte;
 			if (DP_RECV.byteLeft == 0) {
 				DP_HandleParamUpdate(DP_RECV.paramName, DP_RECV.paramValue);
-				if (--DP_RECV.paramLeft == 0) {
+				DP_RECV.paramLeft--;
+				if (DP_RECV.paramLeft == 0) {
 					DP_RECV_Reset();
 				} else {
 					DP_RECV.byteLeft = DP_PARAM_NAME_LEN;
@@ -171,6 +171,7 @@ void DP_RECV_Reset(void)
 	DP_RECV.status = DP_S_HEAD;
 }
 
+static uint8_t byte;
 void DP_Init(void)
 {
 	DP_RECV_Reset();
@@ -179,6 +180,9 @@ void DP_Init(void)
 	DP_SendPack.__header[1] = 0xFC;
 	
 	//由于使用的是在 stm32f1xx_it.c 里面拦截HAL的方式，可以不使用 HAL_UART_Receive_IT
+	
+	HAL_UART_Receive_IT(&huart1, &byte, 1);
+	USART1->CR1 |= USART_CR1_RXNEIE;
 }
 
 DP_SendPack_t DP_SendPack;

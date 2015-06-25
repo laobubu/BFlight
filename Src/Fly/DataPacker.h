@@ -9,6 +9,7 @@ typedef __packed struct {
 	char __header[2];
 	float Pitch, Roll, Yaw, Alt;
 	uint8_t Motor[4];
+	float optX, optY;
 } DP_SendPack_t;
 
 extern uint64_t DP_LastUpdate;

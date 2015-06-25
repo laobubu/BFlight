@@ -122,7 +122,7 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 0 */
   if (USART1->SR & USART_SR_RXNE) {
 	  DP_Feed(USART1->DR);
-	  USART1->SR &= ~ USART_SR_RXNE;
+	  //USART1->SR &= ~ USART_SR_RXNE;
   } else
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
@@ -139,7 +139,7 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART2_IRQn 0 */
   if (USART2->SR & USART_SR_RXNE) {
 	  PX4Flow_FeedByte(USART2->DR);
-	  USART2->SR &= ~ USART_SR_RXNE;
+	  //USART2->SR &= ~ USART_SR_RXNE;
   } else
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
