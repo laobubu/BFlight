@@ -5,17 +5,68 @@
 #include "DataPacker.h"
 #include "stdio.h"
 #include "string.h"
-#include "stm32f1xx_hal.h"
 
+//Things that params affect.
 #include "Algorithm/PID.h"
-
+#include "Hardware/XRotor.h"
 extern PID_Typedef X_PID;
 extern PID_Typedef Y_PID;
 
+#define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
+
 void DP_HandleParamUpdate(const char name[4], const float value)
 {
-	if (strcmp(name, "YP")==0) {
-		// Handle
+	static union {
+		struct {
+			float *number;
+			PID_Typedef *pid;
+		} pid;
+	} tmp;
+	
+	if (name[0] == 'g') {	//param whose name begins with 'g' shall be PID
+		
+			 if (name[1] == 'y')	tmp.pid.pid = &yaw_PID;
+		else if (name[1] == 'r')	tmp.pid.pid = &roll_PID;
+		else if (name[1] == 'p')	tmp.pid.pid = &pitch_PID;
+		else if (name[1] == 'a')	tmp.pid.pid = &alt_PID;
+		else if (name[1] == 'X')	tmp.pid.pid = &X_PID;
+		else if (name[1] == 'Y')	tmp.pid.pid = &Y_PID;
+		else						return;
+		
+			 if (name[2] == 'p')	tmp.pid.number = &tmp.pid.pid->P;
+		else if (name[2] == 'i')	tmp.pid.number = &tmp.pid.pid->I;
+		else if (name[2] == 'd')	tmp.pid.number = &tmp.pid.pid->D;
+		else if (name[2] == 'e')	tmp.pid.number = &tmp.pid.pid->Desired;
+		
+		*tmp.pid.number = value;
+		
+		if (name[2] == 'e') {		//something special
+				 if (name[1] == 'r') ExpectedAngle[0] = *tmp.pid.number;
+			else if (name[1] == 'p') ExpectedAngle[1] = *tmp.pid.number;
+			else if (name[1] == 'y') ExpectedAngle[2] = *tmp.pid.number;
+			else if (name[1] == 'a') ExpectedAltitude = *tmp.pid.number;
+		}
+		
+		return;
+	}
+	
+	if (DP_IS_PARAM_NAME("Thro")) {	//油门
+		Thro = value;
+		Motor_SetAllSpeed(Thro, Thro, Thro, Thro);
+		return;
+	}
+	
+	if (DP_IS_PARAM_NAME("Work")) {	//总开关，为 0 表示不开
+		Flight_Working = value;
+		if (!Flight_Working) {
+			PID_Init_All();
+			Motor_SetAllSpeed(0,0,0,0);
+		}
+		return;
+	}
+	
+	if (DP_IS_PARAM_NAME("YP")) {
+		
 		return;
 	}
 }
@@ -73,6 +124,9 @@ void DP_Feed(char byte)	//shall be called by interrupt function
 			DP_RECV.paramLeft = byte;
 			DP_RECV.byteLeft = DP_PARAM_NAME_LEN;
 			DP_RECV.status = DP_S_PARAM_NAME;
+			if (DP_RECV.paramLeft == 0) {	//heartbeat
+				DP_RECV_Reset();
+			}
 		}
 		break;
 		
