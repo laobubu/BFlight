@@ -1,3 +1,7 @@
+//TMessager - the messager and watchdog!
+// 1. 定时发送最新姿态数据 
+// 2. 检查最近一次通讯时间并做出失联时的反应
+
 #include "TMessager.h"
 #include "stdio.h"
 #include "string.h"
@@ -5,6 +9,7 @@
 #include "DataPacker.h"
 
 #include "Algorithm/StatusCalc.h"
+#include "Hardware/XRotor.h"
 
 extern UART_HandleTypeDef huart1;
 
@@ -32,6 +37,13 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Alt = status.Altitude;
 		
 		DP_Send();
+		
+		//失联检测
+		if (Flight_Working && ((DP_LastUpdate + 2000) < millis())) {
+			Flight_Working = 0;
+			PID_Init_All();
+			Motor_SetAllSpeed(0,0,0,0);
+		}
 		
 		PT_YIELD(pt);
 	}

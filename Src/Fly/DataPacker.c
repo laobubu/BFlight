@@ -1,5 +1,5 @@
 //负责打包发送数据，也负责处理收到的数据
-// ( TMessager 负责的是接收数据的过程，然后交给 DataPacker 处理)
+// ( TMessager 的工作是：1. 定时发送最新姿态数据 2. 检查最近一次通讯时间并做出失联时的反应 )
 
 #include "FlyBasic.h"
 #include "DataPacker.h"
@@ -25,6 +25,7 @@ void DP_HandleParamUpdate(const char name[4], const float value)
 	
 	if (name[0] == 'g') {	//param whose name begins with 'g' shall be PID
 		
+		//find the PID Object
 			 if (name[1] == 'y')	tmp.pid.pid = &yaw_PID;
 		else if (name[1] == 'r')	tmp.pid.pid = &roll_PID;
 		else if (name[1] == 'p')	tmp.pid.pid = &pitch_PID;
@@ -33,6 +34,7 @@ void DP_HandleParamUpdate(const char name[4], const float value)
 		else if (name[1] == 'Y')	tmp.pid.pid = &Y_PID;
 		else						return;
 		
+		//find the PID Gain factor
 			 if (name[2] == 'p')	tmp.pid.number = &tmp.pid.pid->P;
 		else if (name[2] == 'i')	tmp.pid.number = &tmp.pid.pid->I;
 		else if (name[2] == 'd')	tmp.pid.number = &tmp.pid.pid->D;
