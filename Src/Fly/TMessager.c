@@ -36,6 +36,11 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Yaw = status.Yaw;
 		DP_SendPack.Alt = status.Altitude;
 		
+		DP_SendPack.Motor[0] = Motor_Out[0];
+		DP_SendPack.Motor[1] = Motor_Out[1];
+		DP_SendPack.Motor[2] = Motor_Out[2];
+		DP_SendPack.Motor[3] = Motor_Out[3];
+		
 		DP_Send();
 		
 		//失联检测

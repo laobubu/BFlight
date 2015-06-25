@@ -2,13 +2,13 @@
 #define __DATAPACKER__
 
 //负责打包发送数据，也负责处理收到的数据
-// ( TMessager 负责的是接收数据的过程，然后交给 DataPacker 处理)
 
 #include <stdint.h>
 
 typedef __packed struct {
 	char __header[2];
 	float Pitch, Roll, Yaw, Alt;
+	uint8_t Motor[4];
 } DP_SendPack_t;
 
 extern uint64_t DP_LastUpdate;
