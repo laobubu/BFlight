@@ -43,7 +43,7 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Motor[3] = Motor_Out[3];
 		
 		DP_SendPack.optX = PX4Flow.x;
-		DP_SendPack.optY = PX4Flow.x;
+		DP_SendPack.optY = PX4Flow.y;
 		
 		DP_Send();
 		

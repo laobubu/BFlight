@@ -1,6 +1,8 @@
 #include "PX4Flow.h"
 #include "FlyBasic.h"
 
+#include "Algorithm/AvgFilter.h"
+
 #include "mavlink/common/mavlink.h"
 #include "mavlink/pixhawk/mavlink.h"
 
@@ -37,18 +39,24 @@ extern UART_HandleTypeDef huart2;
 PX4Flow_Typedef PX4Flow;
 static uint8_t byte;
 
-void PX4Flow_Init(void)
+void PX4Flow_Reset(void)
 {
-	//PX4Flow is using UART
 	memset(&PX4Flow, 0, sizeof(PX4Flow_Typedef));
 	PX4Flow.ratio = 1.0f;
+}
+
+void PX4Flow_Init(void)
+{
+	PX4Flow_Reset();
+	
+	//PX4Flow is using UART
 	
 	HAL_UART_Receive_IT(&uart, &byte, 1);
 	USART2->CR1 |= USART_CR1_RXNEIE;
 }
 
-static mavlink_message_t px4_msg;
-static mavlink_status_t px4_status;
+static volatile mavlink_message_t px4_msg;
+static volatile mavlink_status_t px4_status;
 
 void PX4Flow_FeedByte(char byte)
 {
@@ -69,8 +77,10 @@ void PX4Flow_FeedByte(char byte)
 				if (PX4Flow.lastUpdate != 0)
 				{
 					const float timeSpan = PX4Flow.ratio / 100.0;// * (d1->time_usec - PX4Flow.lastUpdate) / 1000000.0f;
-					PX4Flow.x += d1->flow_x * timeSpan;
-					PX4Flow.y += d1->flow_y * timeSpan;
+					if (d1->flow_x > 10 || d1->flow_x< -10 )
+						PX4Flow.x += d1->flow_x * timeSpan;
+					if (d1->flow_y > 10 || d1->flow_y< -10 )
+						PX4Flow.y += d1->flow_y * timeSpan;
 				}
 				PX4Flow.lastUpdate = d1->time_usec;
 			}

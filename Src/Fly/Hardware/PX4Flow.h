@@ -11,6 +11,7 @@ typedef struct {
 
 extern PX4Flow_Typedef PX4Flow;
 
+void PX4Flow_Reset(void);
 void PX4Flow_Init(void);
 void PX4Flow_FeedByte(char byte);
 

@@ -9,8 +9,11 @@
 //Things that params affect.
 #include "Algorithm/PID.h"
 #include "Hardware/XRotor.h"
+#include "Hardware/PX4Flow.h"
+
 extern PID_Typedef X_PID;
 extern PID_Typedef Y_PID;
+extern float ExpectedPos[2]; //X,Y
 
 #define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
 
@@ -47,6 +50,8 @@ void DP_HandleParamUpdate(char name[4], float value)
 			else if (name[1] == 'p') ExpectedAngle[1] = *tmp.pid.number;
 			else if (name[1] == 'y') ExpectedAngle[2] = *tmp.pid.number;
 			else if (name[1] == 'a') ExpectedAltitude = *tmp.pid.number;
+			else if (name[1] == 'X') ExpectedPos[0] = *tmp.pid.number;
+			else if (name[1] == 'Y') ExpectedPos[1] = *tmp.pid.number;
 		}
 		
 		return;
@@ -63,6 +68,9 @@ void DP_HandleParamUpdate(char name[4], float value)
 		if (!Flight_Working) {
 			PID_Init_All();
 			Motor_SetAllSpeed(0,0,0,0);
+		} else {
+			//reset sensor
+			PX4Flow_Reset();
 		}
 		return;
 	}
