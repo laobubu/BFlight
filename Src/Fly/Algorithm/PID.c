@@ -111,20 +111,23 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t delta)
 
 	//-----------位置式PID-----------
 	//误差=期望值-测量值
-	PID->Error=target-measure;
+	PID->Error = target - measure;
 	
 	if (0xFFFFFF != delta) {
 		PID->Deriv = delta ;   // 第一层D直接用角速度，效果不错；
 	} else {
-		PID->Deriv = PID->Error-PID->PreError;
-	}	
-	PID->Integ = PID->Integ + PID->Error;
-  if (PID->Integ>50){
-	    PID->Integ = 50; 
+		PID->Deriv = PID->Error - PID->PreError;
 	}
-	 if (PID->Integ<-50){
-	    PID->Integ = -50; 
-	 }//PID I项累加，上下限幅正负50
-	PID->Output = PID->P * PID->Error + PID->I * PID->Integ + PID->D * PID->Deriv;
+	
+	PID->Integ = PID->Integ + PID->Error;
+	if (PID->iLimit) {
+		if (PID->Integ > PID->iLimit){
+			PID->Integ = PID->iLimit; 
+		} else if (PID->Integ < -PID->iLimit){
+			PID->Integ = -PID->iLimit; 
+		}
+	}
+	 
+	PID->Output = (PID->P * PID->Error) + (PID->I * PID->Integ) + (PID->D * PID->Deriv);
 	PID->PreError = PID->Error;
 }
