@@ -11,6 +11,7 @@
 #include "Algorithm/StatusCalc.h"
 #include "Hardware/XRotor.h"
 #include "Hardware/PX4Flow.h"
+#include "Hardware/Laser.h"
 
 extern UART_HandleTypeDef huart1;
 
@@ -42,8 +43,10 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Motor[2] = Motor_Out[2];
 		DP_SendPack.Motor[3] = Motor_Out[3];
 		
-		DP_SendPack.optX = PX4Flow.x;
-		DP_SendPack.optY = PX4Flow.y;
+		//DP_SendPack.optX = PX4Flow.x;
+		//DP_SendPack.optY = PX4Flow.y;
+		DP_SendPack.optX = Laser_Read(LASER_LEFT);
+		DP_SendPack.optY = Laser_Read(LASER_RIGHT);
 		
 		DP_Send();
 		

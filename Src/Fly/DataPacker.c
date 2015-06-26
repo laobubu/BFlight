@@ -11,6 +11,8 @@
 #include "Hardware/XRotor.h"
 #include "Hardware/PX4Flow.h"
 
+#include "Param.h"
+
 extern PID_Typedef X_PID;
 extern PID_Typedef Y_PID;
 extern float ExpectedPos[2]; //X,Y
@@ -75,10 +77,10 @@ void DP_HandleParamUpdate(char name[4], float value)
 		return;
 	}
 	
-	if (DP_IS_PARAM_NAME("YP")) {
-		
-		return;
-	}
+	
+	//下面是用于 Param 系统的
+	#define PARAM_MAP_READER(type,name)  if (DP_IS_PARAM_NAME(#name)) { Param.name = value; return; }
+	PARAM_LIST(PARAM_MAP_READER)
 }
 
 
@@ -158,7 +160,7 @@ void DP_Feed(char byte)	//shall be called by interrupt function
 		{
 			DP_RECV.paramValue_char[4 - (DP_RECV.byteLeft--)] = byte;
 			if (DP_RECV.byteLeft == 0) {
-				DP_HandleParamUpdate(DP_RECV.paramName, DP_RECV.paramValue);
+				DP_HandleParamUpdate((char*)DP_RECV.paramName, DP_RECV.paramValue);
 				DP_RECV.paramLeft--;
 				if (DP_RECV.paramLeft == 0) {
 					DP_RECV_Reset();

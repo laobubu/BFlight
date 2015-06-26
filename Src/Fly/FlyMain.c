@@ -1,5 +1,6 @@
 #include "FlyBasic.h"
 #include "FlyMain.h"
+#include "Param.h"
 
 #include "TNavigator.h"
 #include "TMessager.h"
@@ -18,7 +19,7 @@ void Mode2Main(void);
 
 void FlyMain(void) {
 	//Initial Hardware
-	
+	Param_Reset();
 	//patchedPrintf_Init();		//for FreeRTOS
 	IICinit();
 	Motor_Init();

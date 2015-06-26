@@ -563,6 +563,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\TPilot.c</FilePath>
             </File>
+            <File>
+              <FileName>Param.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Fly\Param.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -612,6 +617,11 @@
               <FileName>PX4Flow.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\Hardware\PX4Flow.c</FilePath>
+            </File>
+            <File>
+              <FileName>Laser.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Fly\Hardware\Laser.c</FilePath>
             </File>
           </Files>
         </Group>
