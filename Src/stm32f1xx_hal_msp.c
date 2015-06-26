@@ -226,19 +226,20 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     __USART2_CLK_ENABLE();
   
     /**USART2 GPIO Configuration    
-    PA2     ------> USART2_TX
-    PA3     ------> USART2_RX 
+    PD5     ------> USART2_TX
+    PD6     ------> USART2_RX 
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_2;
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = GPIO_PIN_3;
+    GPIO_InitStruct.Pin = GPIO_PIN_6;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+    __HAL_AFIO_REMAP_USART2_ENABLE();
   /* Peripheral interrupt init*/
     HAL_NVIC_SetPriority(USART2_IRQn, 13, 0);
     HAL_NVIC_EnableIRQ(USART2_IRQn);
@@ -285,10 +286,10 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     __USART2_CLK_DISABLE();
   
     /**USART2 GPIO Configuration    
-    PA2     ------> USART2_TX
-    PA3     ------> USART2_RX 
+    PD5     ------> USART2_TX
+    PD6     ------> USART2_RX 
     */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2|GPIO_PIN_3);
+    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_5|GPIO_PIN_6);
 
     /* Peripheral interrupt DeInit*/
     HAL_NVIC_DisableIRQ(USART2_IRQn);
