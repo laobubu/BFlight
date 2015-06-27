@@ -3,7 +3,7 @@
 
 /******* 硬件相关 *******/
 //STM32 HAL
-#include "stm32f1xx_hal.h"
+#include "stm32f4xx_hal.h"
 
 /******* 程序相关 *******/
 
@@ -38,6 +38,7 @@ extern char Flight_Working;
 #define millis() 			HAL_GetTick()
 #define delay_ms(x)			HAL_Delay(x)			//短时间延时
 #define delayThread(pt,x)	PT_TIMER_DELAY(pt,x)	//用于进程函数的长时间延迟（x毫秒）
+void delay_us(const uint16_t us);
 
 //位带操作
 #define BITBAND(addr, bitnum) ((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2)) 

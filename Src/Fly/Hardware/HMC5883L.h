@@ -3,8 +3,7 @@
 
 // HMC5883L 驱动程序
 
-#include "stdint.h"
-#include "stm32f1xx_hal.h"
+#include "FlyBasic.h"
 
 #define HMC58X3_LENGTH 4
 

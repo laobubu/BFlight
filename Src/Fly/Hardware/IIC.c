@@ -1,10 +1,14 @@
+#include "FlyBasic.h"
 #include "IIC.h"
-#include "stm32f1xx_hal.h"
 
+#define HAL_Interface hi2c1
+
+#ifndef HAL_Interface
+//Software IIC (for STM32F1xx)
 #define IIC_SCL_1	GPIOB->BSRR = 1<<6
-#define IIC_SCL_0	GPIOB->BRR  = 1<<6
+#define IIC_SCL_0	GPIOB->BSRR  = (1<<6)<<16
 #define IIC_SDA_1	GPIOB->BSRR = 1<<7
-#define IIC_SDA_0	GPIOB->BRR  = 1<<7
+#define IIC_SDA_0	GPIOB->BSRR  = (1<<7)<<16
 #define READ_SDA	(GPIOB->IDR & (1<<7))
 
 ////驱动接口，GPIO模拟IIC
@@ -12,16 +16,6 @@
 //SDA-->PB7
 #define SDA_IN()  {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x80000000;}
 #define SDA_OUT() {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x30000000;}
-
-void delay_us(unsigned short us) {
-	unsigned char lnc = 1 // SystemCoreClock / 1000000
-		, t;
-	us >>= 1;
-	while(us--) {
-		t = lnc;
-		while(--t) ;
-	}
-}
 
 void IICinit(void) {
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -33,10 +27,9 @@ void IICinit(void) {
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 
-/**************************实现函数********************************************
-*函数原型:		void IIC_Start(void)
-*功　　能:		产生IIC起始信号
-*******************************************************************************/
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		void IIC_Start(void)
+///功　　能:		产生IIC起始信号
 void IIC_Start(void)
 {
 	SDA_OUT();     //sda线输出 
@@ -48,10 +41,9 @@ void IIC_Start(void)
 	IIC_SCL_0;//钳住I2C总线，准备发送或接收数据 
 }
 
-/**************************实现函数********************************************
-*函数原型:		void IIC_Stop(void)
-*功　　能:	    //产生IIC停止信号
-*******************************************************************************/	  
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		void IIC_Stop(void)
+///功　　能:	    产生IIC停止信号
 void IIC_Stop(void)
 {
 	SDA_OUT();//sda线输出
@@ -63,12 +55,11 @@ void IIC_Stop(void)
 	delay_us(4);							   	
 }
 
-/**************************实现函数********************************************
-*函数原型:		u8 IIC_Wait_Ack(void)
-*功　　能:	    等待应答信号到来 
-//返回值：1，接收应答失败
-//        0，接收应答成功
-*******************************************************************************/
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		u8 IIC_Wait_Ack(void)
+///功　　能:	    等待应答信号到来 
+///返回值：1，接收应答失败
+///        0，接收应答成功
 u8 IIC_Wait_Ack(void)
 {
 	u8 ucErrTime=0;
@@ -89,10 +80,9 @@ u8 IIC_Wait_Ack(void)
 	return 0;  
 } 
 
-/**************************实现函数********************************************
-*函数原型:		void IIC_Ack(void)
-*功　　能:	    产生ACK应答
-*******************************************************************************/
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		void IIC_Ack(void)
+///功　　能:	    产生ACK应答
 void IIC_Ack(void)
 {
 	IIC_SCL_0;
@@ -104,10 +94,9 @@ void IIC_Ack(void)
 	IIC_SCL_0;
 }
 	
-/**************************实现函数********************************************
-*函数原型:		void IIC_NAck(void)
-*功　　能:	    产生NACK应答
-*******************************************************************************/	    
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		void IIC_NAck(void)
+///功　　能:	    产生NACK应答    
 void IIC_NAck(void)
 {
 	IIC_SCL_0;
@@ -119,10 +108,9 @@ void IIC_NAck(void)
 	IIC_SCL_0;
 }					 				     
 
-/**************************实现函数********************************************
-*函数原型:		void IIC_Send_Byte(u8 txd)
-*功　　能:	    IIC发送一个字节
-*******************************************************************************/		  
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		void IIC_Send_Byte(u8 txd)
+///功　　能:	    IIC发送一个字节
 void IIC_Send_Byte(u8 txd)
 {                        
     u8 t;   
@@ -143,10 +131,9 @@ void IIC_Send_Byte(u8 txd)
     }	 
 } 	 
    
-/**************************实现函数********************************************
-*函数原型:		u8 IIC_Read_Byte(unsigned char ack)
-*功　　能:	    //读1个字节，ack=1时，发送ACK，ack=0，发送nACK 
-*******************************************************************************/  
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		u8 IIC_Read_Byte(unsigned char ack)
+///功　　能:	    读1个字节，ack=1时，发送ACK，ack=0，发送nACK 
 u8 IIC_Read_Byte(unsigned char ack)
 {
 	unsigned char i,receive=0;
@@ -167,13 +154,12 @@ u8 IIC_Read_Byte(unsigned char ack)
     return receive;
 }
 
-/**************************实现函数********************************************
-*函数原型:		unsigned char IICreadOneByte(unsigned char I2C_Addr,unsigned char addr)
-*功　　能:	    读取指定设备 指定寄存器的一个值
-输入	I2C_Addr  目标设备地址
-		addr	   寄存器地址
-返回   读出来的值
-*******************************************************************************/ 
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		unsigned char IICreadOneByte(unsigned char I2C_Addr,unsigned char addr)
+///功　　能:	    读取指定设备 指定寄存器的一个值
+///输入	I2C_Addr  目标设备地址
+///		addr	   寄存器地址
+///返回   读出来的值
 unsigned char IICreadOneByte(unsigned char I2C_Addr,unsigned char addr)
 {
 	unsigned char res=0;
@@ -196,15 +182,14 @@ unsigned char IICreadOneByte(unsigned char I2C_Addr,unsigned char addr)
 }
 
 
-/**************************实现函数********************************************
-*函数原型:		u8 IICreadBytes(u8 dev, u8 reg, u8 length, u8 *data)
-*功　　能:	    读取指定设备 指定寄存器的 length个值
-输入	dev  目标设备地址
-		reg	  寄存器地址
-		length 要读的字节数
-		*data  读出的数据将要存放的指针
-返回   读出来的字节数量
-*******************************************************************************/ 
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		u8 IICreadBytes(u8 dev, u8 reg, u8 length, u8 *data)
+///功　　能:	    读取指定设备 指定寄存器的 length个值
+///输入	dev  目标设备地址
+///		reg	  寄存器地址
+///		length 要读的字节数
+///		*data  读出的数据将要存放的指针
+///返回   读出来的字节数量
 u8 IICreadBytes(u8 dev, u8 reg, u8 length, u8 *data){
     u8 count = 0;
 	u8 temp;
@@ -230,13 +215,12 @@ u8 IICreadBytes(u8 dev, u8 reg, u8 length, u8 *data){
     return count;
 }
 
-/**************************实现函数********************************************
-*函数原型:		u8 IICwriteOneByte(u8 dev, u8 reg, u8 length, u8* data)
-*功　　能:	    将1个字节写入指定设备，参考 MS5611 的文档11页
-输入	dev  目标设备地址
-		data  将要写的数据
-返回   返回是否成功
-*******************************************************************************/ 
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		u8 IICwriteOneByte(u8 dev, u8 reg, u8 length, u8* data)
+///功　　能:	    将1个字节写入指定设备，参考 MS5611 的文档11页
+///输入	dev  目标设备地址
+///		data  将要写的数据
+///返回   返回是否成功
 u8 IICwriteOneByte(u8 dev, u8 data){
 	IIC_Start();
 	IIC_Send_Byte(dev);	   //发送写命令
@@ -248,15 +232,14 @@ u8 IICwriteOneByte(u8 dev, u8 data){
     return 1; //status == 0;
 }
 
-/**************************实现函数********************************************
-*函数原型:		u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data)
-*功　　能:	    将多个字节写入指定设备 指定寄存器
-输入	dev  目标设备地址
-		reg	  寄存器地址
-		length 要写的字节数
-		*data  将要写的数据的首地址
-返回   返回是否成功
-*******************************************************************************/ 
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data)
+///功　　能:	    将多个字节写入指定设备 指定寄存器
+///输入	dev  目标设备地址
+///		reg	  寄存器地址
+///		length 要写的字节数
+///		*data  将要写的数据的首地址
+///返回   返回是否成功
 u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data){
   
  	u8 count = 0;
@@ -274,42 +257,39 @@ u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data){
     return 1; //status == 0;
 }
 
-/**************************实现函数********************************************
-*函数原型:		u8 IICreadByte(u8 dev, u8 reg, u8 *data)
-*功　　能:	    读取指定设备 指定寄存器的一个值
-输入	dev  目标设备地址
-		reg	   寄存器地址
-		*data  读出的数据将要存放的地址
-返回   1
-*******************************************************************************/ 
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		u8 IICreadByte(u8 dev, u8 reg, u8 *data)
+///功　　能:	    读取指定设备 指定寄存器的一个值
+///输入	dev  目标设备地址
+///		reg	   寄存器地址
+///		*data  读出的数据将要存放的地址
+///返回   1
 u8 IICreadByte(u8 dev, u8 reg, u8 *data){
 	*data=IICreadOneByte(dev, reg);
     return 1;
 }
 
-/**************************实现函数********************************************
-*函数原型:		unsigned char IICwriteByte(unsigned char dev, unsigned char reg, unsigned char data)
-*功　　能:	    写入指定设备 指定寄存器一个字节
-输入	dev  目标设备地址
-		reg	   寄存器地址
-		data  将要写入的字节
-返回   1
-*******************************************************************************/ 
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		unsigned char IICwriteByte(unsigned char dev, unsigned char reg, unsigned char data)
+///功　　能:	    写入指定设备 指定寄存器一个字节
+///输入	dev  目标设备地址
+///		reg	   寄存器地址
+///		data  将要写入的字节
+///返回   1
 unsigned char IICwriteByte(unsigned char dev, unsigned char reg, unsigned char data){
     return IICwriteBytes(dev, reg, 1, &data);
 }
 
-/**************************实现函数********************************************
-*函数原型:		u8 IICwriteBits(u8 dev,u8 reg,u8 bitStart,u8 length,u8 data)
-*功　　能:	    读 修改 写 指定设备 指定寄存器一个字节 中的多个位
-输入	dev  目标设备地址
-		reg	   寄存器地址
-		bitStart  目标字节的起始位
-		length   位长度
-		data    存放改变目标字节位的值
-返回   成功 为1 
- 		失败为0
-*******************************************************************************/ 
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		u8 IICwriteBits(u8 dev,u8 reg,u8 bitStart,u8 length,u8 data)
+///功　　能:	    读 修改 写 指定设备 指定寄存器一个字节 中的多个位
+///输入	dev  目标设备地址
+///		reg	   寄存器地址
+///		bitStart  目标字节的起始位
+///		length   位长度
+///		data    存放改变目标字节位的值
+///返回   成功 为1 
+/// 		失败为0
 u8 IICwriteBits(u8 dev,u8 reg,u8 bitStart,u8 length,u8 data)
 {
 
@@ -326,16 +306,15 @@ u8 IICwriteBits(u8 dev,u8 reg,u8 bitStart,u8 length,u8 data)
     }
 }
 
-/**************************实现函数********************************************
-*函数原型:		u8 IICwriteBit(u8 dev, u8 reg, u8 bitNum, u8 data)
-*功　　能:	    读 修改 写 指定设备 指定寄存器一个字节 中的1个位
-输入	dev  目标设备地址
-		reg	   寄存器地址
-		bitNum  要修改目标字节的bitNum位
-		data  为0 时，目标位将被清0 否则将被置位
-返回   成功 为1 
- 		   失败为0
-*******************************************************************************/ 
+////////////////////////////////////////////////////////////////////////////////
+///函数原型:		u8 IICwriteBit(u8 dev, u8 reg, u8 bitNum, u8 data)
+///功　　能:	    读 修改 写 指定设备 指定寄存器一个字节 中的1个位
+///输入	dev  目标设备地址
+///		reg	   寄存器地址
+///		bitNum  要修改目标字节的bitNum位
+///		data  为0 时，目标位将被清0 否则将被置位
+///返回	成功 为1 
+///		失败为0
 u8 IICwriteBit(u8 dev, u8 reg, u8 bitNum, u8 data){
     u8 b;
     
@@ -344,37 +323,43 @@ u8 IICwriteBit(u8 dev, u8 reg, u8 bitNum, u8 data){
     
     return IICwriteByte(dev, reg, b);
 }
+#endif	//Software IIC
 
 
-/*
-//USING HARDWARE I2C
-//NOTICE: INIT WAS SET IN STM32CUBE
-extern I2C_HandleTypeDef hi2c1;
+#ifdef HAL_Interface
+// HAL Hardware IIC
+extern I2C_HandleTypeDef HAL_Interface;
 #define I2C_TIMEOUT HAL_MAX_DELAY
 
 void IICinit(void){}
 
 u8 IICreadOneByte(u8 dev,u8 reg) {
 	uint8_t dd;
-	while (HAL_BUSY != HAL_I2C_Mem_Read(&hi2c1, dev, reg, I2C_MEMADD_SIZE_8BIT, &dd, 1, I2C_TIMEOUT));
+	while (HAL_BUSY != HAL_I2C_Mem_Read(&HAL_Interface, dev, reg, I2C_MEMADD_SIZE_8BIT, &dd, 1, I2C_TIMEOUT));
 	return dd;
 }
 
 u8 IICreadBytes(u8 dev, u8 reg, u8 length, u8 *data) {
 	HAL_StatusTypeDef rtn;
-	while (HAL_BUSY != (rtn = HAL_I2C_Mem_Read(&hi2c1, dev, reg, I2C_MEMADD_SIZE_8BIT, data, length, I2C_TIMEOUT)));
+	while (HAL_BUSY != (rtn = HAL_I2C_Mem_Read(&HAL_Interface, dev, reg, I2C_MEMADD_SIZE_8BIT, data, length, I2C_TIMEOUT)));
+	return rtn==HAL_OK;
+}
+
+u8 IICwriteOneByte(u8 dev, u8 data) {
+	HAL_StatusTypeDef rtn;
+	while (HAL_BUSY != (rtn = HAL_I2C_Master_Transmit(&HAL_Interface, dev, &data, 1, I2C_TIMEOUT)));
 	return rtn==HAL_OK;
 }
 
 u8 IICwriteByte(u8 dev, u8 reg, u8 data) {
 	HAL_StatusTypeDef rtn;
-	while (HAL_BUSY != (rtn = HAL_I2C_Mem_Write(&hi2c1, dev, reg, I2C_MEMADD_SIZE_8BIT, &data, 1, I2C_TIMEOUT)));
+	while (HAL_BUSY != (rtn = HAL_I2C_Mem_Write(&HAL_Interface, dev, reg, I2C_MEMADD_SIZE_8BIT, &data, 1, I2C_TIMEOUT)));
 	return rtn==HAL_OK;
 }
 
 u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data) {
 	HAL_StatusTypeDef rtn;
-	while (HAL_BUSY != (rtn = HAL_I2C_Mem_Write(&hi2c1, dev, reg, I2C_MEMADD_SIZE_8BIT, data, length, I2C_TIMEOUT)));
+	while (HAL_BUSY != (rtn = HAL_I2C_Mem_Write(&HAL_Interface, dev, reg, I2C_MEMADD_SIZE_8BIT, data, length, I2C_TIMEOUT)));
 	return rtn==HAL_OK;
 }
 
@@ -394,4 +379,4 @@ u8 IICwriteBit(u8 dev, u8 reg, u8 bitNum, u8 data){
 	if (data) b |= 1<<bitNum;
 	return IICwriteByte(dev, reg, b);
 }
-*/
+#endif

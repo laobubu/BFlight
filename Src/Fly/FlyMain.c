@@ -16,11 +16,13 @@ char Flight_Working = 0;
 
 void Mode1Main(void);
 void Mode2Main(void);
+void FlyBasic_Init(void);
 
 void FlyMain(void) {
 	//Initial Hardware
 	Param_Reset();
 	//patchedPrintf_Init();		//for FreeRTOS
+	FlyBasic_Init();
 	IICinit();
 	Motor_Init();
 	

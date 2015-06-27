@@ -3,9 +3,9 @@
 // 2. 检查最近一次通讯时间并做出失联时的反应
 
 #include "TMessager.h"
+#include "FlyBasic.h"
 #include "stdio.h"
 #include "string.h"
-#include "stm32f1xx_hal.h"
 #include "DataPacker.h"
 
 #include "Algorithm/StatusCalc.h"

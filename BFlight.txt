@@ -1,0 +1,100 @@
+Configuration	BFlight
+STM32CubeMX 	4.8.0
+Date	06/27/2015
+MCU	STM32F407ZETx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC1	IN0	ADC1_IN0	PA0-WKUP
+ADC1	IN1	ADC1_IN1	PA1
+ADC1	IN2	ADC1_IN2	PA2
+ADC1	IN3	ADC1_IN3	PA3
+I2C1	I2C	I2C1_SCL	PB6
+I2C1	I2C	I2C1_SDA	PB7
+RCC	Crystal/Ceramic Resonator	RCC_OSC_IN	PH0-OSC_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC_OUT	PH1-OSC_OUT
+SPI1	Full-Duplex Master	SPI1_MISO	PA6
+SPI1	Full-Duplex Master	SPI1_MOSI	PA7
+SPI1	Full-Duplex Master	SPI1_SCK	PA5
+SPI1	Hardware	SPI1_NSS	PA4
+SYS	JTAG (5 pins)	SYS_JTCK-SWCLK	PA14
+SYS	JTAG (5 pins)	SYS_JTDI	PA15
+SYS	JTAG (5 pins)	SYS_JTDO-SWO	PB3
+SYS	JTAG (5 pins)	SYS_JTMS-SWDIO	PA13
+SYS	JTAG (5 pins)	SYS_JTRST	PB4
+TIM1	PWM Generation CH1	TIM1_CH1	PE9
+TIM1	PWM Generation CH2	TIM1_CH2	PE11
+TIM1	PWM Generation CH3	TIM1_CH3	PE13
+TIM1	PWM Generation CH4	TIM1_CH4	PE14
+TIM4	Internal Clock	TIM4_VS_ClockSourceINT	VP_TIM4_VS_ClockSourceINT
+USART1	Asynchronous	USART1_RX	PA10
+USART1	Asynchronous	USART1_TX	PA9
+USART2	Asynchronous	USART2_RX	PD6
+USART2	Asynchronous	USART2_TX	PD5
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+14	PF4	GPIO_EXTI4	SONAR_ECHO
+15	PF5	GPIO_Output	SONAR_TRIG
+23	PH0-OSC_IN	RCC_OSC_IN	
+24	PH1-OSC_OUT	RCC_OSC_OUT	
+34	PA0-WKUP	ADC1_IN0	
+35	PA1	ADC1_IN1	
+36	PA2	ADC1_IN2	
+37	PA3	ADC1_IN3	
+40	PA4	SPI1_NSS	
+41	PA5	SPI1_SCK	
+42	PA6	SPI1_MISO	
+43	PA7	SPI1_MOSI	
+60	PE9	TIM1_CH1	
+64	PE11	TIM1_CH2	
+66	PE13	TIM1_CH3	
+67	PE14	TIM1_CH4	
+74	PB13	GPIO_Output	LED_3
+75	PB14	GPIO_Output	LED_4
+78	PD9	GPIO_Input	Key1
+79	PD10	GPIO_Input	Key2
+80	PD11	GPIO_Input	Key3
+101	PA9	USART1_TX	
+102	PA10	USART1_RX	
+105	PA13	SYS_JTMS-SWDIO	
+109	PA14	SYS_JTCK-SWCLK	
+110	PA15	SYS_JTDI	
+119	PD5	USART2_TX	
+122	PD6	USART2_RX	
+133	PB3	SYS_JTDO-SWO	
+134	PB4	SYS_JTRST	
+136	PB6	I2C1_SCL	
+137	PB7	I2C1_SDA	
+141	PE0	GPIO_Output	LED_2
+142	PE1	GPIO_Output	LED_1
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : BFlight
+Project Folder : E:\C\ARM\32CUBE\BFlight
+Toolchain / IDE : MDK-ARM V5
+Firmware Package Name and Version : STM32Cube FW_F4 V1.6.0
+
+
+Code Generation Settings : 
+STM32Cube Firmware Library Package : Copy all used libraries into the project folder
+Generate peripheral initialization as a pair of '.c/.h' files per IP : No
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : Balanced Size/Speed
+
+
+
+
+
+

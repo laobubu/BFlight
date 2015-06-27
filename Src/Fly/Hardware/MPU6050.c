@@ -6,7 +6,7 @@
 */
 #include "MPU6050.h"
 #include "IIC.h"
-#include "stm32f1xx_hal.h"
+#include "FlyBasic.h"
 
 uint8_t buffer[14];
 int16_t  MPU6050_FIFO[6][11];

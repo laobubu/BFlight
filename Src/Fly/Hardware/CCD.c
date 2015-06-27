@@ -10,7 +10,7 @@ CCD_TypeDef CCD;
 extern ADC_HandleTypeDef hadc1;
 
 void CCD_Init(void) {
-	HAL_ADCEx_Calibration_Start(&hadc1);
+	//HAL_ADCEx_Calibration_Start(&hadc1);
 }
 
 void CCD_Sample(void) {

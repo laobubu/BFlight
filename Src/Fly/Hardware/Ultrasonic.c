@@ -1,7 +1,11 @@
 #include "Ultrasonic.h"
-#include "stm32f1xx_hal.h"
+#include "FlyBasic.h"
 
-extern TIM_HandleTypeDef htim4;
+#define htim_sonar		htim4
+#define GPIO_TRIG		GPIOF
+#define GPIO_TRIG_PIN	5
+
+extern TIM_HandleTypeDef htim_sonar;
 
 Ultrasonic_Typedef Ultrasonic;
 const float Ultrasonic_SpeedFactor = 58.0 / 4.0; // us / 58 => cm
@@ -36,8 +40,8 @@ void US_UPDATE(float val) {
 #endif
 
 void Ultrasonic_Init(void) {
-	HAL_TIM_Base_Stop(&htim4);
-	GPIOE->BRR  |= 1 << 6;
+	HAL_TIM_Base_Stop(&htim_sonar);
+	GPIO_TRIG->BSRR  |= (1 << GPIO_TRIG_PIN)<<16;
 	
 	Ultrasonic.status = USS_IDLE;
 	Ultrasonic.altitude = 0.0f;
@@ -46,12 +50,12 @@ void Ultrasonic_Init(void) {
 void Ultrasonic_Trig(void) {
 	unsigned short cntdown = 200;
 	if (Ultrasonic.status == USS_IDLE) {
-		htim4.Instance->CNT = 0;
+		htim_sonar.Instance->CNT = 0;
 		Ultrasonic.status = USS_PREPARE;
 		
-		GPIOE->BSRR |= 1 << 6;
+		GPIO_TRIG->BSRR |= 1 << GPIO_TRIG_PIN;
 		while(--cntdown);
-		GPIOE->BRR  |= 1 << 6;
+		GPIO_TRIG->BSRR  |= (1 << GPIO_TRIG_PIN)<<16;
 	}
 }
 
@@ -59,16 +63,16 @@ void Ultrasonic_Echo(char high){
 	if (Ultrasonic.status == USS_IDLE) return;
 	
 	if (high) { //超声波开始
-		HAL_TIM_Base_Start(&htim4);
+		HAL_TIM_Base_Start(&htim_sonar);
 		Ultrasonic.status = USS_TIMING;
 	} else { //超声波结束
-		HAL_TIM_Base_Stop(&htim4);
-		US_UPDATE(htim4.Instance->CNT / Ultrasonic_SpeedFactor);
+		HAL_TIM_Base_Stop(&htim_sonar);
+		US_UPDATE(htim_sonar.Instance->CNT / Ultrasonic_SpeedFactor);
 		Ultrasonic.status = USS_IDLE;
 	}
 }
 
 void Ultrasonic_TimeoutCallback(void) {
-	HAL_TIM_Base_Stop(&htim4);
+	HAL_TIM_Base_Stop(&htim_sonar);
 	Ultrasonic.status = USS_IDLE;
 }
