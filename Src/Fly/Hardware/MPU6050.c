@@ -123,7 +123,7 @@ void MPU6050_initialize(void) {
 
 /*
 	MPU6050_reset();
-	HAL_Delay(5); // wait after reset 50ms
+	delay_ms(5); // wait after reset 50ms
 	MPU6050_setRate(0);  
 	MPU6050_setClockSource(MPU6050_CLOCK_PLL_ZGYRO);
 	//printf(("设置DLPF带宽为42Hz...\r\n"));
@@ -134,7 +134,7 @@ void MPU6050_initialize(void) {
 */
 
 	IICwriteByte(MPU6050_ADDR, MPU6050_RA_PWR_MGMT_1, 0x80);      //PWR_MGMT_1    -- DEVICE_RESET 1
-	HAL_Delay(50);
+	delay_ms(50);
 	IICwriteByte(MPU6050_ADDR, MPU6050_RA_SMPLRT_DIV, 0x00);      //SMPLRT_DIV    -- SMPLRT_DIV = 0  Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV)
 	IICwriteByte(MPU6050_ADDR, MPU6050_RA_PWR_MGMT_1, 0x03);      //PWR_MGMT_1    -- SLEEP 0; CYCLE 0; TEMP_DIS 0; CLKSEL 3 (PLL with Z Gyro reference)
 	IICwriteByte(MPU6050_ADDR, MPU6050_RA_INT_PIN_CFG, 0 << 7 | 0 << 6 | 0 << 5 | 0 << 4 | 0 << 3 | 0 << 2 | 1 << 1 | 0 << 0);  // INT_PIN_CFG   -- INT_LEVEL_HIGH, INT_OPEN_DIS, LATCH_INT_DIS, INT_RD_CLEAR_DIS, FSYNC_INT_LEVEL_HIGH, FSYNC_INT_DIS, I2C_BYPASS_EN, CLOCK_DIS

@@ -2,9 +2,9 @@
 
 void delay_us(unsigned short us);
 
-#define TSL1401_SI(val)		PAout(0)=val
-#define TSL1401_CLK(val)	PAout(3)=val
-#define TSL1401_Delay()		delay_us(10) //产生一段用于时钟信号的延时
+#define TSL1401_SI(val)		ESP_Set2(val, Pin_CCD_SI)
+#define TSL1401_CLK(val)	ESP_Set2(val, Pin_CCD_CLK)
+#define TSL1401_Delay(val)	delay_us(10) //产生一段用于时钟信号的延时
 
 CCD_TypeDef CCD;
 extern ADC_HandleTypeDef hadc1;
