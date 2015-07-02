@@ -26,19 +26,31 @@ void PID_Init_All(void) {
 	PID_Init(&roll_PID);
 	PID_Init(&yaw_PID);
 	PID_Init(&alt_PID);
-	pitch_PID.P = -0.39;
-	pitch_PID.D = 0.14; 
+//	pitch_PID.P = -0.39;
+//	pitch_PID.D = 0.14; 
+//	pitch_PID.I = 0 ;
+//	roll_PID.P = 0.39;
+//	roll_PID.D = -0.1;
+//  roll_PID.I = 0;
+//	yaw_PID.P = -0.4;
+//	yaw_PID.D = 0.01;
+//	yaw_PID.I = 0;
+//	alt_PID.P = 0.2;
+//	alt_PID.D = 25;
+//	alt_PID.I = 0;
+	pitch_PID.P = 0;
+	pitch_PID.D = 0; 
 	pitch_PID.I = 0 ;
-	roll_PID.P = 0.39;
-	roll_PID.D = -0.1;
+
+	roll_PID.P = 0;
+	roll_PID.D = 0;
   roll_PID.I = 0;
-	yaw_PID.P = -0.4;
-	yaw_PID.D = 0.01;
+	yaw_PID.P = -0;
+	yaw_PID.D = 0;
 	yaw_PID.I = 0;
-	alt_PID.P = 0.2;
-	alt_PID.D = 25;
-	alt_PID.I = 0;
-	
+	alt_PID.P = 0;
+	alt_PID.D = 0;
+	alt_PID.I = 0;	
 	
 }
 
@@ -116,15 +128,15 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t delta)
 	if (0xFFFFFF != delta) {
 		PID->Deriv = delta ;   // 第一层D直接用角速度，效果不错；
 	} else {
-		PID->Deriv = PID->Error - PID->PreError;
+		PID->Deriv = PID->Error - PID->PreError;//超声波等用传统的D
 	}
 	
 	PID->Integ = PID->Integ + PID->Error;
 	if (PID->iLimit) {
-		if (PID->Integ > PID->iLimit){
-			PID->Integ = PID->iLimit; 
-		} else if (PID->Integ < -PID->iLimit){
-			PID->Integ = -PID->iLimit; 
+		if (PID->Error > 10){
+			PID->Integ = 0; 
+		} else if (PID->Error < -10){
+			PID->Integ = 0;                          //对I的修正为，当P大于一定值的时候不积分；
 		}
 	}
 	 

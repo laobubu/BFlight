@@ -9,7 +9,7 @@
 //Things that params affect.
 #include "Algorithm/PID.h"
 #include "Hardware/XRotor.h"
-#include "Hardware/PX4Flow.h"
+//#include "Hardware/PX4Flow.h"
 
 #include "Param.h"
 
@@ -72,7 +72,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 			Motor_SetAllSpeed(0,0,0,0);
 		} else {
 			//reset sensor
-			PX4Flow_Reset();
+			//PX4Flow_Reset();
 		}
 		return;
 	}
