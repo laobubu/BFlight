@@ -56,7 +56,7 @@ void HMC58X3_FIFO_init(void) {
 	memset(&HMC58X3, 0, sizeof(HMC58X3_TypeDef));
 	for(i=0;i<20;i++){	//连续读取100次数据，以初始化FIFO数组
 		HMC58X3_ReadSensor();
-		HAL_Delay(1);  //延时再读取数据
+		delay_ms(1);  //延时再读取数据
 	}
 }
 

@@ -64,7 +64,7 @@ void PID_Calc_All() {
 	PID_Postion_Cal(&roll_PID,	ExpectedAngle[0], status.Roll 	,	LastGyroX());
 	PID_Postion_Cal(&pitch_PID, ExpectedAngle[1], status.Pitch	,	LastGyroY());
 	PID_Postion_Cal(&yaw_PID,	ExpectedAngle[2], status.Yaw	,	LastGyroZ());
-	PID_Postion_Cal(&alt_PID,	ExpectedAltitude, status.Altitude,	0xFFFFFF);
+	PID_Postion_Cal(&alt_PID,	ExpectedAltitude, status.Altitude,	2e38);
 
 	PID_Limiter(&yaw_PID.Output, 10);
 	PID_Limiter(&alt_PID.Output, 10);
@@ -118,14 +118,14 @@ void PID_Init(PID_Typedef * PID) {
 }
 
 //-----------仅用于角度环和角速度环的位置式PID-----------
-void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t delta)
+void PID_Postion_Cal(PID_Typedef * PID,float target,float measure, float delta)
 {
 
 	//-----------位置式PID-----------
 	//误差=期望值-测量值
 	PID->Error = target - measure;
 	
-	if (0xFFFFFF != delta) {
+	if (1e38 >= delta) {
 		PID->Deriv = delta ;   // 第一层D直接用角速度，效果不错；
 	} else {
 		PID->Deriv = PID->Error - PID->PreError;//超声波等用传统的D

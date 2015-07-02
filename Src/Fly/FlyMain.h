@@ -3,6 +3,6 @@
 
 //I hate STM32Cube Code,therefore a clear file is necessary
 
-inline void FlyMain(void);
+void FlyMain(void);
 
 #endif

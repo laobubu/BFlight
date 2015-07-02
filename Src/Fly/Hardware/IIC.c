@@ -5,17 +5,17 @@
 
 #ifndef HAL_Interface
 //Software IIC (for STM32F1xx)
-#define IIC_SCL_1	GPIOB->BSRR = 1<<6
-#define IIC_SCL_0	GPIOB->BSRR  = (1<<6)<<16
-#define IIC_SDA_1	GPIOB->BSRR = 1<<7
-#define IIC_SDA_0	GPIOB->BSRR  = (1<<7)<<16
-#define READ_SDA	(GPIOB->IDR & (1<<7))
+#define IIC_SCL_1	ESP_Set(Pin_IIC_SCL)
+#define IIC_SCL_0	ESP_Reset(Pin_IIC_SCL)
+#define IIC_SDA_1	ESP_Set(Pin_IIC_SDA)
+#define IIC_SDA_0	ESP_Reset(Pin_IIC_SDA)
+#define READ_SDA	ESP_Read(Pin_IIC_SDA)
 
 ////驱动接口，GPIO模拟IIC
 //SCL-->PB6
 //SDA-->PB7
-#define SDA_IN()  {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x80000000;}
-#define SDA_OUT() {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x30000000;}
+#define SDA_IN()	ESP_SetIn(Pin_IIC_SDA);
+#define SDA_OUT()	ESP_SetOut(Pin_IIC_SDA);
 
 void IICinit(void) {
 	GPIO_InitTypeDef GPIO_InitStruct;

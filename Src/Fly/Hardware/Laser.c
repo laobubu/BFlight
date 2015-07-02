@@ -9,8 +9,8 @@ void Laser_Init(void)
 char Laser_Read(Laser_enum_t laser)
 {
 	switch (laser) {
-		case LASER_LEFT:	return PFin(0);
-		case LASER_RIGHT:	return PFin(1);
+		case LASER_LEFT:	return ESP_Read(Pin_Laser_L);
+		case LASER_RIGHT:	return ESP_Read(Pin_Laser_R);
 	}
 	return 0;
 }

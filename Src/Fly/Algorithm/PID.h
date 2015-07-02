@@ -1,8 +1,6 @@
 #ifndef __PID_H_
 #define __PID_H_
 
-#include <stdint.h>
-
 // PID结构体
 typedef struct
 {
@@ -23,7 +21,7 @@ typedef struct
 }PID_Typedef;
 
 void PID_Init(PID_Typedef * PID);
-void PID_Postion_Cal(PID_Typedef *PID,float target,float measure, int dertT);
+void PID_Postion_Cal(PID_Typedef *PID,float target,float measure, float dertT);
 
 //以下两个方法是和整个系统耦合的
 void PID_Init_All(void); 

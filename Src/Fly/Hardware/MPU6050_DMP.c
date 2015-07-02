@@ -234,7 +234,7 @@ uint8_t MPU6050_DMP_Initialize(void)
     //printf(("\r\n=======配置DMP引擎=========\r\n"));
     //printf(("复位MPU6050...\r\n"));
     MPU6050_reset();
-    HAL_Delay(50); // wait after reset 50ms
+    delay_ms(50); // wait after reset 50ms
     //printf(("禁止休眠模式...\r\n"));
     MPU6050_setSleepEnabled(0);
     //printf(("\r\n读取MPU6050硬件版本...\r\n"));
@@ -271,7 +271,7 @@ uint8_t MPU6050_DMP_Initialize(void)
     MPU6050_setSlaveAddress(0, 0x68);
     //printf(("复位IIC主器件控制权...\r\n"));
     MPU6050_resetI2CMaster();
-    HAL_Delay(20);
+    delay_ms(20);
 
     // load DMP code into memory banks
     //printf(("正在写入DMP代码段到MPU6050 \r\n"));
