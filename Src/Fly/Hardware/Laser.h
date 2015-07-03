@@ -3,7 +3,8 @@
 
 typedef enum {
 	LASER_LEFT,
-	LASER_RIGHT
+	LASER_RIGHT,
+	LASER_MIDDLE
 } Laser_enum_t;
 
 void Laser_Init(void);

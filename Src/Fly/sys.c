@@ -1,7 +1,7 @@
 #include "sys.h"
 
 //max: 1hour
-uint32_t _millis = 0, _micros = 0;
+volatile uint32_t _millis = 0, _micros = 0;
 
 
 ///////////// ST HAL Driver

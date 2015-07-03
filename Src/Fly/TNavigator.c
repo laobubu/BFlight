@@ -5,7 +5,7 @@
 #include "Param.h"
 
 #include "Algorithm/PID.h"
-#include "Hardware/PX4Flow.h"
+//#include "Hardware/PX4Flow.h"
 #include "Hardware/Laser.h"
 
 extern float ExpectedAngle[3];
@@ -23,7 +23,7 @@ void Init_Navigator(void) {
 	PID_Init(&Y_PID);
 	
 	Laser_Init();
-	PX4Flow_Init();
+	//PX4Flow_Init();
 }
 
 void Do_Navigator(void) {
@@ -31,8 +31,8 @@ void Do_Navigator(void) {
 }
 
 //float currentX, currentY;
-#define currentX PX4Flow.x
-#define currentY PX4Flow.y
+#define currentX 0//PX4Flow.x
+#define currentY 0//PX4Flow.y
 
 enum {
 	BSET_NONE,

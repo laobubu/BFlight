@@ -30,8 +30,9 @@ ES Pins Functions:
 #define Pin_CCD_SI			A,		0
 #define Pin_CCD_CLK			A,		3
 
-#define Pin_Laser_L			F,		0
-#define Pin_Laser_R			F,		1
+#define Pin_Laser_L			C,		6
+#define Pin_Laser_M			C,		7
+#define Pin_Laser_R			C,		9
 
 
 #endif
