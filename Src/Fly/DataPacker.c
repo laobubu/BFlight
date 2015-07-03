@@ -44,6 +44,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 		else if (name[2] == 'i')	tmp.pid.number = &tmp.pid.pid->I;
 		else if (name[2] == 'd')	tmp.pid.number = &tmp.pid.pid->D;
 		else if (name[2] == 'e')	tmp.pid.number = &tmp.pid.pid->Desired;
+		else if (name[2] == 'l')	tmp.pid.number = &tmp.pid.pid->iLimit;
 		
 		*tmp.pid.number = value;
 		

@@ -133,9 +133,9 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure, float delta)
 	
 	PID->Integ = PID->Integ + PID->Error;
 	if (PID->iLimit) {
-		if (PID->Error > 10){
+		if (PID->Error > PID->iLimit){
 			PID->Integ = 0; 
-		} else if (PID->Error < -10){
+		} else if (PID->Error < -PID->iLimit){
 			PID->Integ = 0;                          //对I的修正为，当P大于一定值的时候不积分；
 		}
 	}
