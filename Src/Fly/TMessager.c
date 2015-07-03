@@ -8,7 +8,7 @@
 #include "string.h"
 #include "DataPacker.h"
 
-#include "Algorithm/StatusCalc.h"
+#include "Algorithm/StatusCtrl.h"
 #include "Hardware/XRotor.h"
 #include "Hardware/PX4Flow.h"
 #include "Hardware/Laser.h"
@@ -38,10 +38,10 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Yaw = status.Yaw;
 		DP_SendPack.Alt = status.Altitude;
 		
-		DP_SendPack.Motor[0] = Motor_Out[0];
-		DP_SendPack.Motor[1] = Motor_Out[1];
-		DP_SendPack.Motor[2] = Motor_Out[2];
-		DP_SendPack.Motor[3] = Motor_Out[3];
+		DP_SendPack.Motor[0] = status_ctrl.Motor_Out[0];
+		DP_SendPack.Motor[1] = status_ctrl.Motor_Out[1];
+		DP_SendPack.Motor[2] = status_ctrl.Motor_Out[2];
+		DP_SendPack.Motor[3] = status_ctrl.Motor_Out[3];
 		
 		//DP_SendPack.optX = PX4Flow.x;
 		//DP_SendPack.optY = PX4Flow.y;
@@ -53,7 +53,7 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		//失联检测
 		if (Flight_Working && ((DP_LastUpdate + 2000) < millis())) {
 			Flight_Working = 0;
-			PID_Init_All();
+			SCx_Init();
 			Motor_SetAllSpeed(0,0,0,0);
 		}
 		

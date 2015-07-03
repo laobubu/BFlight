@@ -7,15 +7,11 @@
 #include "string.h"
 
 //Things that params affect.
-#include "Algorithm/PID.h"
+#include "Algorithm/StatusCtrl.h"
 #include "Hardware/XRotor.h"
 //#include "Hardware/PX4Flow.h"
 
 #include "Param.h"
-
-extern PID_Typedef X_PID;
-extern PID_Typedef Y_PID;
-extern float ExpectedPos[2]; //X,Y
 
 #define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
 
@@ -31,12 +27,10 @@ void DP_HandleParamUpdate(char name[4], float value)
 	if (name[0] == 'g') {	//param whose name begins with 'g' shall be PID
 		
 		//find the PID Object
-			 if (name[1] == 'y')	tmp.pid.pid = &yaw_PID;
-		else if (name[1] == 'r')	tmp.pid.pid = &roll_PID;
-		else if (name[1] == 'p')	tmp.pid.pid = &pitch_PID;
-		else if (name[1] == 'a')	tmp.pid.pid = &alt_PID;
-		else if (name[1] == 'X')	tmp.pid.pid = &X_PID;
-		else if (name[1] == 'Y')	tmp.pid.pid = &Y_PID;
+			 if (name[1] == 'y')	tmp.pid.pid = &status_ctrl.PID_yaw;
+		else if (name[1] == 'r')	tmp.pid.pid = &status_ctrl.PID_roll;
+		else if (name[1] == 'p')	tmp.pid.pid = &status_ctrl.PID_pitch;
+		else if (name[1] == 'a')	tmp.pid.pid = &status_ctrl.PID_alt;
 		else						return;
 		
 		//find the PID Gain factor
@@ -49,27 +43,25 @@ void DP_HandleParamUpdate(char name[4], float value)
 		*tmp.pid.number = value;
 		
 		if (name[2] == 'e') {		//something special
-				 if (name[1] == 'r') ExpectedAngle[0] = *tmp.pid.number;
-			else if (name[1] == 'p') ExpectedAngle[1] = *tmp.pid.number;
-			else if (name[1] == 'y') ExpectedAngle[2] = *tmp.pid.number;
-			else if (name[1] == 'a') ExpectedAltitude = *tmp.pid.number;
-			else if (name[1] == 'X') ExpectedPos[0] = *tmp.pid.number;
-			else if (name[1] == 'Y') ExpectedPos[1] = *tmp.pid.number;
+				 if (name[1] == 'r') status_ctrl.expectedStatus.Roll 		= value;
+			else if (name[1] == 'p') status_ctrl.expectedStatus.Pitch 		= value;
+			else if (name[1] == 'y') status_ctrl.expectedStatus.Yaw 		= value;
+			else if (name[1] == 'a') status_ctrl.expectedStatus.Altitude 	= value;
 		}
 		
 		return;
 	}
 	
 	if (DP_IS_PARAM_NAME("Thro")) {	//油门
-		Thro = value;
-		Motor_SetAllSpeed(Thro, Thro, Thro, Thro);
+		status_ctrl.Thro = value;
+		Motor_SetAllSpeed(value, value, value, value);
 		return;
 	}
 	
 	if (DP_IS_PARAM_NAME("Work")) {	//总开关，为 0 表示不开
 		Flight_Working = value;
 		if (!Flight_Working) {
-			PID_Init_All();
+			SCx_Init();
 			Motor_SetAllSpeed(0,0,0,0);
 		} else {
 			//reset sensor

@@ -9,19 +9,11 @@
 #include "Hardware/Laser.h"
 #include "Hardware/LED.h"
 
-extern float ExpectedAngle[3];
-
-PID_Typedef X_PID;
-PID_Typedef Y_PID;
-float ExpectedPos[2] = {0.,0.}; //X,Y
-
 struct pt ptNavigator;
 PT_THREAD(TNavigator(struct pt *pt));
 
 void Init_Navigator(void) {
 	PT_INIT(&ptNavigator);
-	PID_Init(&X_PID);
-	PID_Init(&Y_PID);
 	
 	Laser_Init();
 	//PX4Flow_Init();
@@ -30,10 +22,6 @@ void Init_Navigator(void) {
 void Do_Navigator(void) {
 	TNavigator(&ptNavigator);
 }
-
-//float currentX, currentY;
-#define currentX 0//PX4Flow.x
-#define currentY 0//PX4Flow.y
 
 enum {
 	BSET_NONE,
@@ -91,13 +79,13 @@ PT_THREAD(TNavigator(struct pt *pt)) {
 		}
 		switch (bset) {
 			case BSET_NONE:
-				ExpectedAngle[0] = Param.RFix;
+				//ExpectedAngle[0] = Param.RFix;
 				break;
 			case BSET_LEFT:
-				ExpectedAngle[0] = Param.RFix - Param.BOff;
+				//ExpectedAngle[0] = Param.RFix - Param.BOff;
 				break;
 			case BSET_RIGHT:
-				ExpectedAngle[0] = Param.RFix + Param.BOff;
+				//ExpectedAngle[0] = Param.RFix + Param.BOff;
 				break;
 		}
 		

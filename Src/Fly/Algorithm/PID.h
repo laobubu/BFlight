@@ -22,15 +22,6 @@ typedef struct
 
 void PID_Init(PID_Typedef * PID);
 void PID_Postion_Cal(PID_Typedef *PID,float target,float measure, float dertT);
-
-//以下两个方法是和整个系统耦合的
-void PID_Init_All(void); 
-void PID_Calc_All(void) ;
 void PID_Limiter(float *data, float  range);
-
-extern PID_Typedef pitch_PID;
-extern PID_Typedef roll_PID;
-extern PID_Typedef yaw_PID;
-extern PID_Typedef alt_PID;
 
 #endif

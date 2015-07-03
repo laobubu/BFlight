@@ -3,6 +3,16 @@
 #include "IIC.h"
 #include "math.h"
 
+typedef union {
+	uint32_t value;
+	uint8_t bytes[4];
+} uint32andUint8_t;		//便于 I2C 的读取
+
+typedef union {
+    uint16_t value;
+    uint8_t bytes[2];
+} uint16andUint8_t;
+
 #define SQR(x) ((x)*(x))
 
 #define MS5611_FILTER_RATION 0.7

@@ -7,6 +7,7 @@
 #include "math.h"
 
 #include "Algorithm/StatusCalc.h"
+#include "Algorithm/StatusCtrl.h"
 
 #include "Hardware/IIC.h"
 //#include "Hardware/MPU6050.h"
@@ -23,7 +24,7 @@ void Init_TPilot(void) {
 	PT_INIT(&pTPilot);
 	
 	SC_Init_All();	
-	PID_Init_All();
+	SCx_Init();
 }
 
 void Do_TPilot(void) {
@@ -55,8 +56,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		
 		//读取结束后就交给 PID 处理了
 		if (Flight_Working) {
-			PID_Calc_All();
-			Motor_SetAllSpeed(Motor_Out[0],Motor_Out[1],Motor_Out[2],Motor_Out[3]);
+			SCx_Process();
 		} else {
 			Motor_SetAllSpeed(0,0,0,0);
 		}
