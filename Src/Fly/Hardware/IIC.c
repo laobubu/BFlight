@@ -1,7 +1,7 @@
 #include "FlyBasic.h"
 #include "IIC.h"
 
-#define HAL_Interface hi2c1
+//#define HAL_Interface hi2c1
 
 #ifndef HAL_Interface
 //Software IIC (for STM32F1xx)
@@ -16,6 +16,16 @@
 //SDA-->PB7
 #define SDA_IN()	ESP_SetIn(Pin_IIC_SDA);
 #define SDA_OUT()	ESP_SetOut(Pin_IIC_SDA);
+
+void delay_us_iic(uint16_t us)
+{
+	volatile uint8_t test = UINT8_MAX;
+	while(us--)
+	{
+		test = 20;
+		while(--test);
+	}
+}
 
 void IICinit(void) {
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -35,9 +45,9 @@ void IIC_Start(void)
 	SDA_OUT();     //sda线输出 
 	IIC_SDA_1;	  	  
 	IIC_SCL_1;
-	delay_us(4);
+	delay_us_iic(4);
  	IIC_SDA_0;//START:when CLK is high,DATA change form high to low 
-	delay_us(4);
+	delay_us_iic(4);
 	IIC_SCL_0;//钳住I2C总线，准备发送或接收数据 
 }
 
@@ -49,10 +59,10 @@ void IIC_Stop(void)
 	SDA_OUT();//sda线输出
 	IIC_SCL_0;
 	IIC_SDA_0;//STOP:when CLK is high DATA change form low to high
- 	delay_us(4);
+ 	delay_us_iic(4);
 	IIC_SCL_1; 
 	IIC_SDA_1;//发送I2C总线结束信号
-	delay_us(4);							   	
+	delay_us_iic(4);							   	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,8 +74,8 @@ u8 IIC_Wait_Ack(void)
 {
 	u8 ucErrTime=0;
 	SDA_IN();      //SDA设置为输入  
-	IIC_SDA_1;delay_us(1);	   
-	IIC_SCL_1;delay_us(1);	 
+	IIC_SDA_1;delay_us_iic(1);	   
+	IIC_SCL_1;delay_us_iic(1);	 
 	while(READ_SDA)
 	{
 		ucErrTime++;
@@ -74,7 +84,7 @@ u8 IIC_Wait_Ack(void)
 			IIC_Stop();
 			return 1;
 		}
-	  delay_us(1);
+	  delay_us_iic(1);
 	}
 	IIC_SCL_0;//时钟输出0 	   
 	return 0;  
@@ -88,9 +98,9 @@ void IIC_Ack(void)
 	IIC_SCL_0;
 	SDA_OUT();
 	IIC_SDA_0;
-	delay_us(1);
+	delay_us_iic(1);
 	IIC_SCL_1;
-	delay_us(1);
+	delay_us_iic(1);
 	IIC_SCL_0;
 }
 	
@@ -102,9 +112,9 @@ void IIC_NAck(void)
 	IIC_SCL_0;
 	SDA_OUT();
 	IIC_SDA_1;
-	delay_us(1);
+	delay_us_iic(1);
 	IIC_SCL_1;
-	delay_us(1);
+	delay_us_iic(1);
 	IIC_SCL_0;
 }					 				     
 
@@ -123,11 +133,11 @@ void IIC_Send_Byte(u8 txd)
 		else
 			IIC_SDA_0;
         txd<<=1; 	  
-		delay_us(1);   
+		delay_us_iic(1);   
 		IIC_SCL_1;
-		delay_us(1); 
+		delay_us_iic(1); 
 		IIC_SCL_0;	
-		delay_us(1);
+		delay_us_iic(1);
     }	 
 } 	 
    
@@ -141,11 +151,11 @@ u8 IIC_Read_Byte(unsigned char ack)
     for(i=0;i<8;i++ )
 	{
         IIC_SCL_0; 
-        delay_us(1);
+        delay_us_iic(1);
 		IIC_SCL_1;
         receive<<=1;
         if (READ_SDA) receive++;
-		delay_us(1); 
+		delay_us_iic(1); 
     }					 
     if (ack)
         IIC_Ack(); //发送ACK 

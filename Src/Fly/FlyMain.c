@@ -27,8 +27,8 @@ void FlyMain(void) {
 	Motor_Init();
 	
 	//Special Modes
-	if (ESP_Read(Pin_MODE1)) Mode1Main();	//Key1 and goes debug mode 1
-	if (ESP_Read(Pin_MODE2)) Mode2Main();	//Key2 and goes debug mode 2
+	if (!ESP_Read(Pin_MODE1)) Mode1Main();	//Key1 and goes debug mode 1
+	if (!ESP_Read(Pin_MODE2)) Mode2Main();	//Key2 and goes debug mode 2
 	
 	//Load Threads
 	Init_TPilot();
@@ -49,7 +49,7 @@ void Mode2Main(void) {
 
 void Mode1Main(void) {
 	Motor_Configure_Start();		//Enter X-Rotor Selector mode
-	while(ESP_Read(Pin_MODE1));	 	//wait until PA4 gets low
+	while(!ESP_Read(Pin_MODE1));	 	//wait until PA4 gets low
 	Motor_Configure_Confrim();		//That's my skateboard!
 	
 	//Remeber to reboot now

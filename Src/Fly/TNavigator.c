@@ -7,6 +7,7 @@
 #include "Algorithm/PID.h"
 //#include "Hardware/PX4Flow.h"
 #include "Hardware/Laser.h"
+#include "Hardware/LED.h"
 
 extern float ExpectedAngle[3];
 
@@ -40,10 +41,19 @@ enum {
 	BSET_RIGHT
 } bset = BSET_NONE;
 
+u8 LED_is_Lighting = 0;
+
 PT_THREAD(TNavigator(struct pt *pt)) {
 	PT_BEGIN(pt);
 	while(1) {
 		PT_TIMER_INTERVAL(pt, 10);  //控制程序频率为 100 Hz
+		
+		LED_is_Lighting ^= 1;
+		if (LED_is_Lighting) {
+			LED_ON(1);
+		} else {
+			LED_OFF(1);
+		}
 		
 		//.................
 

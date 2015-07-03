@@ -34,5 +34,9 @@ ES Pins Functions:
 #define Pin_Laser_M			C,		7
 #define Pin_Laser_R			C,		9
 
+#define Pin_LED_1			E,		1
+#define Pin_LED_2			E,		2
+#define Pin_LED_3			B,		13
+#define Pin_LED_4			B,		14
 
 #endif

@@ -1,6 +1,6 @@
 Configuration	BFlight
 STM32CubeMX 	4.8.0
-Date	06/27/2015
+Date	07/03/2015
 MCU	STM32F407ZETx
 
 
@@ -57,6 +57,9 @@ Pin Nb	PINs	FUNCTIONs	LABELs
 78	PD9	GPIO_Input	Key1
 79	PD10	GPIO_Input	Key2
 80	PD11	GPIO_Input	Key3
+96	PC6	GPIO_Input	BDetectL
+97	PC7	GPIO_Input	BDetectM
+99	PC9	GPIO_Input	BDetectR
 101	PA9	USART1_TX	
 102	PA10	USART1_RX	
 105	PA13	SYS_JTMS-SWDIO	
@@ -77,7 +80,7 @@ SOFTWARE PROJECT
 
 Project Settings : 
 Project Name : BFlight
-Project Folder : E:\C\ARM\32CUBE\BFlight
+Project Folder : E:\C\ARM\32CUBE\FlyVBTx
 Toolchain / IDE : MDK-ARM V5
 Firmware Package Name and Version : STM32Cube FW_F4 V1.6.0
 
