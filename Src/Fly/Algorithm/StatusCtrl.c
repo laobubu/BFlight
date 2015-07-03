@@ -12,50 +12,45 @@ StatusCtrl_Typedef status_ctrl;
 void SCx_Init(void)
 {
 	memset(&status_ctrl, 0, sizeof(status_ctrl));
-	PID_Init(&status_ctrl.PID_pitch);
-	PID_Init(&status_ctrl.PID_roll);
-	PID_Init(&status_ctrl.PID_yaw);
-	PID_Init(&status_ctrl.PID_alt);
-	status_ctrl.PID_OutputLimit = 10.0f;
+	PID_Init(&status_ctrl.PID_pitch, 	PID_MODE_DERIVATIV_SET, 	5.0f);
+	PID_Init(&status_ctrl.PID_roll, 	PID_MODE_DERIVATIV_SET, 	5.0f);
+	PID_Init(&status_ctrl.PID_yaw, 		PID_MODE_DERIVATIV_SET, 	5.0f);
+	PID_Init(&status_ctrl.PID_alt, 		PID_MODE_DERIVATIV_CALC, 	5.0f);
 }
 
 void SCx_Process(void)
 {
-	int16_t Pitch ;
-	int16_t Roll  ;
-	int16_t Yaw   ;
-	int16_t Alt   ;
+	static uint32_t lastPIDTime = 0;
+	float dt;
 	
-	PID_Postion_Cal(&status_ctrl.PID_pitch, status_ctrl.expectedStatus.Pitch, 		status.Roll 	,	DMP_DATA.GYROx);
-	PID_Postion_Cal(&status_ctrl.PID_roll,  status_ctrl.expectedStatus.Roll, 		status.Pitch	,	DMP_DATA.GYROy);
-	PID_Postion_Cal(&status_ctrl.PID_yaw,	status_ctrl.expectedStatus.Yaw, 		status.Yaw		,	DMP_DATA.GYROz);
-	PID_Postion_Cal(&status_ctrl.PID_alt,	status_ctrl.expectedStatus.Altitude , 	status.Altitude	,	2e38);
-
-	PID_Limiter(&status_ctrl.PID_yaw.Output, status_ctrl.PID_OutputLimit);
-	PID_Limiter(&status_ctrl.PID_alt.Output, status_ctrl.PID_OutputLimit);
+	if (lastPIDTime == 0) {
+		lastPIDTime = micros();
+		return;
+	}
 	
-	Pitch = status_ctrl.PID_pitch.Output;
-	Roll  = status_ctrl.PID_roll.Output;
-	Yaw   = status_ctrl.PID_yaw.Output; 
-	Alt   = status_ctrl.PID_alt.Output; 
+	dt = (micros() - lastPIDTime)/1000.0f;
+	lastPIDTime = micros();
+	
+	status_ctrl.Pitch = PID_Postion_Cal(&status_ctrl.PID_pitch, status_ctrl.expectedStatus.Pitch, 		status.Pitch 	,	DMP_DATA.GYROy	, dt);
+	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  status_ctrl.expectedStatus.Roll, 		status.Roll		,	DMP_DATA.GYROx	, dt);
+	status_ctrl.Yaw   = PID_Postion_Cal(&status_ctrl.PID_yaw,	status_ctrl.expectedStatus.Yaw, 		status.Yaw		,	DMP_DATA.GYROz	, dt);
+	status_ctrl.Alt   = PID_Postion_Cal(&status_ctrl.PID_alt,	status_ctrl.expectedStatus.Altitude , 	status.Altitude	,	0				, dt);
 	
 	//If the altitude value has problem...
-	if (status.Altitude < 5) Alt = 0;
-	
-	Alt  += status_ctrl.Thro;
+	if (status.Altitude < 5) status_ctrl.Alt = 0;
 	
 //	//X copter
-//	status_ctrl.Motor_Out[1] = (int16_t)(Thro + Pitch -Roll - Yaw );    //M1  
-//	status_ctrl.Motor_Out[2] = (int16_t)(Thro + Pitch +Roll + Yaw );    //M2 
-//	status_ctrl.Motor_Out[3] = (int16_t)(Thro - Pitch +Roll - Yaw );    //M3  
-//	status_ctrl.Motor_Out[0] = (int16_t)(Thro - Pitch -Roll + Yaw );    //M4
+//	status_ctrl.Motor_Out[1] = (int16_t)(status_ctrl.Thro + status_ctrl.Pitch - status_ctrl.Roll - status_ctrl.Yaw );  
+//	status_ctrl.Motor_Out[2] = (int16_t)(status_ctrl.Thro + status_ctrl.Pitch + status_ctrl.Roll + status_ctrl.Yaw );  
+//	status_ctrl.Motor_Out[3] = (int16_t)(status_ctrl.Thro - status_ctrl.Pitch + status_ctrl.Roll - status_ctrl.Yaw );  
+//	status_ctrl.Motor_Out[0] = (int16_t)(status_ctrl.Thro - status_ctrl.Pitch - status_ctrl.Roll + status_ctrl.Yaw );  
 
 	
 	//+ copter
-	status_ctrl.Motor_Out[0] = (int16_t)(Alt - Roll - Yaw );
-	status_ctrl.Motor_Out[1] = (int16_t)(Alt - Pitch  + Yaw );  
-	status_ctrl.Motor_Out[2] = (int16_t)(Alt + Roll - Yaw );   // P调 1和3
-	status_ctrl.Motor_Out[3] = (int16_t)(Alt + Pitch  + Yaw );  //P 调 2和4
+	status_ctrl.Motor_Out[0] = (int16_t)(status_ctrl.Thro + status_ctrl.Alt - status_ctrl.Roll   - status_ctrl.Yaw );
+	status_ctrl.Motor_Out[1] = (int16_t)(status_ctrl.Thro + status_ctrl.Alt - status_ctrl.Pitch  + status_ctrl.Yaw );  
+	status_ctrl.Motor_Out[2] = (int16_t)(status_ctrl.Thro + status_ctrl.Alt + status_ctrl.Roll   - status_ctrl.Yaw );  
+	status_ctrl.Motor_Out[3] = (int16_t)(status_ctrl.Thro + status_ctrl.Alt + status_ctrl.Pitch  + status_ctrl.Yaw );  
 	
 	#define Motor_Macro_Limiter(x) if(x>100)x=100;else if(x<0)x=0;
 	Motor_Macro_Limiter(status_ctrl.Motor_Out[0]);

@@ -34,20 +34,20 @@ void DP_HandleParamUpdate(char name[4], float value)
 		else						return;
 		
 		//find the PID Gain factor
-			 if (name[2] == 'p')	tmp.pid.number = &tmp.pid.pid->P;
-		else if (name[2] == 'i')	tmp.pid.number = &tmp.pid.pid->I;
-		else if (name[2] == 'd')	tmp.pid.number = &tmp.pid.pid->D;
-		else if (name[2] == 'e')	tmp.pid.number = &tmp.pid.pid->Desired;
-		else if (name[2] == 'l')	tmp.pid.number = &tmp.pid.pid->iLimit;
+			 if (name[2] == 'p')	tmp.pid.number = &tmp.pid.pid->kp;
+		else if (name[2] == 'i')	tmp.pid.number = &tmp.pid.pid->ki;
+		else if (name[2] == 'd')	tmp.pid.number = &tmp.pid.pid->kd;
+		else if (name[2] == 'l')	tmp.pid.number = &tmp.pid.pid->integral_limit;
+		else if (name[2] == 'o')	tmp.pid.number = &tmp.pid.pid->output_limit;
+		else if (name[2] == 'e') {		//something special
+				 if (name[1] == 'r') tmp.pid.number = &status_ctrl.expectedStatus.Roll 		;
+			else if (name[1] == 'p') tmp.pid.number = &status_ctrl.expectedStatus.Pitch 	;
+			else if (name[1] == 'y') tmp.pid.number = &status_ctrl.expectedStatus.Yaw 		;
+			else if (name[1] == 'a') tmp.pid.number = &status_ctrl.expectedStatus.Altitude 	;
+		} 
+		else						return;
 		
 		*tmp.pid.number = value;
-		
-		if (name[2] == 'e') {		//something special
-				 if (name[1] == 'r') status_ctrl.expectedStatus.Roll 		= value;
-			else if (name[1] == 'p') status_ctrl.expectedStatus.Pitch 		= value;
-			else if (name[1] == 'y') status_ctrl.expectedStatus.Yaw 		= value;
-			else if (name[1] == 'a') status_ctrl.expectedStatus.Altitude 	= value;
-		}
 		
 		return;
 	}
