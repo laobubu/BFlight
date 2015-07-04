@@ -37,7 +37,7 @@ void SCx_Process(void)
 	status_ctrl.Alt   = PID_Postion_Cal(&status_ctrl.PID_alt,	status_ctrl.expectedStatus.Altitude , 	status.Altitude	,	0				, dt);
 	
 	//If the altitude value has problem...
-	if (status.Altitude < 5) status_ctrl.Alt = 0;
+	if (status.Altitude < 3) status_ctrl.Alt = 0;
 	
 //	//X copter
 //	status_ctrl.Motor_Out[1] = (int16_t)(status_ctrl.Thro + status_ctrl.Pitch - status_ctrl.Roll - status_ctrl.Yaw );  

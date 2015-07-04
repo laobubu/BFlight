@@ -115,6 +115,8 @@ float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, floa
 					fabsf(i) <= pid->integral_limit) {
 					/* not saturated, use new integral value */
 					pid->integral = i;
+				}else {
+				pid->integral = 0;   //IÏ´°×°×
 				}
 			}
 		}
