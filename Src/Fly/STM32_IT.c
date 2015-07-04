@@ -7,7 +7,7 @@ void Ultrasonic_TimeoutCallback(void);
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == GPIO_PIN_4) 
-		Ultrasonic_Echo(HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_4));
+		Ultrasonic_Echo(HAL_GPIO_ReadPin(GPIOF,GPIO_PIN_4));
 	
 	if (GPIO_Pin == GPIO_PIN_8) // MPU6050 - HMC5883 DRDY
 		HMC58X3_DRDY = 1;
