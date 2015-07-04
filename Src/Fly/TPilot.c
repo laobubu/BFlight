@@ -32,6 +32,7 @@ void Do_TPilot(void) {
 }
 
 static pt_timer init_until;
+static char needLanding = 0;
 
 PT_THREAD(TPilot(struct pt *pt)) {
 	PT_BEGIN(pt);
@@ -57,8 +58,17 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		//读取结束后就交给 PID 处理了
 		if (Flight_Working) {
 			SCx_Process();
+			needLanding = 1;
 		} else {
-			Motor_SetAllSpeed(0,0,0,0);
+			if (needLanding) {
+				status_ctrl.expectedStatus.Altitude = 5;
+				SCx_Process();
+				if (status.Altitude <7){
+					needLanding = 0;
+				}
+			} else {
+				Motor_SetAllSpeed(0,0,0,0);
+			}
 		}
 		
 		PT_YIELD(pt);
