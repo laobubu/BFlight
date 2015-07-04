@@ -4,3 +4,4 @@ MDK-ARM/**
 !MDK-ARM/JLinkSettings.ini
 Package/*
 Drivers/**
+misc2/**
