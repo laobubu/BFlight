@@ -68,6 +68,7 @@ void PID_Init(PID_Typedef * pid, pid_mode_t mode, float dt_min) {
 
 float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, float dt)
 {
+	
 	if (!isfinite(sp) || !isfinite(val) || !isfinite(val_dot) || !isfinite(dt)) {
 		return pid->last_output;
 	}
@@ -84,7 +85,8 @@ float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, floa
 
 	} else if (pid->mode == PID_MODE_DERIVATIV_CALC_NO_SP) {
 		d = (-val - pid->error_previous) / fmaxf(dt, pid->dt_min);
-		pid->error_previous = -val;
+		pid->error_previous = -val;     
+		
 
 	} else if (pid->mode == PID_MODE_DERIVATIV_SET) {
 		d = -val_dot;
@@ -100,23 +102,31 @@ float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, floa
 	/* calculate PD output */
 	float output = (error * pid->kp) + (d * pid->kd);
 
-	if (pid->ki > SIGMA) {
+	/*if (pid->ki > SIGMA) {
 		// Calculate the error integral and check for saturation
 		i = pid->integral + (error * dt);
 
-		/* check for saturation */
+		// check for saturation /
 		if (isfinite(i)) {
 			if ((pid->output_limit < SIGMA || (fabsf(output + (i * pid->ki)) <= pid->output_limit)) &&
 			    fabsf(i) <= pid->integral_limit) {
-				/* not saturated, use new integral value */
+				// not saturated, use new integral value /
 				pid->integral = i;
 			}
 		}
 
-		/* add I component to output */
+		// add I component to output //
 		output += pid->integral * pid->ki;
-	}
-
+	}*/
+    pid->integral  = pid->integral +error;
+					if (error > pid->integral_limit )
+					{
+							pid->integral = 0;
+					}
+					if (error <- pid->integral_limit)
+					{
+							pid->integral = 0;
+					}       
 	/* limit output */
 	if (isfinite(output)) {
 		if (pid->output_limit > SIGMA) {
