@@ -38,6 +38,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 		else if (name[2] == 'i')	tmp.pid.number = &tmp.pid.pid->ki;
 		else if (name[2] == 'd')	tmp.pid.number = &tmp.pid.pid->kd;
 		else if (name[2] == 'l')	tmp.pid.number = &tmp.pid.pid->integral_limit;
+		else if (name[2] == 'm')	tmp.pid.number = &tmp.pid.pid->integral_max_error;
 		else if (name[2] == 'o')	tmp.pid.number = &tmp.pid.pid->output_limit;
 		else if (name[2] == 'e') {		//something special
 				 if (name[1] == 'r') tmp.pid.number = &status_ctrl.expectedStatus.Roll 		;

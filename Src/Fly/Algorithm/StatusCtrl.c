@@ -12,10 +12,10 @@ StatusCtrl_Typedef status_ctrl;
 void SCx_Init(void)
 {
 	memset(&status_ctrl, 0, sizeof(status_ctrl));
-	PID_Init(&status_ctrl.PID_pitch, 	PID_MODE_DERIVATIV_SET, 	5.0f);
-	PID_Init(&status_ctrl.PID_roll, 	PID_MODE_DERIVATIV_SET, 	5.0f);
-	PID_Init(&status_ctrl.PID_yaw, 		PID_MODE_DERIVATIV_SET, 	5.0f);
-	PID_Init(&status_ctrl.PID_alt, 		PID_MODE_DERIVATIV_CALC, 	5.0f);
+	PID_Init(&status_ctrl.PID_pitch, 	PID_MODE_DERIVATIV_SET, 	0.005f);
+	PID_Init(&status_ctrl.PID_roll, 	PID_MODE_DERIVATIV_SET, 	0.005f);
+	PID_Init(&status_ctrl.PID_yaw, 		PID_MODE_DERIVATIV_SET, 	0.005f);
+	PID_Init(&status_ctrl.PID_alt, 		PID_MODE_DERIVATIV_CALC, 	0.005f);
 }
 
 static volatile uint32_t lastPIDTime = 0;
@@ -24,12 +24,12 @@ void SCx_Process(void)
 	float dt;
 	
 	if (lastPIDTime == 0) {
-		lastPIDTime = micros();
+		lastPIDTime = millis();
 		return;
 	}
 	
-	dt = (micros() - lastPIDTime)/1000.0f;
-	lastPIDTime = micros();
+	dt = (millis() - lastPIDTime)/1000.0f;
+	lastPIDTime = millis();
 	
 	status_ctrl.Pitch = PID_Postion_Cal(&status_ctrl.PID_pitch, status_ctrl.expectedStatus.Pitch, 		status.Pitch 	,	DMP_DATA.GYROy	, dt);
 	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  status_ctrl.expectedStatus.Roll, 		status.Roll		,	DMP_DATA.GYROx	, dt);

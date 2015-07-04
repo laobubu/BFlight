@@ -73,6 +73,7 @@ typedef struct
 	float ki;
 	float kd;
 	float integral;
+	float integral_max_error;
 	float integral_limit;
 	float output_limit;
 	float error_previous;
