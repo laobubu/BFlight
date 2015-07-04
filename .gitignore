@@ -1,7 +1,5 @@
 MDK-ARM/**
-!MDK-ARM/*.uvoptx
 !MDK-ARM/*.uvprojx
-!MDK-ARM/JLinkSettings.ini
 Package/*
 Drivers/**
 misc2/**

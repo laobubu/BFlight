@@ -15,7 +15,7 @@ typedef union {
 
 #define SQR(x) ((x)*(x))
 
-#define MS5611_FILTER_RATION 0.7
+#define MS5611_FILTER_RATION 0.7f
 
 ///////////////////////////////////////
 
@@ -60,7 +60,7 @@ void pushNewPressure(uint32_t v) {/*
 	if (++curi == 8) curi = 0;
 	MS5611.Pressure = sum2 / 8.0;*/
 	
-	MS5611.Pressure = MS5611.Pressure * 0.5 + 0.5 * v;
+	MS5611.Pressure = MS5611.Pressure * 0.5f + 0.5f * v;
 }
 
 void requestPressure(void)
@@ -166,7 +166,7 @@ void calculatePressureAltitude(void)
 	pushNewPressure((((d1.value * sensitivity) >> 21) - offset) >> 15);
 
 	float newalt = (44330.0f * (1.0f - pow((float)MS5611.Pressure / 101325.0f, 1.0f / 5.255f)));
-	MS5611.Altitude = MS5611.Altitude * (1.0-MS5611_FILTER_RATION) + MS5611_FILTER_RATION * newalt;
+	MS5611.Altitude = MS5611.Altitude * (1.0f-MS5611_FILTER_RATION) + MS5611_FILTER_RATION * newalt;
 	MS5611.deltaAltitude = MS5611.Altitude - MS5611.floorAltitude;
 
 	//DBG_PRINT("calculate Pressure Altitude : %f\n",pressureAlt50Hz);

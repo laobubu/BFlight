@@ -35,12 +35,9 @@ void SC_PreSample_End(void) {
 
 //生成新的姿态数据
 void SC_Generate(void) {
-	float fix_dmp_yaw;
-	
 	status.Pitch = DMP_DATA.dmp_pitch;
 	status.Roll = DMP_DATA.dmp_roll;
 	status.Yaw = angleNorm(DMP_DATA.dmp_yaw + Yaw_MagMinusDMP) - 180.0f;
-	
 	status.Altitude = Ultrasonic.altitude;
 }
 
