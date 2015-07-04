@@ -13,6 +13,7 @@
 
 #include "Param.h"
 
+
 #define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
 
 void DP_HandleParamUpdate(char name[4], float value)
@@ -62,8 +63,8 @@ void DP_HandleParamUpdate(char name[4], float value)
 	if (DP_IS_PARAM_NAME("Work")) {	//总开关，为 0 表示不开
 		Flight_Working = value;
 		if (!Flight_Working) {
-			SCx_Init();
-			Motor_SetAllSpeed(0,0,0,0);
+	//		SCx_Init();
+  //	Motor_SetAllSpeed(0,0,0,0);
 		} else {
 			//reset sensor
 			//PX4Flow_Reset();
