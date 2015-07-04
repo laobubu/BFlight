@@ -18,9 +18,9 @@ void SCx_Init(void)
 	PID_Init(&status_ctrl.PID_alt, 		PID_MODE_DERIVATIV_CALC, 	5.0f);
 }
 
+static volatile uint32_t lastPIDTime = 0;
 void SCx_Process(void)
 {
-	static uint32_t lastPIDTime = 0;
 	float dt;
 	
 	if (lastPIDTime == 0) {
