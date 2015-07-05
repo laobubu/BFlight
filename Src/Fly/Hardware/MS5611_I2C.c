@@ -165,7 +165,7 @@ void calculatePressureAltitude(void)
 
 	pushNewPressure((((d1.value * sensitivity) >> 21) - offset) >> 15);
 
-	float newalt = (44330.0f * (1.0f - pow((float)MS5611.Pressure / 101325.0f, 1.0f / 5.255f)));
+	float newalt = (4433000.0f * (1.0f - pow((float)MS5611.Pressure / 101325.0f, 1.0f / 5.255f)));
 	MS5611.Altitude = MS5611.Altitude * (1.0f-MS5611_FILTER_RATION) + MS5611_FILTER_RATION * newalt;
 	MS5611.deltaAltitude = MS5611.Altitude - MS5611.floorAltitude;
 
@@ -235,6 +235,6 @@ void MS5611_Read(void) {
 }
 
 void MS5611_SetFloor(void) {
-	MS5611.floorAltitude = MS5611.Altitude;
-	MS5611.deltaAltitude = MS5611.Altitude - MS5611.floorAltitude;
+	volatile float temp = MS5611.Altitude;
+	MS5611.floorAltitude = temp;
 }

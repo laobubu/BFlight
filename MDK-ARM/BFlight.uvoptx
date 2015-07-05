@@ -13,7 +13,6 @@
     <tExt>*.txt; *.h; *.inc</tExt>
     <pExt>*.plm</pExt>
     <CppX>*.cpp</CppX>
-    <nMigrate>0</nMigrate>
   </Extensions>
 
   <DaveTm>
@@ -32,7 +31,6 @@
         <BeepAtEnd>1</BeepAtEnd>
         <RunSim>0</RunSim>
         <RunTarget>1</RunTarget>
-        <RunAbUc>0</RunAbUc>
       </OPTTT>
       <OPTHX>
         <HexSelection>1</HexSelection>
@@ -77,42 +75,42 @@
         <tvExpOptDlg>0</tvExpOptDlg>
         <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
-      <CpuCode>18</CpuCode>
+      <CpuCode>0</CpuCode>
       <Books>
         <Book>
           <Number>0</Number>
           <Title>User Manual (MCBSTM32F400)</Title>
-          <Path>d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\MDK/Boards/Keil/MCBSTM32F400/Documentation/mcbstm32f200.chm</Path>
+          <Path>E:\kell5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\Keil\MCBSTM32F400\Documentation\mcbstm32f200.chm</Path>
         </Book>
         <Book>
           <Number>1</Number>
           <Title>Schematics (MCBSTM32F400)</Title>
-          <Path>d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\MDK/Boards/Keil/MCBSTM32F400/Documentation/mcbstm32f400-schematics.pdf</Path>
+          <Path>E:\kell5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\Keil\MCBSTM32F400\Documentation\mcbstm32f400-schematics.pdf</Path>
         </Book>
         <Book>
           <Number>2</Number>
           <Title>Getting Started (STM32F4-Discovery)</Title>
-          <Path>d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\MDK/Boards/ST/STM32F4-Discovery/Documentation/DM00037368.pdf</Path>
+          <Path>E:\kell5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F4-Discovery\Documentation\DM00037368.pdf</Path>
         </Book>
         <Book>
           <Number>3</Number>
           <Title>User Manual (STM32F4-Discovery)</Title>
-          <Path>d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\MDK/Boards/ST/STM32F4-Discovery/Documentation/DM00039084.pdf</Path>
+          <Path>E:\kell5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F4-Discovery\Documentation\DM00039084.pdf</Path>
         </Book>
         <Book>
           <Number>4</Number>
           <Title>Bill of Materials (STM32F4-Discovery)</Title>
-          <Path>d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\MDK/Boards/ST/STM32F4-Discovery/Documentation/stm32f4discovery_bom.zip</Path>
+          <Path>E:\kell5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F4-Discovery\Documentation\stm32f4discovery_bom.zip</Path>
         </Book>
         <Book>
           <Number>5</Number>
           <Title>Gerber Files (STM32F4-Discovery)</Title>
-          <Path>d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\MDK/Boards/ST/STM32F4-Discovery/Documentation/stm32f4discovery_gerber.zip</Path>
+          <Path>E:\kell5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F4-Discovery\Documentation\stm32f4discovery_gerber.zip</Path>
         </Book>
         <Book>
           <Number>6</Number>
           <Title>Schematics (STM32F4-Discovery)</Title>
-          <Path>d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\MDK/Boards/ST/STM32F4-Discovery/Documentation/stm32f4discovery_sch.zip</Path>
+          <Path>E:\kell5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F4-Discovery\Documentation\stm32f4discovery_sch.zip</Path>
         </Book>
         <Book>
           <Number>7</Number>
@@ -145,6 +143,7 @@
         <tRtrace>0</tRtrace>
         <sRSysVw>1</sRSysVw>
         <tRSysVw>1</tRSysVw>
+        <tPdscDbg>1</tPdscDbg>
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <nTsel>6</nTsel>
@@ -197,24 +196,7 @@
           <Name></Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>65</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134249016</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Src\Fly\Hardware\Ultrasonic.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -236,6 +218,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>Ultrasonic</ItemText>
         </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>MS5611</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -249,7 +236,6 @@
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
           <ItemText>status</ItemText>
-          <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
       <Tracepoint>

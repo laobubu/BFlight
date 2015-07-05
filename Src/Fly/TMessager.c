@@ -10,6 +10,8 @@
 
 #include "Algorithm/StatusCtrl.h"
 #include "Hardware/XRotor.h"
+#include "Hardware/Ultrasonic.h"
+#include "Hardware/MS5611_I2C.h"
 #include "Hardware/PX4Flow.h"
 #include "Hardware/Laser.h"
 
@@ -48,8 +50,8 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		//DP_SendPack.optX = Laser_Read(LASER_LEFT);
 		//DP_SendPack.optY = Laser_Read(LASER_RIGHT);
 		
-		DP_SendPack.optX = status_ctrl.PID_roll.integral;
-		DP_SendPack.optY = status_ctrl.PID_pitch.integral;
+		DP_SendPack.optX = Ultrasonic.altitude;
+		DP_SendPack.optY = MS5611.deltaAltitude;
 		
 		DP_Send();
 		

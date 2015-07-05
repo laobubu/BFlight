@@ -44,7 +44,6 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		SC_PreSample();
 		PT_YIELD(pt);
 	}
-	SC_PreSample();
 	SC_PreSample_End();
 	
 	
