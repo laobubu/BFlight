@@ -54,3 +54,7 @@ void delay_us(uint16_t us){
 	uint32_t target = since + us;
 	while((_micros < since) ^ (_micros < target));
 }
+
+uint32_t HAL_GetTick(void){
+	return millis();
+}
