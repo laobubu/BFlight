@@ -11,7 +11,7 @@ Status_Typedef status;
 
 static float Yaw_MagMinusDMP = 180.0f;
 
-static char SensorPending_DMP = 0;
+//static char SensorPending_DMP = 0;
 static char SensorPending_HMC58X3 = 0;
 
 void SC_Init_All(void) {
@@ -52,15 +52,15 @@ void SC_Sample(void) {
 		Yaw_MagMinusDMP = angleNorm(HMC58X3.Yaw - DMP_DATA.dmp_yaw) + 180.0f;
 		SensorPending_HMC58X3 = 0;
 	}
-	if (SensorPending_DMP) {
+	//if (SensorPending_DMP) {
 		DMP_Routing();
-		SensorPending_DMP = 0;
-	}
+	//	SensorPending_DMP = 0;
+	//}
 }
 
 //StatusCalc Callback for sensor
 void SC_Callback_DMP(void) {
-	SensorPending_DMP = 1;
+	//SensorPending_DMP = 1;
 }
 
 void SC_Callback_HMC58X3(void) {
