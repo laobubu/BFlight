@@ -35,13 +35,13 @@ void SCx_Process(void)
 	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  status_ctrl.expectedStatus.Roll, 		status.Roll		,	DMP_DATA.GYROx	, dt);
 	status_ctrl.Yaw   = PID_Postion_Cal(&status_ctrl.PID_yaw,	status_ctrl.expectedStatus.Yaw, 		status.Yaw		,	DMP_DATA.GYROz	, dt);
 	
-			if (status_ctrl.expectedStatus.Altitude - status.Altitude >20){
-								 status_ctrl.Alt   = PID_Postion_Cal(&status_ctrl.PID_alt,	status.Altitude + 20 , 	status.Altitude	,	0				, dt);
+			if (status_ctrl.expectedStatus.Altitude - status.Altitude >11){
+								 status_ctrl.Alt   = PID_Postion_Cal(&status_ctrl.PID_alt,	status.Altitude + 11 , 	status.Altitude	,	0				, dt);
 			}
 			else {
 							 status_ctrl.Alt   = PID_Postion_Cal(&status_ctrl.PID_alt,	status_ctrl.expectedStatus.Altitude , 	status.Altitude	,	0	, dt);
 			}
-              //飞机往上飞；
+              //飞机往上飞；改正I的小把戏。
 	
 	//If the altitude value has problem...
 	if (status.Altitude < 3) status_ctrl.Alt = 0;

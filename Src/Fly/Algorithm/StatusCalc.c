@@ -27,6 +27,11 @@ void SC_PreSample(void) {
 	
 //	HMC58X3_ReadSensor();	//读磁力计
 //	DMP_Routing();			//读mpu6050
+	if (SensorPending_HMC58X3) {
+		HMC58X3_ReadSensor();
+		Yaw_MagMinusDMP = angleNorm(HMC58X3.Yaw - DMP_DATA.dmp_yaw) + 180.0f;
+		SensorPending_HMC58X3 = 0;
+	}
 }
 
 void SC_PreSample_End(void) {
@@ -47,11 +52,6 @@ void SC_Generate(void) {
 void SC_Sample(void) {
 	Ultrasonic_Trig();		//超声波传感器 采样
 	MS5611_Read();		//读取气压计
-	if (SensorPending_HMC58X3) {
-		HMC58X3_ReadSensor();
-		Yaw_MagMinusDMP = angleNorm(HMC58X3.Yaw - DMP_DATA.dmp_yaw) + 180.0f;
-		SensorPending_HMC58X3 = 0;
-	}
 	//if (SensorPending_DMP) {
 		DMP_Routing();
 	//	SensorPending_DMP = 0;
