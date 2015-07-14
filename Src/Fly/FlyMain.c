@@ -5,6 +5,7 @@
 #include "TNavigator.h"
 #include "TMessager.h"
 #include "TPilot.h"
+#include "TCCD.h"
 
 #include "Hardware/XRotor.h"
 #include "Hardware/IIC.h"
@@ -32,12 +33,14 @@ void FlyMain(void) {
 	Init_TPilot();
 	Init_MessagerThread();
 	Init_Navigator();
+	Init_TCCD();
 	
 	//Coroutine the Threads
 	while(1) {
 		Do_TPilot();
 		Do_MessagerThread();
 		Do_Navigator();
+		Do_TCCD();
 	}
 }
 

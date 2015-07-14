@@ -9,6 +9,8 @@
 #include "DataPacker.h"
 
 #include "Algorithm/StatusCtrl.h"
+
+#include "Hardware/CCD.h"
 #include "Hardware/XRotor.h"
 #include "Hardware/Ultrasonic.h"
 #include "Hardware/MS5611_I2C.h"
@@ -52,6 +54,15 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		
 		DP_SendPack.optX = Ultrasonic.altitude;
 		DP_SendPack.optY = MS5611.deltaAltitude;
+		
+		/*
+		DP_SendPack.__ccdheader = 0xFF;
+		for(uint16_t xxx = 0; xxx != 128; xxx++)
+		{
+			DP_SendPack.__ccd[xxx] = (CCD.data[xxx]==0xFF)?0xFE:CCD.data[xxx];
+		}
+		HAL_UART_Transmit_DMA(&huart1, (uint8_t*)&DP_SendPack.__ccdheader, 129);
+		*/
 		
 		DP_Send();
 		
