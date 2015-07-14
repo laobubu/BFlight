@@ -13,6 +13,7 @@
 
 #include "Param.h"
 
+extern PID_Typedef  nav_pid;
 
 #define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
 
@@ -32,6 +33,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 		else if (name[1] == 'r')	tmp.pid.pid = &status_ctrl.PID_roll;
 		else if (name[1] == 'p')	tmp.pid.pid = &status_ctrl.PID_pitch;
 		else if (name[1] == 'a')	tmp.pid.pid = &status_ctrl.PID_alt;
+		else if (name[1] == 'n')	tmp.pid.pid = &nav_pid;
 		else						return;
 		
 		//find the PID Gain factor
