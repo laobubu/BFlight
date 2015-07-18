@@ -59,15 +59,16 @@ PT_THREAD(TPilot(struct pt *pt)) {
 			SCx_Process();
 			needLanding = 1;
 		} else {
-			if (needLanding) {
-				status_ctrl.expectedStatus.Altitude = 5;
-				SCx_Process();
-				if (status.Altitude <7){
-					needLanding = 0;
-				}
-			} else {
+//			if (needLanding) {
+//				status_ctrl.expectedStatus.Altitude = 10;
+//				SCx_Process();
+//				if (status.Altitude <15){
+//					needLanding = 0;
+//				}
+//			} else {
+//				Motor_SetAllSpeed(0,0,0,0);
+//			}
 				Motor_SetAllSpeed(0,0,0,0);
-			}
 		}
 		
 		PT_YIELD(pt);

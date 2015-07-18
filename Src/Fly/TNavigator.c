@@ -13,6 +13,20 @@
 #include "Hardware/CCD.h"
 
 PID_Typedef  nav_pid;
+typedef struct {
+	float alt;
+	float roll;
+	float yaw;
+	float pitch;
+	int   run_out_line;
+	int   obstacle_avoidance;
+	int   stop_fly;
+	int   turninng;
+	int   find_home;
+	int   find_target;
+} Waypoint_t;
+
+Waypoint_t plan[20];
 
 unsigned char nav_position = 60;
 u8 run_out_of_line = 0;
@@ -55,7 +69,7 @@ PT_THREAD(TNavigator(struct pt *pt)) {
 		//下面是CCD处理程序
 		nav_handle();       		//差分处理
 		status_ctrl.expectedStatus.Roll = PID_Postion_Cal(&nav_pid, 60, nav_position, 0, 0);
-		
+  //  status_ctrl.expectedStatus.Altitude = altplan[1];		
 		//.................
 
 //    PID_Postion_Cal(&X_PID,	ExpectedPos[0], currentX,	0xFFFFFF);
