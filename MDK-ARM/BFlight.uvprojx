@@ -693,6 +693,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\Algorithm\StatusCtrl.c</FilePath>
             </File>
+            <File>
+              <FileName>Plan.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Fly\Algorithm\Plan.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
