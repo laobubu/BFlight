@@ -3,19 +3,10 @@
 #include "TPilot.h"
 #include "FlyBasic.h"
 
-#include "stdio.h"
-#include "math.h"
-
 #include "Algorithm/StatusCalc.h"
 #include "Algorithm/StatusCtrl.h"
 
-#include "Hardware/IIC.h"
-//#include "Hardware/MPU6050.h"
-#include "Hardware/MPU6050_DMP.h"
-#include "Hardware/HMC5883L.h"
-#include "Hardware/MS5611_I2C.h"
 #include "Hardware/XRotor.h"
-#include "Hardware/Ultrasonic.h"
 
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
@@ -32,7 +23,6 @@ void Do_TPilot(void) {
 }
 
 static pt_timer init_until;
-static char needLanding = 0;
 
 PT_THREAD(TPilot(struct pt *pt)) {
 	PT_BEGIN(pt);
@@ -57,18 +47,8 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		//读取结束后就交给 PID 处理了
 		if (Flight_Working) {
 			SCx_Process();
-			needLanding = 1;
 		} else {
-//			if (needLanding) {
-//				status_ctrl.expectedStatus.Altitude = 10;
-//				SCx_Process();
-//				if (status.Altitude <15){
-//					needLanding = 0;
-//				}
-//			} else {
-//				Motor_SetAllSpeed(0,0,0,0);
-//			}
-				Motor_SetAllSpeed(0,0,0,0);
+			Motor_SetAllSpeed(0,0,0,0);
 		}
 		
 		PT_YIELD(pt);
