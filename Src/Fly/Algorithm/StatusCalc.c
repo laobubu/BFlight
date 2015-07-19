@@ -45,7 +45,16 @@ void SC_Generate(void) {
 	status.Pitch = DMP_DATA.dmp_pitch;
 	status.Roll = DMP_DATA.dmp_roll;
 	status.Yaw = angleNorm(DMP_DATA.dmp_yaw + Yaw_MagMinusDMP) - 180.0f;
-	status.Altitude = Ultrasonic.altitude;
+	status.Altitude = Ultrasonic.altitude;  // 旧的高度由超声波读取
+	/*用超声波和气压计融合读取高度*/
+//	if(Ultrasonic.altitude < 50 )
+//	{
+//	  status.Altitude = Ultrasonic.altitude;
+//	}
+//	else{
+//	  status.Altitude = 	MS5611.deltaAltitude ;
+//	}
+	
 }
 
 //做姿态数据数据采样，应定时调用

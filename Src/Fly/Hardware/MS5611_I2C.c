@@ -2,6 +2,7 @@
 #include "MS5611_I2C.h"
 #include "IIC.h"
 #include "math.h"
+#include "Algorithm/Filters.h"
 
 typedef union {
 	uint32_t value;
@@ -49,6 +50,8 @@ MS5611_TypeDef MS5611;
 
 uint8_t newPressureReading = 0;
 uint8_t newTemperatureReading = 0;
+
+KalmanFilter filter1;
 
 void pushNewPressure(uint32_t v) {/*
 	static uint8_t curi = 0;
@@ -168,10 +171,10 @@ void calculatePressureAltitude(void)
 	float newalt = (4433000.0f * (1.0f - pow((float)MS5611.Pressure / 101325.0f, 1.0f / 5.255f)));
 	MS5611.Altitude = MS5611.Altitude * (1.0f-MS5611_FILTER_RATION) + MS5611_FILTER_RATION * newalt;
 	MS5611.deltaAltitude = MS5611.Altitude - MS5611.floorAltitude;
+	MS5611.deltaAltitude =  KF_Update(&filter1, MS5611.deltaAltitude);
 
 	//DBG_PRINT("calculate Pressure Altitude : %f\n",pressureAlt50Hz);
 }
-
 ///////////////////////////////////////////////////////////////////////////////
 // Pressure Initialization
 ///////////////////////////////////////////////////////////////////////////////
@@ -213,6 +216,8 @@ void MS5611_Init(void)
 	c6.bytes[0] = data[1];
 
 	MS5611_Read();
+	
+	filter1 = KF_Create(3.925,25,0);
 }
 
 
