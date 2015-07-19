@@ -170,8 +170,10 @@ void calculatePressureAltitude(void)
 
 	float newalt = (4433000.0f * (1.0f - pow((float)MS5611.Pressure / 101325.0f, 1.0f / 5.255f)));
 	MS5611.Altitude = MS5611.Altitude * (1.0f-MS5611_FILTER_RATION) + MS5611_FILTER_RATION * newalt;
+	MS5611.Altitude =  KF_Update(&filter1, MS5611.Altitude);
+	
+	
 	MS5611.deltaAltitude = MS5611.Altitude - MS5611.floorAltitude;
-	MS5611.deltaAltitude =  KF_Update(&filter1, MS5611.deltaAltitude);
 
 	//DBG_PRINT("calculate Pressure Altitude : %f\n",pressureAlt50Hz);
 }
@@ -240,6 +242,7 @@ void MS5611_Read(void) {
 }
 
 void MS5611_SetFloor(void) {
-	volatile float temp = MS5611.Altitude;
+	volatile float temp;
+  temp	= MS5611.Altitude;
 	MS5611.floorAltitude = temp;
 }

@@ -10,6 +10,8 @@
 Status_Typedef status;
 
 static float Yaw_MagMinusDMP = 180.0f;
+static float FloorAltitudeSonar = 0.0;
+static float FloorAltitudeBaro = 0.0;
 
 //static char SensorPending_DMP = 0;
 static char SensorPending_HMC58X3 = 0;
@@ -38,22 +40,30 @@ void SC_PreSample_End(void) {
 	SC_PreSample();
 	//MS5611_SetFloor();
 	//MS5611.floorAltitude = MS5611.Altitude - Ultrasonic.altitude;
+	
+	FloorAltitudeBaro = MS5611.Altitude;
+	FloorAltitudeSonar = Ultrasonic.altitude;
 }
 
 //生成新的姿态数据
 void SC_Generate(void) {
+	float temp1;
+	
 	status.Pitch = DMP_DATA.dmp_pitch;
 	status.Roll = DMP_DATA.dmp_roll;
 	status.Yaw = angleNorm(DMP_DATA.dmp_yaw + Yaw_MagMinusDMP) - 180.0f;
-	status.Altitude = Ultrasonic.altitude;  // 旧的高度由超声波读取
+	//status.Altitude = Ultrasonic.altitude;  // 旧的高度由超声波读取
+	
+	temp1 = Ultrasonic.altitude - FloorAltitudeSonar;
+	
 	/*用超声波和气压计融合读取高度*/
-//	if(Ultrasonic.altitude < 50 )
-//	{
-//	  status.Altitude = Ultrasonic.altitude;
-//	}
-//	else{
-//	  status.Altitude = 	MS5611.deltaAltitude ;
-//	}
+	if(temp1 < 50 )
+	{
+	  status.Altitude = temp1;
+	}
+	else{
+	  status.Altitude = 	MS5611.Altitude - FloorAltitudeBaro ;
+	}
 	
 }
 
