@@ -31,9 +31,9 @@ void SCx_Process(void)
 	dt = (millis() - lastPIDTime)/1000.0f;
 	lastPIDTime = millis();
 	
-	status_ctrl.Pitch = PID_Postion_Cal(&status_ctrl.PID_pitch, status_ctrl.expectedStatus.Pitch, 		status.Pitch 	,	DMP_DATA.GYROy	, dt);
-	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  status_ctrl.expectedStatus.Roll, 		status.Roll		,	DMP_DATA.GYROx	, dt);
-	status_ctrl.Yaw   = PID_Postion_Cal(&status_ctrl.PID_yaw,	status_ctrl.expectedStatus.Yaw, 		status.Yaw		,	DMP_DATA.GYROz	, dt);
+	status_ctrl.Pitch = PID_Postion_Cal(&status_ctrl.PID_pitch, angleNorm2(status_ctrl.expectedStatus.Pitch -	status.Pitch) 	, 0 ,	DMP_DATA.GYROy	, dt);
+	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  angleNorm2(status_ctrl.expectedStatus.Roll -	status.Roll	)	, 0 ,	DMP_DATA.GYROx	, dt);
+	status_ctrl.Yaw   = PID_Postion_Cal(&status_ctrl.PID_yaw,	angleNorm2(status_ctrl.expectedStatus.Yaw -		status.Yaw	)	, 0 ,	DMP_DATA.GYROz	, dt);
 	
 			if (status_ctrl.expectedStatus.Altitude - status.Altitude >11){
 								 status_ctrl.Alt   = PID_Postion_Cal(&status_ctrl.PID_alt,	status.Altitude + 11 , 	status.Altitude	,	0				, dt);

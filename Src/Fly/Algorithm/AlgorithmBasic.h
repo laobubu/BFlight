@@ -15,4 +15,7 @@ float asin_s(float v);
 //将角度限制为 0°-360°
 float angleNorm(float angle);
 
+//将角度限制为 -180°-180°
+float angleNorm2(float angle);
+
 #endif
