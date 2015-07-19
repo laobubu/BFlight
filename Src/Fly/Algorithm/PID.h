@@ -72,12 +72,14 @@ typedef struct
 	float kp;
 	float ki;
 	float kd;
+	float kdd;
 	float integral;
 	float integral_max_error;
 	float integral_limit;
 	float output_limit;
 	float error_previous;
 	float last_output;
+	float d_previous;
 	
 } PID_Typedef;
 

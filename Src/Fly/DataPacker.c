@@ -39,7 +39,12 @@ void DP_HandleParamUpdate(char name[4], float value)
 		//find the PID Gain factor
 			 if (name[2] == 'p')	tmp.pid.number = &tmp.pid.pid->kp;
 		else if (name[2] == 'i')	tmp.pid.number = &tmp.pid.pid->ki;
-		else if (name[2] == 'd')	tmp.pid.number = &tmp.pid.pid->kd;
+		else if (name[2] == 'd') {
+			if (name[3] == 'd') 
+				tmp.pid.number = &tmp.pid.pid->kdd;
+			else
+				tmp.pid.number = &tmp.pid.pid->kd;
+		} 
 		else if (name[2] == 'l')	tmp.pid.number = &tmp.pid.pid->integral_limit;
 		else if (name[2] == 'm')	tmp.pid.number = &tmp.pid.pid->integral_max_error;
 		else if (name[2] == 'o')	tmp.pid.number = &tmp.pid.pid->output_limit;

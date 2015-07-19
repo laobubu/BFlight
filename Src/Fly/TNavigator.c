@@ -4,6 +4,7 @@
 #include "FlyBasic.h"
 #include "Param.h"
 
+#include "Algorithm/Plan.h"
 #include "Algorithm/PID.h"
 #include "Algorithm/StatusCtrl.h"
 
@@ -37,6 +38,7 @@ PT_THREAD(TNavigator(struct pt *pt)) {
 		//////////////////////////////////////////////////////////////
 		/// Plan 自动控制流程 开始
 		
+		 Plan_Process();
 		
 		
 		/// Plan 自动控制流程 结束

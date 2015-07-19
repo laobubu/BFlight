@@ -59,11 +59,13 @@ void PID_Init(PID_Typedef * pid, pid_mode_t mode, float dt_min) {
 	pid->kp = 0.0f;
 	pid->ki = 0.0f;
 	pid->kd = 0.0f;
+	pid->kdd = 0.0f;
 	pid->integral = 0.0f;
 	pid->integral_limit = 0.0f;
 	pid->integral_max_error = 0.0f;
 	pid->output_limit = 0.0f;
 	pid->error_previous = 0.0f;
+	pid->d_previous = 0.0f;
 	pid->last_output = 0.0f;
 }
 
@@ -73,7 +75,7 @@ float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, floa
 		return pid->last_output;
 	}
 
-	float i, d;
+	float i, d,dd;
 
 	/* current error value */
 	float error = sp - val;
@@ -97,9 +99,14 @@ float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, floa
 	if (!isfinite(d)) {
 		d = 0.0f;
 	}
+	
+	dd = d - pid->d_previous;
+	pid->d_previous = d;
 
 	/* calculate PD output */
 	float output = (error * pid->kp) + (d * pid->kd);
+	
+	output += dd * pid->kdd;
 
 	if ((pid->ki > SIGMA)) {
 		// Calculate the error integral and check for saturation

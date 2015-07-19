@@ -8,6 +8,7 @@
 
 #include "Hardware/XRotor.h"
 
+u8 prefly = 1;
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
 
@@ -45,10 +46,17 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		SC_Generate();	//姿态计算
 		
 		//读取结束后就交给 PID 处理了
-		if (Flight_Working) {
-			SCx_Process();
+		if (Flight_Working) {		
+      if (prefly == 1){			
+				Motor_SetAllSpeed(20,20,20,20);
+				PT_TIMER_DELAY(pt, 6000);
+				prefly = 0;	
+			} else {
+				SCx_Process();
+			}
 		} else {
 			Motor_SetAllSpeed(0,0,0,0);
+			prefly = 1;
 		}
 		
 		PT_YIELD(pt);
