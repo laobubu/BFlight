@@ -62,8 +62,12 @@ void pushNewPressure(uint32_t v) {/*
 	sum[curi] = v;
 	if (++curi == 8) curi = 0;
 	MS5611.Pressure = sum2 / 8.0;*/
-	
-	MS5611.Pressure = MS5611.Pressure * 0.5f + 0.5f * v;
+	/*
+	if (MS5611.Pressure != 0.0f)
+		MS5611.Pressure = MS5611.Pressure * 0.5f + 0.5f * v;
+	else
+		*/
+	MS5611.Pressure = v;
 }
 
 void requestPressure(void)
@@ -128,7 +132,9 @@ void calculateTemperature(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Calculate Pressure Altitude
-///////////////////////////////////////////////////////////////////////////////
+////////////////// /////////////////////////////////////////////////////////////
+
+static float prealt = 0.0f;
 
 void calculatePressureAltitude(void)
 {
@@ -168,14 +174,34 @@ void calculatePressureAltitude(void)
 
 	pushNewPressure((((d1.value * sensitivity) >> 21) - offset) >> 15);
 
-	float newalt = (4433000.0f * (1.0f - pow((float)MS5611.Pressure / 101325.0f, 1.0f / 5.255f)));
-	MS5611.Altitude = MS5611.Altitude * (1.0f-MS5611_FILTER_RATION) + MS5611_FILTER_RATION * newalt;
-	MS5611.Altitude =  KF_Update(&filter1, MS5611.Altitude);
+	volatile float newalt;
+  newalt = (4433000.0f * (1.0f - pow(MS5611.Pressure / 101325.0f, 1.0f / 5.255f)));
 	
-	
-	MS5611.deltaAltitude = MS5611.Altitude - MS5611.floorAltitude;
-
-	//DBG_PRINT("calculate Pressure Altitude : %f\n",pressureAlt50Hz);
+//	//初始化
+//	if (prealt == 0.0f) {
+//		if (newalt > 1e4f) {
+//			filter1.x = newalt;
+//			prealt = newalt;
+//			MS5611.Altitude = newalt;
+//		}
+//	} else {
+//		
+//		//newalt = MS5611.Altitude * (1.0f-MS5611_FILTER_RATION) + MS5611_FILTER_RATION * newalt;
+//		
+		//限幅
+		if( newalt - prealt >15 ){
+			newalt = prealt + 15;
+		}
+		if( newalt - prealt <-15 ){
+			newalt = prealt - 15;
+		}
+//		
+		newalt = KF_Update(&filter1, newalt);
+		
+		MS5611.Altitude = newalt;
+		prealt = newalt ;
+//	}
+	  MS5611.Altitude = newalt;
 }
 ///////////////////////////////////////////////////////////////////////////////
 // Pressure Initialization
@@ -186,8 +212,8 @@ void MS5611_Init(void)
 	uint8_t data[2];
 	
 	MS5611.Temperature = 0;
+	MS5611.Pressure = 0.0f;
 	MS5611.Altitude = 0.0f;
-	MS5611.floorAltitude = 0.0f;
 
 	IICwriteOneByte( MS5611Address, 0x1E);      // Reset Device
 
@@ -219,15 +245,15 @@ void MS5611_Init(void)
 
 	MS5611_Read();
 	
-	filter1 = KF_Create(3.925,25,0);
+	filter1 = KF_Create(0.01,10,0.0f);
 }
 
 
 //读取函数，务必5ms运行一次
+static char LASTREAD = 0;
 void MS5611_Read(void) {	
 	// 0 读温度
 	// 1 读气压并计算
-	static char LASTREAD = 0;
 	if (LASTREAD == 0) {
 		readTemperature();
 		requestPressure();
@@ -239,10 +265,4 @@ void MS5611_Read(void) {
 		calculatePressureAltitude();
 		LASTREAD = 0;
 	}
-}
-
-void MS5611_SetFloor(void) {
-	volatile float temp;
-  temp	= MS5611.Altitude;
-	MS5611.floorAltitude = temp;
 }

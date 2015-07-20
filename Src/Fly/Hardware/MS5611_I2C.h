@@ -10,8 +10,6 @@ typedef struct {
 	int32_t Temperature;		//温度，如 2007 就是 20.07℃
 	float Pressure;			    //气压，100009 就是 1000.09 mbar
 	float Altitude;				//这个……等以后再看吧
-	float floorAltitude;
-	float deltaAltitude;
 } MS5611_TypeDef;
 
 //传感器对象
@@ -20,6 +18,5 @@ extern MS5611_TypeDef MS5611;
 //API
 void MS5611_Init(void);		//初始化
 void MS5611_Read(void);		//更新数据
-void MS5611_SetFloor(void);	//将当前高度设置为初始海拔
 
 #endif
