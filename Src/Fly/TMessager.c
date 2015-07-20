@@ -52,8 +52,8 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		//DP_SendPack.optX = Laser_Read(LASER_LEFT);
 		//DP_SendPack.optY = Laser_Read(LASER_RIGHT);
 		
-		DP_SendPack.optX = Ultrasonic.altitude;
-		DP_SendPack.optY = MS5611.deltaAltitude;
+		DP_SendPack.aux1 = Ultrasonic.altitude;
+		DP_SendPack.aux2 = MS5611.Altitude;
 		
 		/*
 		DP_SendPack.__ccdheader = 0xFF;
