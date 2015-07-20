@@ -8,7 +8,6 @@
 
 #include "Hardware/XRotor.h"
 
-u8 prefly = 1;
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
 
@@ -46,17 +45,37 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		SC_Generate();	//姿态计算
 		
 		//读取结束后就交给 PID 处理了
-		if (Flight_Working) {		
-      if (prefly == 1){			
+		
+		//Flight_Working
+		// 0 -- 不动
+		// 1 -- 准备预热
+		// 2 -- 预热
+		// 3 -- 普通飞行
+		// 4 -- 降落
+		
+		switch (Flight_Working) {
+			case 0: // 0 -- 不动
+				Motor_SetAllSpeed(0,0,0,0);
+				break;
+			case 1:	// 1 -- 准备预热
 				Motor_SetAllSpeed(20,20,20,20);
-				PT_TIMER_DELAY(pt, 6000);
-				prefly = 0;	
-			} else {
+				init_until = millis() + 6000;
+				Flight_Working = 2;
+				break;
+			case 2: // 2 -- 预热
+				if (millis() >= init_until) {
+					Flight_Working = 3;
+				}
+				break;
+			case 3: // 3 -- 普通飞行
 				SCx_Process();
-			}
-		} else {
-			Motor_SetAllSpeed(0,0,0,0);
-			prefly = 1;
+				break;
+			case 4: // 4 -- 降落
+				status_ctrl.expectedStatus.Altitude = 10;
+				SCx_Process();
+				if (status.Altitude < 40 ){
+					Flight_Working = 0;
+				}
 		}
 		
 		PT_YIELD(pt);
