@@ -5,6 +5,7 @@
 
 #include "Algorithm/StatusCalc.h"
 #include "Algorithm/StatusCtrl.h"
+#include "Algorithm/Plan.h"
 
 #include "Hardware/XRotor.h"
 #include "Hardware/Ultrasonic.h"
@@ -56,29 +57,30 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		// 4 -- 降落
 		
 		switch (Flight_Working) {
-			case 0: // 0 -- 不动
+			case FWS_IDLE: // 0 -- 不动
 				Motor_SetAllSpeed(0,0,0,0);
 				break;
-			case 1:	// 1 -- 准备预热
+			case FWS_PREPARE:	// 1 -- 准备预热
 				Motor_SetAllSpeed(20,20,20,20);
 				init_until = millis() + 6000;
-				Flight_Working = 2;
+				Flight_Working = FWS_WARMING;
 				break;
-			case 2: // 2 -- 预热
+			case FWS_WARMING: // 2 -- 预热
 				if (millis() >= init_until) {
-					Flight_Working = 3;
+					Flight_Working = FWS_FLYING;
+					Plan_Init();
 				}
 				break;
-			case 3: // 3 -- 普通飞行
+			case FWS_FLYING: // 3 -- 普通飞行
 				SCx_ProcessAngle();
 				SCx_ProcessOutput();
 				break;
-			case 4: // 4 -- 降落
+			case FWS_LANDING: // 4 -- 降落
 				status_ctrl.expectedStatus.Altitude = 10;
 				SCx_ProcessAngle();
 				SCx_ProcessOutput();
 				if (status.Altitude < 40 ){
-					Flight_Working = 0;
+					Flight_Working = FWS_IDLE;
 				}
 		}
 		

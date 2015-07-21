@@ -11,7 +11,7 @@
 #include "Hardware/IIC.h"
 #include "Hardware/USART.h"
 
-char Flight_Working = 0;
+Flight_Working_Status Flight_Working = FWS_IDLE;
 
 void Mode1Main(void);
 void Mode2Main(void);

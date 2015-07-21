@@ -20,10 +20,13 @@ typedef struct {
 	uint16_t currentPoint;
 	uint16_t pointCount;
 	uint32_t time_since;
+	
+	uint8_t isWorking;
 } Plan_t;
 
 extern Plan_t plan;
 
+uint32_t Plan_GetTime(void);
 void Plan_Init(void);
 void Plan_Process(void);
 
