@@ -26,6 +26,8 @@ typedef struct {
 extern StatusCtrl_Typedef status_ctrl;
 
 void SCx_Init(void);
-void SCx_Process(void);
+void SCx_ProcessOutput(void);
+void SCx_ProcessAngle(void);
+void SCx_ProcessAlt(void);
 
 #endif

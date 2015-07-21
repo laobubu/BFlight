@@ -7,6 +7,7 @@
 #include "Algorithm/StatusCtrl.h"
 
 #include "Hardware/XRotor.h"
+#include "Hardware/Ultrasonic.h"
 
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
@@ -36,6 +37,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 	}
 	SC_PreSample_End();
 	
+	Ultrasonic.callback = &SCx_ProcessAlt;
 	
 	//等到稳定下来以后，进入以下程序
 	while(1) {
@@ -68,11 +70,13 @@ PT_THREAD(TPilot(struct pt *pt)) {
 				}
 				break;
 			case 3: // 3 -- 普通飞行
-				SCx_Process();
+				SCx_ProcessAngle();
+				SCx_ProcessOutput();
 				break;
 			case 4: // 4 -- 降落
 				status_ctrl.expectedStatus.Altitude = 10;
-				SCx_Process();
+				SCx_ProcessAngle();
+				SCx_ProcessOutput();
 				if (status.Altitude < 40 ){
 					Flight_Working = 0;
 				}

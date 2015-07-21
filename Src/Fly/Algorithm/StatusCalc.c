@@ -80,7 +80,7 @@ void SC_Generate(void) {
 	status.Roll = DMP_DATA.dmp_roll;
 	status.Yaw = angleNorm(DMP_DATA.dmp_yaw + Yaw_MagMinusDMP) - 180.0f;
 	//status.Altitude = Ultrasonic.altitude;  // 旧的高度由超声波读取
-	av = status.Altitude -prealt;
+	av = status.Altitude - prealt;
 	if (av > 10 ){
 	    status.Altitude = prealt + preav;
 	}

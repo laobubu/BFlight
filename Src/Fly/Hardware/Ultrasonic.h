@@ -14,9 +14,12 @@ typedef enum {
 	USS_TIMING
 } Ultrasonic_Status;
 
+typedef void Ultrasonic_Callback(void);
+
 typedef struct {
 	Ultrasonic_Status status;
 	float altitude;
+	Ultrasonic_Callback *callback;
 } Ultrasonic_Typedef;
 
 extern Ultrasonic_Typedef Ultrasonic;

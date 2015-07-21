@@ -45,6 +45,7 @@ void Ultrasonic_Init(void) {
 	
 	Ultrasonic.status = USS_IDLE;
 	Ultrasonic.altitude = 0.0f;
+	Ultrasonic.callback = 0;
 }
 
 void Ultrasonic_Trig(void) {
@@ -68,6 +69,8 @@ void Ultrasonic_Echo(char high){
 	} else { //超声波结束
 		HAL_TIM_Base_Stop(&htim_sonar);
 		US_UPDATE(htim_sonar.Instance->CNT / Ultrasonic_SpeedFactor);
+		if (Ultrasonic.callback)
+			(*Ultrasonic.callback)();
 		Ultrasonic.status = USS_IDLE;
 	}
 }

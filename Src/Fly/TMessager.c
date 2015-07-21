@@ -54,6 +54,8 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		
 		DP_SendPack.aux1 = Ultrasonic.altitude;
 		DP_SendPack.aux2 = MS5611.Altitude;
+		DP_SendPack.aux3 = status_ctrl.Alt;
+		DP_SendPack.aux4 = status_ctrl.PID_alt.integral;
 		
 		/*
 		DP_SendPack.__ccdheader = 0xFF;
