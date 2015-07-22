@@ -664,6 +664,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\Hardware\XRotor.c</FilePath>
             </File>
+            <File>
+              <FileName>HyperCCD.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Fly\Hardware\HyperCCD.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

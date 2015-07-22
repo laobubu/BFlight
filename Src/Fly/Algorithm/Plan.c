@@ -5,10 +5,15 @@
 #include "Plan.h"
 #include "Algorithm/PID.h"
 
+#include "Hardware/HyperCCD.h"
+
 Plan_t plan;
 
 PID_Typedef pidRollE;
-float pidRollE_Expect;
+float pidRollE_Expect = 60;
+
+
+void stopflying(void);
 
 void Plan_Init(void) {
 	plan.currentPoint = 0;
@@ -40,10 +45,21 @@ void Plan_Process(void) {
 //	}                  //一个简单的计划系统
 	
 	
-//修改姿态
+
 //	status_ctrl.expectedStatus.Pitch = 3;
-//	status_ctrl.expectedStatus.Roll = PID_Postion_Cal(&pidRollE,pidRollE_Expect,position,0,dt);
-//  status_ctrl.expectedStatus.Altitude = 30; 
+	if (HyperCCD.status.run_out_of_line == 0 ){
+   status_ctrl.expectedStatus.Roll = PID_Postion_Cal(
+			&pidRollE,
+			pidRollE_Expect,
+			HyperCCD.nav_position,
+			0,
+			HyperCCD.time
+		);
+	}
+	else {
+	     stopflying();
+	}
+ //status_ctrl.expectedStatus.Altitude = 30; 
 //  status_ctrl.expectedStatus.Yaw = 30;	
 	
 // 停止飞行
@@ -54,4 +70,10 @@ void Plan_Process(void) {
 uint32_t Plan_GetTime(void)
 {
 	return (millis() - plan.time_since);
+}
+
+
+void stopflying(void){
+   Flight_Working = FWS_LANDING;
+		 plan.isWorking = 0;
 }

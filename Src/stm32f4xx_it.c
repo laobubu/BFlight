@@ -38,6 +38,8 @@
 /* USER CODE BEGIN 0 */
 #include "sys.h"
 #include "DataPacker.h"
+#include "Hardware/HyperCCD.h"
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -126,6 +128,10 @@ void USART1_IRQHandler(void)
   if (USART1->SR & USART_SR_RXNE) {
 	  DP_Feed(USART1->DR);
 	  //USART1->SR &= ~ USART_SR_RXNE;
+  } else
+  if (USART3->SR & USART_SR_RXNE) {
+	  HyperCCD_Feed(USART3->DR);
+	  //USART3->SR &= ~ USART_SR_RXNE;
   } else
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);

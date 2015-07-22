@@ -10,8 +10,6 @@
 
 #include "Hardware/LED.h"
 
-PID_Typedef  nav_pid;
-
 struct pt ptNavigator;
 PT_THREAD(TNavigator(struct pt *pt));
 
