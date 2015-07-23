@@ -7,6 +7,7 @@
 #include "Algorithm/StatusCtrl.h"
 #include "Algorithm/Plan.h"
 
+#include "Hardware/LED.h"
 #include "Hardware/XRotor.h"
 #include "Hardware/Ultrasonic.h"
 
@@ -25,6 +26,7 @@ void Do_TPilot(void) {
 }
 
 static pt_timer init_until;
+static uint8_t tp_initing = 0;
 
 PT_THREAD(TPilot(struct pt *pt)) {
 	PT_BEGIN(pt);
@@ -34,6 +36,10 @@ PT_THREAD(TPilot(struct pt *pt)) {
 	while (millis() <= init_until) {
 		PT_TIMER_INTERVAL(pt, 10);
 		SC_PreSample();
+		
+		if (tp_initing & 0xF0) { LED_ON(2); } else { LED_OFF(2); }
+		tp_initing++;
+		
 		PT_YIELD(pt);
 	}
 	SC_PreSample_End();

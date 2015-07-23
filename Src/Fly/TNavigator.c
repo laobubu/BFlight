@@ -9,12 +9,15 @@
 #include "Algorithm/StatusCtrl.h"
 
 #include "Hardware/LED.h"
+#include "Hardware/HyperCCD.h"
 
 struct pt ptNavigator;
 PT_THREAD(TNavigator(struct pt *pt));
 
 void Init_Navigator(void) {
 	PT_INIT(&ptNavigator);
+	
+	HyperCCD_Init();
 }
 
 void Do_Navigator(void) {
