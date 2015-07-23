@@ -9,6 +9,7 @@
 #include "DataPacker.h"
 
 #include "Algorithm/StatusCtrl.h"
+#include "Algorithm/plan.h"
 
 #include "Hardware/CCD.h"
 #include "Hardware/XRotor.h"
@@ -16,6 +17,7 @@
 #include "Hardware/MS5611_I2C.h"
 #include "Hardware/PX4Flow.h"
 #include "Hardware/Laser.h"
+#include "Hardware/HyperCCD.h"
 
 extern UART_HandleTypeDef huart1;
 
@@ -47,15 +49,10 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Motor[2] = status_ctrl.Motor_Out[2];
 		DP_SendPack.Motor[3] = status_ctrl.Motor_Out[3];
 		
-		//DP_SendPack.optX = PX4Flow.x;
-		//DP_SendPack.optY = PX4Flow.y;
-		//DP_SendPack.optX = Laser_Read(LASER_LEFT);
-		//DP_SendPack.optY = Laser_Read(LASER_RIGHT);
-		
-		DP_SendPack.aux1 = Ultrasonic.altitude;
-		DP_SendPack.aux2 = MS5611.Altitude;
-		DP_SendPack.aux3 = status_ctrl.Alt;
-		DP_SendPack.aux4 = status_ctrl.PID_alt.integral;
+		DP_SendPack.aux1 = HyperCCD.time;
+		DP_SendPack.aux2 = plan.status;
+		DP_SendPack.aux3 = HyperCCD.nav_position;
+		DP_SendPack.aux4 = HyperCCD.status.run_out_of_line;
 		
 		/*
 		DP_SendPack.__ccdheader = 0xFF;

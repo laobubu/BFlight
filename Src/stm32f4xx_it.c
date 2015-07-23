@@ -47,6 +47,7 @@ extern TIM_HandleTypeDef htim4;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
@@ -129,10 +130,6 @@ void USART1_IRQHandler(void)
 	  DP_Feed(USART1->DR);
 	  //USART1->SR &= ~ USART_SR_RXNE;
   } else
-  if (USART3->SR & USART_SR_RXNE) {
-	  HyperCCD_Feed(USART3->DR);
-	  //USART3->SR &= ~ USART_SR_RXNE;
-  } else
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
@@ -152,6 +149,23 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
+* @brief This function handles USART3 global interrupt.
+*/
+void USART3_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART3_IRQn 0 */
+  if (USART3->SR & USART_SR_RXNE) {
+	  HyperCCD_Feed(USART3->DR);
+	  //USART3->SR &= ~ USART_SR_RXNE;
+  } else
+  /* USER CODE END USART3_IRQn 0 */
+  HAL_UART_IRQHandler(&huart3);
+  /* USER CODE BEGIN USART3_IRQn 1 */
+
+  /* USER CODE END USART3_IRQn 1 */
 }
 
 /**

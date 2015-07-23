@@ -10,22 +10,18 @@
 Plan_t plan;
 
 PID_Typedef pidRollE;
-float pidRollE_Expect = 60;
-
+float pidRollE_Expect = 73;
 
 void stopflying(void);
 
 void Plan_Init(void) {
-	plan.currentPoint = 0;
-	plan.pointCount = 0;
 	plan.time_since = millis();
 	PID_Init(&pidRollE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
 	
 	plan.isWorking = 1;
+	plan.status = (PLAN1_STATUS_TYPE)0;
 }
 
-#define CURRENT (plan.points[plan.currentPoint])
-#define NEXT    (plan.points[plan.currentPoint + 1])
 void Plan_Process(void) {
 	//如果现在不执行计划，则退出该函数
 		if (!plan.isWorking) return;
@@ -45,22 +41,34 @@ void Plan_Process(void) {
 //	}                  //一个简单的计划系统
 	
 	
+	
+	
+	switch (plan.status) {
+		case P1S_LIFT:
+			status_ctrl.expectedStatus.Altitude = 40;
+			if (status.Altitude > 30) {
+				plan.status = P1S_FOLLOW_LINE;
+			}
+			break;
+			
+		case P1S_FOLLOW_LINE:
+			if (HyperCCD.status.run_out_of_line == 0 ){
+				 status_ctrl.expectedStatus.Roll = 3 + PID_Postion_Cal(
+						&pidRollE,
+						pidRollE_Expect,
+						HyperCCD.nav_position,
+						0,
+						HyperCCD.time
+					);
+		 } else {
+			 stopflying();
+		 }
+		 break;
+	}
+	
+	
 
 //	status_ctrl.expectedStatus.Pitch = 3;
-	if (HyperCCD.status.run_out_of_line == 0 ){
-   status_ctrl.expectedStatus.Roll = PID_Postion_Cal(
-			&pidRollE,
-			pidRollE_Expect,
-			HyperCCD.nav_position,
-			0,
-			HyperCCD.time
-		);
-	}
-	else {
-	     stopflying();
-	}
- //status_ctrl.expectedStatus.Altitude = 30; 
-//  status_ctrl.expectedStatus.Yaw = 30;	
 	
 // 停止飞行
 //	Flight_Working = FWS_LANDING;
@@ -74,6 +82,6 @@ uint32_t Plan_GetTime(void)
 
 
 void stopflying(void){
-   Flight_Working = FWS_LANDING;
-		 plan.isWorking = 0;
+	Flight_Working = FWS_LANDING;
+	plan.isWorking = 0;
 }
