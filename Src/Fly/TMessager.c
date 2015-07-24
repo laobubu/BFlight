@@ -21,6 +21,9 @@
 
 extern UART_HandleTypeDef huart1;
 
+extern PID_Typedef  pidRollE;
+extern float pidRollE_Expect;
+
 struct pt ptMessagerThread;
 PT_THREAD(TMessagerThread(struct pt *pt));
 
@@ -49,7 +52,7 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Motor[2] = status_ctrl.Motor_Out[2];
 		DP_SendPack.Motor[3] = status_ctrl.Motor_Out[3];
 		
-		DP_SendPack.aux1 = HyperCCD.time;
+		DP_SendPack.aux1 = status_ctrl.expectedStatus.Roll;
 		DP_SendPack.aux2 = plan.status;
 		DP_SendPack.aux3 = HyperCCD.nav_position;
 		DP_SendPack.aux4 = HyperCCD.status.run_out_of_line;

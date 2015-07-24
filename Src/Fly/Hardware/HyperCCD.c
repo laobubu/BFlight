@@ -15,8 +15,17 @@ void HyperCCD_Init(void)
 	USART3->CR1 |= USART_CR1_RXNEIE | USART_CR1_RE;
 	
 	HAL_UART_Receive_IT(&huart3, &temp123, 1);
-}
+}	
 
+
+static uint8_t HC_hasNewData = 0;
+uint8_t HyperCCD_HasNewData(void) {
+	if (HC_hasNewData) {
+		HC_hasNewData = 0;
+		return 1;
+	}
+	return 0;
+}
 
 
 //收到的数据
@@ -44,6 +53,7 @@ void HyperCCD_Feed(uint8_t ch)
 			HyperCCD.nav_position = HyperCCD_DataGot.nav_position;
 			HyperCCD.status = HyperCCD_DataGot.status;
 			HyperCCD.time = HyperCCD_DataGot.time;
+			HC_hasNewData = 1;
 		}
 	}
 }

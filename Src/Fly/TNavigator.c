@@ -18,6 +18,7 @@ void Init_Navigator(void) {
 	PT_INIT(&ptNavigator);
 	
 	HyperCCD_Init();
+	Plan_Init();
 }
 
 void Do_Navigator(void) {

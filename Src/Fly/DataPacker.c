@@ -13,7 +13,10 @@
 
 #include "Param.h"
 
+
 extern PID_Typedef  pidRollE;
+extern float pidRollE_Expect;
+
 
 #define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
 
@@ -53,6 +56,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 			else if (name[1] == 'p') tmp.pid.number = &status_ctrl.expectedStatus.Pitch 	;
 			else if (name[1] == 'y') tmp.pid.number = &status_ctrl.expectedStatus.Yaw 		;
 			else if (name[1] == 'a') tmp.pid.number = &status_ctrl.expectedStatus.Altitude 	;
+			else if (name[1] == 'e') tmp.pid.number = &pidRollE_Expect					 	;
 		} 
 		else						return;
 		

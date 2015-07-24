@@ -17,5 +17,6 @@ extern HyperCCD_t HyperCCD;
 
 void HyperCCD_Init(void);
 void HyperCCD_Feed(uint8_t ch);
+uint8_t HyperCCD_HasNewData(void);
 
 #endif
