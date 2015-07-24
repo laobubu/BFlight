@@ -11,4 +11,5 @@ void Param_Reset(void)
 	Param.RFix = -3.0;
 	Param.PFix = -8.0;
 	Param.BOff =  5.0;
+	Param.Mode =  0;
 }
