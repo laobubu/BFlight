@@ -8,6 +8,7 @@
 	DEFINE_PARAM(float,   RFix)		/* Roll  零偏 */			\
 	DEFINE_PARAM(float,   PFix)		/* Pitch 零偏 */			\
 	DEFINE_PARAM(float,   BOff)		/* 避障时的角度变化量 */	\
+	DEFINE_PARAM(uint8_t, Mode)		/* 模式选择，具体看TNavigator */	\
 
 	
 //定义结构体

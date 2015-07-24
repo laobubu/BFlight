@@ -40,6 +40,7 @@ PT_THREAD(TNavigator(struct pt *pt)) {
 		//////////////////////////////////////////////////////////////
 		/// Plan 自动控制流程 开始
 		
+		if (Param.Mode != 0)
 		 Plan_Process();
 		
 		
