@@ -44,6 +44,11 @@ PT_THREAD(TPilot(struct pt *pt)) {
 	}
 	SC_PreSample_End();
 	
+	LED_OFF(1);
+	LED_OFF(2);
+	LED_OFF(3);
+	LED_OFF(4);
+	
 	Ultrasonic.callback = &SCx_ProcessAlt;
 	
 	//等到稳定下来以后，进入以下程序
@@ -74,7 +79,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 			case FWS_WARMING: // 2 -- 预热
 				if (millis() >= init_until) {
 					Flight_Working = FWS_FLYING;
-					Plan_Init();
+					Plan_Start();
 				}
 				break;
 			case FWS_FLYING: // 3 -- 普通飞行

@@ -19,6 +19,7 @@ extern Plan_t plan;
 
 uint32_t Plan_GetTime(void);
 void Plan_Init(void);
+void Plan_Start(void);
 void Plan_Process(void);
 
 #endif

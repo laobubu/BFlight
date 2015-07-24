@@ -2,6 +2,7 @@
 
 #include "FlyBasic.h"
 #include "AlgorithmBasic.h"
+#include "Param.h"
 #include "Plan.h"
 #include "Algorithm/PID.h"
 
@@ -15,9 +16,11 @@ float pidRollE_Expect = 73;
 void stopflying(void);
 
 void Plan_Init(void) {
-	plan.time_since = millis();
 	PID_Init(&pidRollE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
-	
+}
+
+void Plan_Start(void) {
+	plan.time_since = millis();
 	plan.isWorking = 1;
 	plan.status = (PLAN1_STATUS_TYPE)0;
 }
@@ -45,24 +48,26 @@ void Plan_Process(void) {
 	
 	switch (plan.status) {
 		case P1S_LIFT:
-			status_ctrl.expectedStatus.Altitude = 40;
-			if (status.Altitude > 30) {
+			//status_ctrl.expectedStatus.Altitude = 40;
+			if (status.Altitude > 15) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
 			
 		case P1S_FOLLOW_LINE:
 			if (HyperCCD.status.run_out_of_line == 0 ){
-				 status_ctrl.expectedStatus.Roll = 3 + PID_Postion_Cal(
+				if (HyperCCD_HasNewData()) {
+					status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
 						&pidRollE,
 						pidRollE_Expect,
 						HyperCCD.nav_position,
 						0,
 						HyperCCD.time
 					);
-		 } else {
-			 stopflying();
-		 }
+				}
+			 } else {
+				 stopflying();
+			 }
 		 break;
 	}
 	

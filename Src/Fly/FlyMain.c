@@ -27,6 +27,8 @@ void FlyMain(void) {
 	Motor_Init();
 	
 	LED_ON(2);
+	LED_ON(3);
+	LED_ON(4);
 	
 	delay_ms(100);
 	
