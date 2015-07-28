@@ -63,9 +63,8 @@ void SCx_ProcessAlt(void)
 	SC_Generate();
 	
 	status_ctrl.Alt   = PID_Postion_Cal(&status_ctrl.PID_alt,	
-													fminf(status_ctrl.expectedStatus.Altitude, status.Altitude + 11)
+													fminf(status_ctrl.expectedStatus.Altitude, status.Altitude + 8)
 													, 	status.Altitude	,	0	, dt);
-  //飞机往上飞；改正I的小把戏。
 	
 	//If the altitude value has problem...
 	if (status.Altitude < 3) status_ctrl.Alt = 0;
@@ -88,5 +87,5 @@ void SCx_ProcessAngle(void)
 	
 	status_ctrl.Pitch = PID_Postion_Cal(&status_ctrl.PID_pitch, angleNorm2(status_ctrl.expectedStatus.Pitch -	status.Pitch) 	, 0 ,	DMP_DATA.GYROy	, dt);
 	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  angleNorm2(status_ctrl.expectedStatus.Roll -	status.Roll	)	, 0 ,	DMP_DATA.GYROx	, dt);
-	status_ctrl.Yaw   = PID_Postion_Cal(&status_ctrl.PID_yaw,	angleNorm2(status_ctrl.expectedStatus.Yaw -		status.Yaw	)	, 0 ,	DMP_DATA.GYROz	, dt);
+	status_ctrl.Yaw   = PID_Postion_Cal(&status_ctrl.PID_yaw,	angleNorm2( status_ctrl.expectedStatus.Yaw -	 status.Yaw), 0 ,	DMP_DATA.GYROz	, dt);
 }

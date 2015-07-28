@@ -26,6 +26,7 @@ void Do_Navigator(void) {
 }
 
 
+
 static u8 LED_is_Lighting = 0;
 
 PT_THREAD(TNavigator(struct pt *pt)) {

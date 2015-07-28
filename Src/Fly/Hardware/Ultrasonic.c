@@ -16,10 +16,10 @@ const float Ultrasonic_SpeedFactor = 58.0 / 4.0; // us / 58 => cm
 static const float filter_a = 0.1;
 static const float filter_acom = 1.0f - filter_a;
 void US_UPDATE(float val) {
-	if (val > (Ultrasonic.altitude + 20))
-		val = (Ultrasonic.altitude + 20);
-	else if (val < (Ultrasonic.altitude - 20))
-		val = (Ultrasonic.altitude - 20);
+	if (val > (Ultrasonic.altitude + 15))
+		val = (Ultrasonic.altitude + 15);
+	else if (val < (Ultrasonic.altitude - 15))
+		val = (Ultrasonic.altitude - 15);
 	
 	Ultrasonic.altitude = filter_a * (val) + filter_acom * Ultrasonic.altitude;
 }

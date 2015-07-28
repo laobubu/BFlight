@@ -6,7 +6,10 @@
 
 typedef enum {
 	P1S_LIFT = 0,
-	P1S_FOLLOW_LINE
+	P1S_FOLLOW_LINE = 1,
+	P1S_TURN_LEFT = 2,
+	P1S_TURN_RIGHT = 3,
+	P1S_RUN_OUT_OF_LINE = 4
 } PLAN1_STATUS_TYPE;
 
 typedef struct {

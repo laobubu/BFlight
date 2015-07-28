@@ -15,7 +15,9 @@
 
 
 extern PID_Typedef  pidRollE;
+extern PID_Typedef  pidYawE;
 extern float pidRollE_Expect;
+extern float pidYawE_Expect;
 
 
 #define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
@@ -37,6 +39,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 		else if (name[1] == 'p')	tmp.pid.pid = &status_ctrl.PID_pitch;
 		else if (name[1] == 'a')	tmp.pid.pid = &status_ctrl.PID_alt;
 		else if (name[1] == 'n')	tmp.pid.pid = &pidRollE;
+		else if (name[1] == 'f')	tmp.pid.pid = &pidYawE;
 		else						return;
 		
 		//find the PID Gain factor

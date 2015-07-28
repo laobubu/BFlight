@@ -11,12 +11,18 @@
 Plan_t plan;
 
 PID_Typedef pidRollE;
+PID_Typedef pidYawE;
 float pidRollE_Expect = 73;
+float pidYawE_Expect = 73;
+int  left_flag = 0;
+int  right_flag = 0 ;
+
 
 void stopflying(void);
 
 void Plan_Init(void) {
 	PID_Init(&pidRollE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
+  PID_Init(&pidYawE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
 }
 
 void Plan_Start(void) {
@@ -49,13 +55,23 @@ void Plan_Process(void) {
 	switch (plan.status) {
 		case P1S_LIFT:
 			//status_ctrl.expectedStatus.Altitude = 40;
-			if (status.Altitude > 15) {
+			if (status.Altitude > 20) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
 			
 		case P1S_FOLLOW_LINE:
-			if (HyperCCD.status.run_out_of_line == 0 ){
+//			if (HyperCCD.run_out_of_line == 1 ){
+//				plan.status = P1S_RUN_OUT_OF_LINE;
+//			}
+			if (HyperCCD.turn_left== 1 ){
+				plan.status = P1S_TURN_LEFT;
+				left_flag  = 1;
+			}
+		  if (HyperCCD.turn_right== 1 ){
+				plan.status = P1S_TURN_RIGHT;
+				right_flag  = 1 ; 
+			}
 				if (HyperCCD_HasNewData()) {
 					status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
 						&pidRollE,
@@ -64,21 +80,38 @@ void Plan_Process(void) {
 						0,
 						HyperCCD.time
 					);
+//					status_ctrl.expectedStatus.Yaw =  Param.YFix + PID_Postion_Cal(&pidYawE ,	pidYawE_Expect,HyperCCD.nav_position,0,HyperCCD.time);
 				}
-			 } else {
-				 stopflying();
-			 }
+			
 		 break;
+		case P1S_TURN_LEFT:		if(left_flag == 1){
+			  status_ctrl.expectedStatus.Yaw -= 90;
+			   left_flag = 0;
+			}
+
+ if ((!HyperCCD.run_out_of_line)&&(fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 5)&&(!HyperCCD.turn_left)&&(!HyperCCD.turn_right)){
+            plan.status = P1S_FOLLOW_LINE;
+     } 
+		break;
+		case P1S_TURN_RIGHT:
+			if(right_flag == 1){
+			status_ctrl.expectedStatus.Yaw +=  90;
+			right_flag  = 0 ; 
+			}
+	 if ((!HyperCCD.run_out_of_line)&&(fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 5)&&(!HyperCCD.turn_left)&&(!HyperCCD.turn_right) ){
+			plan.status = P1S_FOLLOW_LINE;
+	     } 
+		break;
+		//case P1S_RUN_OUT_OF_LINE:
+      // stopflying();
+		//break;          //停止的问题再议。
+				
 	}
+}
 	
 	
 
-//	status_ctrl.expectedStatus.Pitch = 3;
-	
-// 停止飞行
-//	Flight_Working = FWS_LANDING;
-//	plan.isWorking = 0;
-}
+
 
 uint32_t Plan_GetTime(void)
 {
@@ -87,6 +120,9 @@ uint32_t Plan_GetTime(void)
 
 
 void stopflying(void){
-	Flight_Working = FWS_LANDING;
+
+	Flight_Working = FWS_IDLE;
 	plan.isWorking = 0;
+	plan.status = P1S_LIFT ;
+	
 }
