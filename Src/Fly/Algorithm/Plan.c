@@ -64,11 +64,11 @@ void Plan_Process(void) {
 //			if (HyperCCD.run_out_of_line == 1 ){
 //				plan.status = P1S_RUN_OUT_OF_LINE;
 //			}
-			if (HyperCCD.turn_left== 1 ){
+			if ((HyperCCD.turn_left== 1)&&(status.Altitude > 35) ){
 				plan.status = P1S_TURN_LEFT;
 				left_flag  = 1;
 			}
-		  if (HyperCCD.turn_right== 1 ){
+		  if ((HyperCCD.turn_right== 1)&&((status.Altitude > 35) ) ){
 				plan.status = P1S_TURN_RIGHT;
 				right_flag  = 1 ; 
 			}
@@ -85,21 +85,25 @@ void Plan_Process(void) {
 			
 		 break;
 		case P1S_TURN_LEFT:		if(left_flag == 1){
+			  status_ctrl.expectedStatus.Roll -= Param.YFix ; 
 			  status_ctrl.expectedStatus.Yaw -= 90;
 			   left_flag = 0;
 			}
 
  if ((!HyperCCD.run_out_of_line)&&(fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 5)&&(!HyperCCD.turn_left)&&(!HyperCCD.turn_right)){
-            plan.status = P1S_FOLLOW_LINE;
+       status_ctrl.expectedStatus.Roll += Param.YFix ;          
+	     plan.status = P1S_FOLLOW_LINE;
      } 
 		break;
 		case P1S_TURN_RIGHT:
 			if(right_flag == 1){
+			status_ctrl.expectedStatus.Roll += Param.YFix ; 
 			status_ctrl.expectedStatus.Yaw +=  90;
 			right_flag  = 0 ; 
 			}
 	 if ((!HyperCCD.run_out_of_line)&&(fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 5)&&(!HyperCCD.turn_left)&&(!HyperCCD.turn_right) ){
-			plan.status = P1S_FOLLOW_LINE;
+		 status_ctrl.expectedStatus.Roll -= Param.YFix ; 
+		 plan.status = P1S_FOLLOW_LINE;
 	     } 
 		break;
 		//case P1S_RUN_OUT_OF_LINE:

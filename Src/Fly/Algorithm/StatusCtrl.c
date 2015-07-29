@@ -84,6 +84,12 @@ void SCx_ProcessAngle(void)
 	lastPIDTime = millis();
 	
 	SC_Generate();
+	if (status_ctrl.expectedStatus.Yaw > 180){
+	     status_ctrl.expectedStatus.Yaw  -=360 ;
+	}
+	if (status_ctrl.expectedStatus.Yaw < -180){
+	     status_ctrl.expectedStatus.Yaw  +=360 ;
+	}
 	
 	status_ctrl.Pitch = PID_Postion_Cal(&status_ctrl.PID_pitch, angleNorm2(status_ctrl.expectedStatus.Pitch -	status.Pitch) 	, 0 ,	DMP_DATA.GYROy	, dt);
 	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  angleNorm2(status_ctrl.expectedStatus.Roll -	status.Roll	)	, 0 ,	DMP_DATA.GYROx	, dt);
