@@ -243,6 +243,31 @@
           <WinNumber>1</WinNumber>
           <ItemText>HyperCCD.run_out_of_line</ItemText>
         </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>x</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>y</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>HMC58X3.Yaw</ItemText>
+        </Ww>
+        <Ww>
+          <count>12</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>DMP_DATA.dmp_pitch</ItemText>
+        </Ww>
+        <Ww>
+          <count>13</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>DMP_DATA.dmp_roll</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
