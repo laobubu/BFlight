@@ -7,22 +7,32 @@
 #include "Algorithm/PID.h"
 
 #include "Hardware/HyperCCD.h"
+#include "Hardware/HyperFlow.h"
 
 Plan_t plan;
 
 PID_Typedef pidRollE;
 PID_Typedef pidYawE;
+PID_Typedef pidFlowE; //ROLL的光流PID
+PID_Typedef pidFlewE;// PITCH的光流PID 
+float newx,newy,prex=0,prey=0,xv=0,yv=0,prexv=0,preyv=0;
+
 float pidRollE_Expect = 73;
 float pidYawE_Expect = 73;
+float pidFlowE_Expect = 0;
+float pidFlewE_Expect = 0;
 int  left_flag = 0;
 int  right_flag = 0 ;
 
 
 void stopflying(void);
+void Flowfliter(int x,int y);
 
 void Plan_Init(void) {
 	PID_Init(&pidRollE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
   PID_Init(&pidYawE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
+	PID_Init(&pidFlowE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
+	PID_Init(&pidFlewE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
 }
 
 void Plan_Start(void) {
@@ -34,7 +44,7 @@ void Plan_Start(void) {
 void Plan_Process(void) {
 	//如果现在不执行计划，则退出该函数
 		if (!plan.isWorking) return;
-	//在下面写计划就好了；
+//在下面写计划就好了；
 //	if (Plan_GetTime() <1000){
 //	     status_ctrl.expectedStatus.Pitch = -7;
 //	}
@@ -49,10 +59,26 @@ void Plan_Process(void) {
 //	    plan.isWorking = 0;
 //	}                  //一个简单的计划系统
 	
+//	Flowfliter(HyperFlow.x,HyperFlow.y);
 	
+	if (HyperFlow_HasNewData()) {
+		status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
+						&pidFlowE,
+						pidFlowE_Expect,
+						newx,
+						0,
+						1
+					);
+		status_ctrl.expectedStatus.Pitch = Param.PFix + PID_Postion_Cal(
+					&pidFlewE,
+					pidFlewE_Expect,
+				  newy,
+				  0,
+				  1
+					);
+	}
 	
-	
-	switch (plan.status) {
+	/*switch (plan.status) {
 		case P1S_LIFT:
 			//status_ctrl.expectedStatus.Altitude = 40;
 			if (status.Altitude > 20) {
@@ -110,7 +136,9 @@ void Plan_Process(void) {
       // stopflying();
 		//break;          //停止的问题再议。
 				
-	}
+	}*/   ////以上是巡线程序；
+	
+	
 }
 	
 	
@@ -129,4 +157,24 @@ void stopflying(void){
 	plan.isWorking = 0;
 	plan.status = P1S_LIFT ;
 	
+}
+
+void Flowfliter(int x,int y){
+    newx = x/10;
+    newy = y/10;	 //新值输入
+	  xv = newx - prex ; 
+	  yv = newy - prey ; //新速度计算
+	if ((xv> 5)||(xv<-5)){
+	    newx = prex + prexv ;
+	}else{
+	     prexv  = xv ; 
+	}                   //速度异常时，新值替换速度不变；正常时，速度更新；
+ 
+		if ((yv> 5)||(yv<-5)){
+	    newy = prey + preyv ;
+	}else{
+	     preyv  = yv ; 
+	}
+	 prey = newy ;  
+	 prex = newx ; 
 }

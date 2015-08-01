@@ -148,7 +148,7 @@
             <UsePdscDebugDescription>1</UsePdscDebugDescription>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
+          <TargetSelection>11</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -162,7 +162,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>Segger\JL2CM3.dll</Driver>
+            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -668,6 +668,11 @@
               <FileName>HyperCCD.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\Hardware\HyperCCD.c</FilePath>
+            </File>
+            <File>
+              <FileName>HyperFlow.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Fly\Hardware\HyperFlow.c</FilePath>
             </File>
           </Files>
         </Group>

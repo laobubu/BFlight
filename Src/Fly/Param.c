@@ -9,6 +9,7 @@ void Param_Reset(void)
 	
 	//系统初始参数
 	Param.RFix = -0.0;
+	Param.PFix =  0.0 ; 
 	Param.YFix = -0.0;
 	Param.BOff =  0.0;
 	Param.Mode =  0;
