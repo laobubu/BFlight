@@ -15,6 +15,7 @@ void HyperFlow_Init(void)
 	USART2->CR1 |= USART_CR1_RXNEIE | USART_CR1_RE;
 	
 	HAL_UART_Receive_IT(&huart2, &temp123, 1);
+	//HAL_UART_Receive(&huart2,&temp123,8,1);
 }	
 
 

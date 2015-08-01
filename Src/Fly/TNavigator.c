@@ -10,13 +10,14 @@
 
 #include "Hardware/LED.h"
 #include "Hardware/HyperCCD.h"
+#include "Hardware/HyperFlow.h"
 
 struct pt ptNavigator;
 PT_THREAD(TNavigator(struct pt *pt));
 
 void Init_Navigator(void) {
 	PT_INIT(&ptNavigator);
-	
+	HyperFlow_Init();
 	HyperCCD_Init();
 	Plan_Init();
 }
