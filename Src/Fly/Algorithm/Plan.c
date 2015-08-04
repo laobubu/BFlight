@@ -23,6 +23,7 @@ float pidFlowE_Expect = 0;
 float pidFlewE_Expect = 0;
 int  left_flag = 0;
 int  right_flag = 0 ;
+int  flow_flag = 1 ;
 
 
 void stopflying(void);
@@ -61,23 +62,35 @@ void Plan_Process(void) {
 	
 //	Flowfliter(HyperFlow.x,HyperFlow.y);
 	
+	if(status.Altitude > 35){
+		if ((pidFlowE_Expect - HyperFlow.x > 20)||(pidFlowE_Expect - HyperFlow.x < -20)){
+		
+		   flow_flag = 1;
+		}
+		
+		if (flow_flag){
+		    pidFlowE_Expect = HyperFlow.x;
+			  pidFlewE_Expect = HyperFlow.y;
+			  flow_flag = 0;
+		}
+		
 	if (HyperFlow_HasNewData()) {
 		status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
 						&pidFlowE,
 						pidFlowE_Expect,
-						newx,
+						HyperFlow.x,
 						0,
 						1
 					);
 		status_ctrl.expectedStatus.Pitch = Param.PFix + PID_Postion_Cal(
 					&pidFlewE,
 					pidFlewE_Expect,
-				  newy,
+				  HyperFlow.y,
 				  0,
 				  1
 					);
 	}
-	
+}
 	/*switch (plan.status) {
 		case P1S_LIFT:
 			//status_ctrl.expectedStatus.Altitude = 40;

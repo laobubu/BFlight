@@ -31,7 +31,7 @@ uint8_t HyperFlow_HasNewData(void) {
 
 //收到的数据
 
-volatile uint16_t HC_BytesLeft1 = 0;
+volatile uint8_t HC_BytesLeft1 = 0;
 volatile uint8_t* HC_BBA1;
 volatile HyperFlow_t HyperFlow_DataGot;
 
@@ -44,7 +44,7 @@ void HyperFlow_Feed(uint8_t ch)
 	} else if (HC_BytesLeft1 == (sizeof(HyperFlow_DataGot)+1)) {
 		if (ch == 0xFF) {
 			HC_BytesLeft1--;
-			HC_BBA1 = (uint8_t*) &HyperFlow_DataGot;
+			HC_BBA1 = ( uint8_t*) &HyperFlow_DataGot;
 		} else {
 			HC_BytesLeft1 = 0;
 		}
@@ -56,7 +56,7 @@ void HyperFlow_Feed(uint8_t ch)
 //			HyperCCD.turn_left = HyperCCD_DataGot.turn_left;
 //			HyperCCD.turn_right = HyperCCD_DataGot.turn_right;
 //			HyperCCD.time = HyperCCD_DataGot.time;
-				HyperFlow.x = HyperFlow_DataGot.x;
+				HyperFlow.x = HyperFlow_DataGot.x ;
 			  HyperFlow.y = HyperFlow_DataGot.y;
 			  HC_hasNewData = 1;
 		}

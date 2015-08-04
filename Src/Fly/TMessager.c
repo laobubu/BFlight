@@ -53,8 +53,8 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Motor[2] = status_ctrl.Motor_Out[2];
 		DP_SendPack.Motor[3] = status_ctrl.Motor_Out[3];
 		
-		DP_SendPack.aux1 = HyperFlow.x;
-		DP_SendPack.aux2 = HyperFlow.y ; 
+		DP_SendPack.aux1 = HyperFlow.x - 32768;
+		DP_SendPack.aux2 = HyperFlow.y - 32768; 
 		DP_SendPack.aux3 = status_ctrl.expectedStatus.Roll;
 		DP_SendPack.aux4 = status_ctrl.expectedStatus.Pitch;
 		

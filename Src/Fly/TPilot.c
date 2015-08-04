@@ -73,7 +73,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 				break;
 			case FWS_PREPARE:	// 1 -- 准备预热
 				Motor_SetAllSpeed(35,35,35,35);
-				init_until = millis() + 6000;
+				init_until = millis() + 3000;
 				Flight_Working = FWS_WARMING;
 				break;
 			case FWS_WARMING: // 2 -- 预热

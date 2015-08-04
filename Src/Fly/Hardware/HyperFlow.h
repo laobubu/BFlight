@@ -6,7 +6,6 @@
 
 //超级CCD结构体
 typedef struct {
-
   int x;
 	int y;
 
