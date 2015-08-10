@@ -71,6 +71,7 @@ void PID_Init(PID_Typedef * pid, pid_mode_t mode, float dt_min) {
 
 float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, float dt)
 {
+
 	if (!isfinite(sp) || !isfinite(val) || !isfinite(val_dot) || !isfinite(dt)) {
 		return pid->last_output;
 	}
@@ -99,8 +100,12 @@ float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, floa
 	if (!isfinite(d)) {
 		d = 0.0f;
 	}
-	
-	dd = d - pid->d_previous;
+//	if (dd_flag){
+//	  dd = 0;
+//		dd_flag = 0;
+//	}else{
+//	  dd = d - pid->d_previous;
+//	}
 	pid->d_previous = d;
 
 	/* calculate PD output */
