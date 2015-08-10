@@ -64,6 +64,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 			else if (name[1] == 'p') tmp.pid.number = &status_ctrl.expectedStatus.Pitch 	;
 			else if (name[1] == 'y') tmp.pid.number = &status_ctrl.expectedStatus.Yaw 		;
 			else if (name[1] == 'a') tmp.pid.number = &status_ctrl.expectedStatus.Altitude 	;
+			else if (name[1] == 'n') tmp.pid.number = &pidRollE_Expect;
 			else if (name[1] == 'f') tmp.pid.number = &pidFlowE_Expect	+ 32768		;
 			else if (name[1] == 't') tmp.pid.number = &pidFlewE_Expect	+ 32768		;
 		} 

@@ -148,7 +148,7 @@
             <UsePdscDebugDescription>1</UsePdscDebugDescription>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
+          <TargetSelection>11</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -162,7 +162,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>Segger\JL2CM3.dll</Driver>
+            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -366,7 +366,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Inc; ..\Drivers\STM32F4xx_HAL_Driver\Inc; ..\Drivers\STM32F4xx_HAL_Driver\Inc\Legacy; ..\Drivers\CMSIS\Include; ..\Drivers\CMSIS\Device\ST\STM32F4xx\Include; ..\Src\Fly</IncludePath>
+              <IncludePath>..\Inc;   ..\Drivers\STM32F4xx_HAL_Driver\Inc;   ..\Drivers\STM32F4xx_HAL_Driver\Inc\Legacy;   ..\Drivers\CMSIS\Include;   ..\Drivers\CMSIS\Device\ST\STM32F4xx\Include;   ..\Src\Fly</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -670,9 +670,9 @@
               <FilePath>..\Src\Fly\Hardware\HyperCCD.c</FilePath>
             </File>
             <File>
-              <FileName>HyperFlow.c</FileName>
+              <FileName>ADNS3080.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\Fly\Hardware\HyperFlow.c</FilePath>
+              <FilePath>..\Src\Fly\Hardware\ADNS3080.c</FilePath>
             </File>
           </Files>
         </Group>

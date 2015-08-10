@@ -7,7 +7,8 @@
 #include "Algorithm/PID.h"
 
 #include "Hardware/HyperCCD.h"
-#include "Hardware/HyperFlow.h"
+#include "Hardware/ADNS3080.h"
+
 
 Plan_t plan;
 
@@ -46,52 +47,12 @@ void Plan_Process(void) {
 	//如果现在不执行计划，则退出该函数
 		if (!plan.isWorking) return;
 //在下面写计划就好了；
-//	if (Plan_GetTime() <1000){
-//	     status_ctrl.expectedStatus.Pitch = -7;
-//	}
-//	else if ((Plan_GetTime() >1000)&&(Plan_GetTime() <2000)){
-//	     status_ctrl.expectedStatus.Pitch = -1;
-//	}
-//	else if ((Plan_GetTime() >2000)&&(Plan_GetTime() <6000)){
-//	     status_ctrl.expectedStatus.Pitch = -4;
-//	}
-//	if (Plan_GetTime() >6000){
-//	    Flight_Working = FWS_LANDING;
-//	    plan.isWorking = 0;
-//	}                  //一个简单的计划系统
-	
-//	Flowfliter(HyperFlow.x,HyperFlow.y);
-	
-	if(status.Altitude > 35){
-		if ((pidFlowE_Expect - HyperFlow.x > 20)||(pidFlowE_Expect - HyperFlow.x < -20)){
-		
-		   flow_flag = 1;
-		}
-		
-		if (flow_flag){
-		    pidFlowE_Expect = HyperFlow.x;
-			  pidFlewE_Expect = HyperFlow.y;
-			  flow_flag = 0;
-		}
-		
-	if (HyperFlow_HasNewData()) {
-		status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
-						&pidFlowE,
-						pidFlowE_Expect,
-						HyperFlow.x,
-						0,
-						1
-					);
-		status_ctrl.expectedStatus.Pitch = Param.PFix + PID_Postion_Cal(
-					&pidFlewE,
-					pidFlewE_Expect,
-				  HyperFlow.y,
-				  0,
-				  1
-					);
-	}
-}
-	/*switch (plan.status) {
+	///////以下是光流的程序////////////
+
+
+if (Param.Mode == 1)	// 模式1 的计划 
+{
+	switch (plan.status) {
 		case P1S_LIFT:
 			//status_ctrl.expectedStatus.Altitude = 40;
 			if (status.Altitude > 20) {
@@ -140,7 +101,7 @@ void Plan_Process(void) {
 			status_ctrl.expectedStatus.Yaw +=  90;
 			right_flag  = 0 ; 
 			}
-	 if ((!HyperCCD.run_out_of_line)&&(fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 5)&&(!HyperCCD.turn_left)&&(!HyperCCD.turn_right) ){
+	 if ((fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 3) ){
 		 status_ctrl.expectedStatus.Roll -= Param.YFix ; 
 		 plan.status = P1S_FOLLOW_LINE;
 	     } 
@@ -149,9 +110,43 @@ void Plan_Process(void) {
       // stopflying();
 		//break;          //停止的问题再议。
 				
-	}*/   ////以上是巡线程序；
+	}  ////以上是巡线程序；
 	
+} 
+else if (Param.Mode == 2)	// 模式2 的计划
+{	
+		ADNS3080_Burst_Read();
+	if(status.Altitude > 35){
+		if ((pidFlowE_Expect - ADNS3080.sumX> 20)||(pidFlowE_Expect - ADNS3080.sumX < -20)||(pidFlewE_Expect - ADNS3080.sumY < -20)||(pidFlewE_Expect - ADNS3080.sumY < -20)){
+		
+		   flow_flag = 1;
+		}
+		
+		if (flow_flag){
+		    pidFlowE_Expect = ADNS3080.sumX;
+			  pidFlewE_Expect = ADNS3080.sumY;
+			  flow_flag = 0;
+		}
+		
 	
+		status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
+						&pidFlowE,
+						pidFlowE_Expect,
+						ADNS3080.sumX,
+						0,
+						1
+					);
+		status_ctrl.expectedStatus.Pitch = Param.PFix + PID_Postion_Cal(
+					&pidFlewE,
+					pidFlewE_Expect,
+				  ADNS3080.sumY,
+				  0,
+				  1
+					);
+	}
+
+}	
+
 }
 	
 	

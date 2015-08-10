@@ -39,7 +39,6 @@
 #include "sys.h"
 #include "DataPacker.h"
 #include "Hardware/HyperCCD.h"
-#include "Hardware/HyperFlow.h"
 
 /* USER CODE END 0 */
 
@@ -144,9 +143,7 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-   if (USART2->SR & USART_SR_RXNE) {
-	  HyperFlow_Feed(USART2->DR);
-	 }else
+
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
