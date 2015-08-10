@@ -9,13 +9,11 @@ static char temp123;
 
 void HyperFlow_Init(void)
 {
-	//GPIO Init
 	
 	__HAL_UART_ENABLE(&huart2);
 	USART2->CR1 |= USART_CR1_RXNEIE | USART_CR1_RE;
 	
 	HAL_UART_Receive_IT(&huart2, &temp123, 1);
-	//HAL_UART_Receive(&huart2,&temp123,8,1);
 }	
 
 
@@ -51,11 +49,7 @@ void HyperFlow_Feed(uint8_t ch)
 	} else {
 		*(HC_BBA1++) = ch;
 		if (!(--HC_BytesLeft1)) {
-//			HyperCCD.nav_position = HyperCCD_DataGot.nav_position;
-//			HyperCCD.run_out_of_line = HyperCCD_DataGot.run_out_of_line;
-//			HyperCCD.turn_left = HyperCCD_DataGot.turn_left;
-//			HyperCCD.turn_right = HyperCCD_DataGot.turn_right;
-//			HyperCCD.time = HyperCCD_DataGot.time;
+
 				HyperFlow.x = HyperFlow_DataGot.x ;
 			  HyperFlow.y = HyperFlow_DataGot.y;
 			  HC_hasNewData = 1;
