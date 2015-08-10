@@ -8,7 +8,7 @@
 #include "Hardware/XRotor.h"
 
 StatusCtrl_Typedef status_ctrl;
-int16_t ThroE = 35;   //模拟摇杆
+int16_t ThroE = 25;   //模拟摇杆
 int counter = 0 ;
 
 
@@ -33,6 +33,9 @@ void SCx_ProcessOutput(void)
 	//+ copter
 	if(status_ctrl.Thro > ThroE ){
 	       counter++;
+	}
+	if(status_ctrl.Thro < ThroE ){
+	      ThroE = status_ctrl.Thro ; 
 	}
 	if (counter == 10){
 					if(status_ctrl.Thro > ThroE ){
