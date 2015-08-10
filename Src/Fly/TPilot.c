@@ -11,6 +11,7 @@
 #include "Hardware/XRotor.h"
 #include "Hardware/Ultrasonic.h"
 
+extern int16_t ThroE ;
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
 
@@ -69,10 +70,11 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		
 		switch (Flight_Working) {
 			case FWS_IDLE: // 0 -- 不动
+			  ThroE = 25; 
 				Motor_SetAllSpeed(0,0,0,0);
 				break;
 			case FWS_PREPARE:	// 1 -- 准备预热
-				Motor_SetAllSpeed(35,35,35,35);
+				Motor_SetAllSpeed(25,25,25,25);
 				init_until = millis() + 3000;
 				Flight_Working = FWS_WARMING;
 				break;
