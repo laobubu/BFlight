@@ -1,6 +1,6 @@
 [PreviousGenFiles]
-HeaderPath=F:/ElectronicDesign/BFlight2/Inc
-SourcePath=F:/ElectronicDesign/BFlight2/Src
+HeaderPath=F:/BFlight3/Inc
+SourcePath=F:/BFlight3/Src
 SourceFiles=stm32f4xx_it.h;stm32f4xx_hal_conf.h;stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;
 HeaderFiles=stm32f4xx_it.h;stm32f4xx_hal_conf.h;
 
