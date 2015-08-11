@@ -174,7 +174,7 @@ static char SPI_SendReceive(char data);
 static uint8_t read_register(uint8_t adress);
 static void writr_register(uint8_t adress,uint8_t vlue);
 static void Write_srom(void);
-static uint8_t read_busy(void);//Ğ´Ö¡ÂÊµÄÅĞÃ¦
+static uint8_t read_busy(void);//å†™å¸§ç‡çš„åˆ¤å¿™
 static void clear_motion(void);
 
 char SPI_SendReceive(char data)
@@ -188,9 +188,9 @@ uint8_t read_register(uint8_t adress)
 {
 	uint8_t temp;
 	ON_CS();
-	temp=SPI_SendReceive(adress+0x00);	//¶Á
+	temp=SPI_SendReceive(adress+0x00);	//è¯»
 	delay_us(75);
-	temp=SPI_SendReceive(0xff);	//Ìá¹©Ê±ÖÓĞÅºÅ_¶Á
+	temp=SPI_SendReceive(0xff);	//æä¾›æ—¶é’Ÿä¿¡å·_è¯»
 	OFF_CS();
 	return temp;
 }
@@ -214,11 +214,11 @@ void Write_srom(void)
 	delay_us(51);
 	writr_register(0x24,0x88);
 	delay_us(51);
-	OFF_CS();  //Í»·¢_Ğ´Ä£Ê½
-	delay_us(340);//µÈ´ı´óÓÚ1Ö¡Ê±¼ä
+	OFF_CS();  //çªå‘_å†™æ¨¡å¼
+	delay_us(340);//ç­‰å¾…å¤§äº1å¸§æ—¶é—´
 	ON_CS(); 
 	writr_register(SROM_Enable,0x18);
-	OFF_CS();  //Í»·¢_Ğ´Ä£Ê½
+	OFF_CS();  //çªå‘_å†™æ¨¡å¼
 	delay_us(41);//  >40us
 	ON_CS();
 	for(i=0;i<=1985;i++)
@@ -230,7 +230,7 @@ void Write_srom(void)
 	delay_us(105);	//>104us
 }
 
-uint8_t read_busy(void)//Ğ´Ö¡ÂÊµÄÅĞÃ¦  ==1Ã¦
+uint8_t read_busy(void)//å†™å¸§ç‡çš„åˆ¤å¿™  ==1å¿™
 {
 	uint8_t temp;
 	ON_CS();
@@ -246,7 +246,7 @@ void clear_motion(void)
 {
 	ON_CS();
 	SPI_SendReceive(Motion_Clear+0x80);
-	SPI_SendReceive(0xff);	//Çå³ıX YÊı¾İ
+	SPI_SendReceive(0xff);	//æ¸…é™¤X Yæ•°æ®
 	OFF_CS();
 }
 
@@ -255,22 +255,22 @@ void clear_motion(void)
 void ADNS3080_Init(void)
 {
 	ADNS3080_Reset();
-	HAL_GPIO_WritePin(ADNS3080_NPD_GPIO, ADNS3080_NPD_PIN, GPIO_PIN_SET);  //À­¸ßNPD,ÃâË¯Ãß
+	HAL_GPIO_WritePin(ADNS3080_NPD_GPIO, ADNS3080_NPD_PIN, GPIO_PIN_SET);  //æ‹‰é«˜NPD,å…ç¡çœ 
 	delay_ms(10);
 	
 	Write_srom();
 	ON_CS(); 
-	writr_register(Configuration_bits, 0x10);		//ÉèÖÃ·Ö±æÂÊ 1600	 //ÈôBit 4Îª0£¬ÔòÎª400µãÃ¿Ó¢´ç
+	writr_register(Configuration_bits, 0x10);		//è®¾ç½®åˆ†è¾¨ç‡ 1600	 //è‹¥Bit 4ä¸º0ï¼Œåˆ™ä¸º400ç‚¹æ¯è‹±å¯¸
 	delay_ms(3);
 	writr_register(Extended_Config, 0x01);
 	delay_ms(3);
 	if(read_busy()!=1)
-	{  							      //ÉèÎª3000Ö¡Ã¿Ãë
-	OFF_CS();  //Í»·¢_Ğ´Ä£Ê½
+	{  							      //è®¾ä¸º3000å¸§æ¯ç§’
+	OFF_CS();  //çªå‘_å†™æ¨¡å¼
 	delay_ms(2);
 	ON_CS();	
-		SPI_SendReceive(Frame_Period_Max_Bound_Lower+0x80);	//ÉèÖÃÖ¡ÂÊ //ÏÈĞ´µÍÎ»ÔÙĞ´¸ßÎ»
-		SPI_SendReceive(0xe0); //          40 3000Ö¡ÂÊ        C0 5000Ö¡ÂÊ	   
+		SPI_SendReceive(Frame_Period_Max_Bound_Lower+0x80);	//è®¾ç½®å¸§ç‡ //å…ˆå†™ä½ä½å†å†™é«˜ä½
+		SPI_SendReceive(0xe0); //          40 3000å¸§ç‡        C0 5000å¸§ç‡	   
 		SPI_SendReceive(Frame_Period_Max_Bound_Upper+0x80);
 		SPI_SendReceive(0x2e);	 //        1f                12
 	} 
@@ -278,10 +278,12 @@ void ADNS3080_Init(void)
 	OFF_CS();
 }
 
-void ADNS3080_Reset(void)  //ADNS3080 ¸´Î»£¨¸ß£©
+void ADNS3080_Reset(void)  //ADNS3080 å¤ä½ï¼ˆé«˜ï¼‰
 {
 	ADNS3080.sumX = 0;
 	ADNS3080.sumY = 0;
+	ADNS3080._sumX = 0;
+	ADNS3080._sumY = 0;
 	
 	HAL_GPIO_WritePin(ADNS3080_RST_GPIO, ADNS3080_RST_PIN, GPIO_PIN_RESET);
 	delay_ms(5);
@@ -298,7 +300,7 @@ void ADNS3080_Burst_Read(void)
 	} x,y;
 	unsigned char move = 0;
 	
-	//±¬·¢¶Á
+	//çˆ†å‘è¯»
 	ON_CS();
 	SPI_SendReceive(0x50);
 	delay_us(75);
@@ -309,7 +311,10 @@ void ADNS3080_Burst_Read(void)
 	
 	if (move & 0x80) {
 		//Motion since last report or PD
-		ADNS3080.sumX += x.s;
-		ADNS3080.sumY += y.s;
+		ADNS3080._sumX += x.s;
+		ADNS3080._sumY += y.s;
+		
+		ADNS3080.sumX += (25.4*(float)x.s *ADNS3080.H)/(12*1600);
+		ADNS3080.sumY += (25.4*(float)y.s *ADNS3080.H)/(12*1600);
 	}
 }

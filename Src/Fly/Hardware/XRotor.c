@@ -45,7 +45,7 @@ void Motor_Init(void) {
   * @note 初始化之后立即使用！直接输出2ms脉冲的样子
   */
 void Motor_Configure_Start(void) {
-  Motor_SetAllSpeed(100,100,100,100);
+  Motor_SetAllSpeed(1000,1000,1000,1000);
 }
 
 

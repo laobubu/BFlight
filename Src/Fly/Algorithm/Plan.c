@@ -41,6 +41,10 @@ void Plan_Start(void) {
 	plan.time_since = millis();
 	plan.isWorking = 1;
 	plan.status = (PLAN1_STATUS_TYPE)0;
+	ADNS3080.sumX = 0;
+	ADNS3080.sumY = 0;
+	ADNS3080._sumX = 0;
+	ADNS3080._sumY = 0;
 }
 
 void Plan_Process(void) {
@@ -115,6 +119,7 @@ if (Param.Mode == 1)	// 模式1 的计划
 } 
 else if (Param.Mode == 2)	// 模式2 的计划
 {	
+	  ADNS3080.H = status.Altitude *10.0f;
 		ADNS3080_Burst_Read();
 	if(status.Altitude > 35){
 		if ((pidFlowE_Expect - ADNS3080.sumX> 20)||(pidFlowE_Expect - ADNS3080.sumX < -20)||(pidFlewE_Expect - ADNS3080.sumY < -20)||(pidFlewE_Expect - ADNS3080.sumY < -20)){

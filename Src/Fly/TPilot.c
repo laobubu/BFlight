@@ -33,7 +33,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 	PT_BEGIN(pt);
 	
 	 //十秒之内是用于陀螺仪的数据稳定的，可以用来做预采样
-	init_until = millis() + 10000;
+	init_until = millis() + 15000;
 	while (millis() <= init_until) {
 		PT_TIMER_INTERVAL(pt, 10);
 		SC_PreSample();
@@ -74,7 +74,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 				Motor_SetAllSpeed(0,0,0,0);
 				break;
 			case FWS_PREPARE:	// 1 -- 准备预热
-				Motor_SetAllSpeed(25,25,25,25);
+				Motor_SetAllSpeed(250,250,250,250);
 				init_until = millis() + 3000;
 				Flight_Working = FWS_WARMING;
 				break;

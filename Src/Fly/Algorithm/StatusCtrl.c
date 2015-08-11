@@ -43,12 +43,12 @@ void SCx_ProcessOutput(void)
 					}
 					counter = 0;
    }
-	status_ctrl.Motor_Out[0] = (int16_t)(ThroE + status_ctrl.Alt - status_ctrl.Roll   - status_ctrl.Yaw );
-	status_ctrl.Motor_Out[1] = (int16_t)(ThroE + status_ctrl.Alt - status_ctrl.Pitch  + status_ctrl.Yaw );  
-	status_ctrl.Motor_Out[2] = (int16_t)(ThroE + status_ctrl.Alt + status_ctrl.Roll   - status_ctrl.Yaw );  
-	status_ctrl.Motor_Out[3] = (int16_t)(ThroE + status_ctrl.Alt + status_ctrl.Pitch  + status_ctrl.Yaw );  
+	status_ctrl.Motor_Out[0] = (int16_t)( 10.0f * (ThroE + status_ctrl.Alt - status_ctrl.Roll   - status_ctrl.Yaw ));
+	status_ctrl.Motor_Out[1] = (int16_t)( 10.0f * (ThroE + status_ctrl.Alt - status_ctrl.Pitch  + status_ctrl.Yaw ));  
+	status_ctrl.Motor_Out[2] = (int16_t)( 10.0f * (ThroE + status_ctrl.Alt + status_ctrl.Roll   - status_ctrl.Yaw ));  
+	status_ctrl.Motor_Out[3] = (int16_t)( 10.0f * (ThroE + status_ctrl.Alt + status_ctrl.Pitch  + status_ctrl.Yaw ));  
 	
-	#define Motor_Macro_Limiter(x) if(x>100)x=100;else if(x<0)x=0;
+	#define Motor_Macro_Limiter(x) if(x>1000)x=1000;else if(x<0)x=0;
 	Motor_Macro_Limiter(status_ctrl.Motor_Out[0]);
 	Motor_Macro_Limiter(status_ctrl.Motor_Out[1]);
 	Motor_Macro_Limiter(status_ctrl.Motor_Out[2]);

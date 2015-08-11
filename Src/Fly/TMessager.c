@@ -18,6 +18,7 @@
 #include "Hardware/PX4Flow.h"
 #include "Hardware/Laser.h"
 #include "Hardware/HyperCCD.h"
+#include "Hardware/ADNS3080.h"
 
 
 extern UART_HandleTypeDef huart1;
@@ -53,10 +54,10 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Motor[2] = status_ctrl.Motor_Out[2];
 		DP_SendPack.Motor[3] = status_ctrl.Motor_Out[3];
 		
-		DP_SendPack.aux1 = HyperCCD.nav_position;
-		DP_SendPack.aux2 = HyperCCD.run_out_of_line; 
-		DP_SendPack.aux3 = status_ctrl.expectedStatus.Roll;
-		DP_SendPack.aux4 = status_ctrl.expectedStatus.Pitch;
+		DP_SendPack.aux1 = status_ctrl.expectedStatus.Roll;
+		DP_SendPack.aux2 = status_ctrl.expectedStatus.Pitch; 
+		DP_SendPack.aux3 = ADNS3080.sumX;
+		DP_SendPack.aux4 = ADNS3080.sumY;
 		
 		/*
 		DP_SendPack.__ccdheader = 0xFF;

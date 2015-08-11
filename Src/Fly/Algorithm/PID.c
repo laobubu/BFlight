@@ -130,9 +130,9 @@ float PID_Postion_Cal(PID_Typedef *pid, float sp, float val, float val_dot, floa
 				}
 			}
 		}
-		else {
-		   pid->integral = 0;     //iÏ´°×
-		}
+//		else {
+//		   pid->integral = 0;     //iÏ´°×
+//		}
 
 		/* add I component to output */
 		output += pid->integral * pid->ki;

@@ -4,8 +4,11 @@
 #include "sys.h"
 
 typedef struct {
-	int sumX;
-	int sumY;
+	int _sumX;
+	int _sumY;
+	float H;	//高度 单位 mm 
+	float sumX;
+	float sumY;
 } ADNS3080_Typedef;
 
 extern volatile ADNS3080_Typedef ADNS3080;

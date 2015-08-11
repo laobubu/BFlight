@@ -80,13 +80,13 @@ void SC_Generate(void) {
 	status.Roll = DMP_DATA.dmp_roll;
 	status.Yaw = angleNorm(DMP_DATA.dmp_yaw + Yaw_MagMinusDMP) - 180.0f;
 	//status.Altitude = Ultrasonic.altitude;  // 旧的高度由超声波读取
-	av = status.Altitude - prealt;
-	if ((av > 10)||(av<-10)){
-	    status.Altitude = 0.1*(prealt + preav) + 0.9 * status.Altitude;
+	av = Ultrasonic.altitude - prealt;
+	if ((av - preav > 5)||(av - preav<-5)){
+	    status.Altitude = 0.01*Ultrasonic.altitude + 0.99 * prealt;
 	}
 	else {
-	   status.Altitude =  0.1*Ultrasonic.altitude + 0.9 * status.Altitude;
-		 preav =  status.Altitude - prealt; 
+	   status.Altitude =  0.1*Ultrasonic.altitude + 0.9 * prealt;
+		 preav =  av; 
 	}
 	
 	prealt = status.Altitude; //奇怪的滤波程序；
