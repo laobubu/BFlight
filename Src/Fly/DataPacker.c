@@ -8,20 +8,11 @@
 
 //Things that params affect.
 #include "Algorithm/StatusCtrl.h"
+#include "Algorithm/Plan.h"
 #include "Hardware/XRotor.h"
 //#include "Hardware/PX4Flow.h"
 
 #include "Param.h"
-
-
-extern PID_Typedef  pidRollE;
-extern PID_Typedef  pidYawE;
-extern PID_Typedef  pidFlowE;
-extern PID_Typedef  pidFlewE;
-extern float pidRollE_Expect;
-extern float pidYawE_Expect;
-extern float pidFlowE_Expect;
-extern float pidFlewE_Expect;
 
 
 #define DP_IS_PARAM_NAME(cmp)	(memcmp(name, cmp "\0\0\0", 4)==0)
@@ -42,9 +33,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 		else if (name[1] == 'r')	tmp.pid.pid = &status_ctrl.PID_roll;
 		else if (name[1] == 'p')	tmp.pid.pid = &status_ctrl.PID_pitch;
 		else if (name[1] == 'a')	tmp.pid.pid = &status_ctrl.PID_alt;
-		else if (name[1] == 'n')	tmp.pid.pid = &pidRollE;
-		else if (name[1] == 'f')	tmp.pid.pid = &pidFlowE;
-		else if (name[1] == 't')	tmp.pid.pid = &pidFlewE;
+		else if (name[1] == 'n')	tmp.pid.pid = &plan.pid.follow_line;
 		else						return;
 		
 		//find the PID Gain factor
@@ -64,9 +53,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 			else if (name[1] == 'p') tmp.pid.number = &status_ctrl.expectedStatus.Pitch 	;
 			else if (name[1] == 'y') tmp.pid.number = &status_ctrl.expectedStatus.Yaw 		;
 			else if (name[1] == 'a') tmp.pid.number = &status_ctrl.expectedStatus.Altitude 	;
-			else if (name[1] == 'n') tmp.pid.number = &pidRollE_Expect;
-			else if (name[1] == 'f') tmp.pid.number = &pidFlowE_Expect;
-			else if (name[1] == 't') tmp.pid.number = &pidFlewE_Expect;
+			else if (name[1] == 'n') tmp.pid.number = &plan.pid.follow_line_expect;
 		} 
 		else						return;
 		

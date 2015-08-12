@@ -43,7 +43,7 @@ static void plan_do_follow_line(void) {
 
 void Plan_Process(void) {
 	//如果现在不执行计划，则退出该函数
-		if (!plan.isWorking) return;
+	if (!plan.isWorking) return;
 	//在下面写计划就好了；
 
 
@@ -148,65 +148,60 @@ void Plan_Process(void) {
 				//恢复到出线前
 				plan.aux.mode3.is_backing = 1;
 				plan.status = P1S_FOLLOW_LINE;
-				break;
+			}
+			break;
 			
 		case P1S_RUN_OUT_OF_LINE:
 			stopflying();
 			break;          //停止的问题再调。
 					
-		}  ////以上是巡线程序；
-		
-		
-	} else if(Param.Mode == 4) // 模式4 的计划
+		}
+	} 
+	else if(Param.Mode == 4) // 模式4 的计划
 	{
-	switch (plan.status) {
-			case P1S_LIFT:
-				//status_ctrl.expectedStatus.Altitude = 40;
-				if (status.Altitude > 30) {
-					plan.status = P1S_FOLLOW_LINE;
-				}
-				break;
-				
-			case P1S_FOLLOW_LINE:
-			if (back_flag){
-				 if (HyperCCD.run_out_of_line == 1 ){
-						plan.status = P1S_RUN_OUT_OF_LINE;
-				}
-			
+		switch (plan.status) {
+		case P1S_LIFT:
+			if (status.Altitude > 30) {
+				plan.status = P1S_FOLLOW_LINE;
 			}
-			if(!back_flag) {
-				if (HyperCCD.run_out_of_line == 1 ){
-					plan.status = P1S_SURF;
-					back_flag = 1;
-				}
-			}
-					if (HyperCCD_HasNewData()) {
-						status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
-							&pidRollE,
-							pidRollE_Expect,
-							HyperCCD.nav_position,
-							0,
-							HyperCCD.time
-						);
-					}
-				
-			 break;
-			case P1S_SURF:
-					status_ctrl.expectedStatus.Yaw += 180;
-					plan.status = P1S_FOLLOW_LINE;
-			
 			break;
-
-			case P1S_RUN_OUT_OF_LINE:
-				 stopflying();
+			
+		case P1S_FOLLOW_LINE:
+			if (HyperCCD.run_out_of_line == 1 ) {
+				//如果出线了
+				if (plan.aux.mode3.is_backing == 0) {
+					//转身
+					status_ctrl.expectedStatus.Yaw += 180;
+					plan.status = P1S_TURN_BACK;
+				} else {
+					plan.status = P1S_RUN_OUT_OF_LINE;
+				}
+			} else {
+				plan_do_follow_line();
+			}
+			break;
+				
+		case P1S_TURN_BACK:
+			if (
+				(fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw )) < 5) || 
+				(HyperCCD.run_out_of_line == 0 )
+			) {
+				//恢复到出线前
+				plan.aux.mode3.is_backing = 1;
+				plan.status = P1S_FOLLOW_LINE;
+			}
+			break;
+			
+		case P1S_RUN_OUT_OF_LINE:
+			stopflying();
 			break;          //停止的问题再调。
-					
-		}  ////以上是巡线程序；
+
+		}
 	}
 
 }
-	
-	
+
+
 
 void Plan_StartTime(void)
 {
@@ -221,9 +216,7 @@ uint32_t Plan_GetTime(void)
 
 void stopflying(void){
 
-	Flight_Working = FWS_IDLE;
+	Flight_Working = FWS_LANDING;
 	plan.isWorking = 0;
-	back_flag = 0 ;
-	plan.status = P1S_LIFT ;
 	
 }
