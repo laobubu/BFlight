@@ -4,6 +4,7 @@
 #include "AlgorithmBasic.h"
 #include "Param.h"
 #include "Plan.h"
+#include "StatusCalc.h"
 #include "Algorithm/PID.h"
 
 #include "Hardware/HyperCCD.h"
@@ -24,7 +25,7 @@ float pidFlowE_Expect = 0;
 float pidFlewE_Expect = 0;
 int  left_flag = 0;
 int  right_flag = 0 ;
-int  flow_flag = 1 ;
+int  back_flag = 0 ;
 
 
 void stopflying(void);
@@ -51,7 +52,7 @@ void Plan_Process(void) {
 	//如果现在不执行计划，则退出该函数
 		if (!plan.isWorking) return;
 //在下面写计划就好了；
-	///////以下是光流的程序////////////
+
 
 
 if (Param.Mode == 1)	// 模式1 的计划 
@@ -59,22 +60,14 @@ if (Param.Mode == 1)	// 模式1 的计划
 	switch (plan.status) {
 		case P1S_LIFT:
 			//status_ctrl.expectedStatus.Altitude = 40;
-			if (status.Altitude > 20) {
+			if (status.Altitude > 30) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
 			
 		case P1S_FOLLOW_LINE:
-//			if (HyperCCD.run_out_of_line == 1 ){
-//				plan.status = P1S_RUN_OUT_OF_LINE;
-//			}
-			if ((HyperCCD.turn_left== 1)&&(status.Altitude > 35) ){
-				plan.status = P1S_TURN_LEFT;
-				left_flag  = 1;
-			}
-		  if ((HyperCCD.turn_right== 1)&&((status.Altitude > 35) ) ){
-				plan.status = P1S_TURN_RIGHT;
-				right_flag  = 1 ; 
+			if (HyperCCD.run_out_of_line == 1 ){
+				plan.status = P1S_RUN_OUT_OF_LINE;
 			}
 				if (HyperCCD_HasNewData()) {
 					status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
@@ -84,73 +77,160 @@ if (Param.Mode == 1)	// 模式1 的计划
 						0,
 						HyperCCD.time
 					);
-//					status_ctrl.expectedStatus.Yaw =  Param.YFix + PID_Postion_Cal(&pidYawE ,	pidYawE_Expect,HyperCCD.nav_position,0,HyperCCD.time);
 				}
 			
 		 break;
-		case P1S_TURN_LEFT:		if(left_flag == 1){
-			  status_ctrl.expectedStatus.Roll -= Param.YFix ; 
-			  status_ctrl.expectedStatus.Yaw -= 90;
-			   left_flag = 0;
-			}
 
- if ((!HyperCCD.run_out_of_line)&&(fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 5)&&(!HyperCCD.turn_left)&&(!HyperCCD.turn_right)){
-       status_ctrl.expectedStatus.Roll += Param.YFix ;          
-	     plan.status = P1S_FOLLOW_LINE;
-     } 
-		break;
-		case P1S_TURN_RIGHT:
-			if(right_flag == 1){
-			status_ctrl.expectedStatus.Roll += Param.YFix ; 
-			status_ctrl.expectedStatus.Yaw +=  90;
-			right_flag  = 0 ; 
-			}
-	 if ((fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 3) ){
-		 status_ctrl.expectedStatus.Roll -= Param.YFix ; 
-		 plan.status = P1S_FOLLOW_LINE;
-	     } 
-		break;
-		//case P1S_RUN_OUT_OF_LINE:
-      // stopflying();
-		//break;          //停止的问题再议。
+		case P1S_RUN_OUT_OF_LINE:
+       stopflying();
+		break;          //停止的问题再调。
 				
 	}  ////以上是巡线程序；
 	
 } 
 else if (Param.Mode == 2)	// 模式2 的计划
 {	
-	  ADNS3080.H = status.Altitude *10.0f;
-		ADNS3080_Burst_Read();
-	if(status.Altitude > 35){
-		if ((pidFlowE_Expect - ADNS3080.sumX> 20)||(pidFlowE_Expect - ADNS3080.sumX < -20)||(pidFlewE_Expect - ADNS3080.sumY < -20)||(pidFlewE_Expect - ADNS3080.sumY < -20)){
-		
-		   flow_flag = 1;
-		}
-		
-		if (flow_flag){
-		    pidFlowE_Expect = ADNS3080.sumX;
-			  pidFlewE_Expect = ADNS3080.sumY;
-			  flow_flag = 0;
-		}
-		
-	
-		status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
-						&pidFlowE,
-						pidFlowE_Expect,
-						ADNS3080.sumX,
+	switch (plan.status) {
+		case P1S_LIFT:
+			//status_ctrl.expectedStatus.Altitude = 40;
+			if (status.Altitude > 30) {
+				plan.status = P1S_FOLLOW_LINE;
+			}
+			break;
+			case P1S_FOLLOW_LINE:
+			if (HyperCCD.run_out_of_line == 1 ){
+				plan.status = P1S_TURN_LEFT;
+				left_flag  = 1 ; 
+			}
+			if(HyperCCD.mark_line == 2){
+			  plan.status = P1S_RUN_OUT_OF_LINE ; 
+			}
+		   if (HyperCCD_HasNewData()) {
+					status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
+						&pidRollE,  
+						pidRollE_Expect,
+						HyperCCD.nav_position,
 						0,
-						1
+						HyperCCD.time
 					);
-		status_ctrl.expectedStatus.Pitch = Param.PFix + PID_Postion_Cal(
-					&pidFlewE,
-					pidFlewE_Expect,
-				  ADNS3080.sumY,
-				  0,
-				  1
+				}
+			
+		 break;
+  	case P1S_TURN_LEFT:
+			if(left_flag == 1){
+			status_ctrl.expectedStatus.Roll -= Param.YFix ; 
+			status_ctrl.expectedStatus.Yaw -=  90;
+			left_flag  = 0 ; 
+			}
+	 if ((fabsf(status.Yaw - status_ctrl.expectedStatus.Yaw )< 5)||(HyperCCD.run_out_of_line == 0 ) ){
+		 status_ctrl.expectedStatus.Roll += Param.YFix ; 
+		 plan.status = P1S_FOLLOW_LINE;
+	     } 
+		break;
+  	case P1S_RUN_OUT_OF_LINE:
+       stopflying();
+		break; 
+			
+			
+		}
+			
+}	else if(Param.Mode == 3)// 模式3 的计划
+{
+  switch (plan.status) {
+		case P1S_LIFT:
+			//status_ctrl.expectedStatus.Altitude = 40;
+			if (status.Altitude > 30) {
+				plan.status = P1S_FOLLOW_LINE;
+			}
+			break;
+			
+		case P1S_FOLLOW_LINE:
+		if(back_flag) {
+			if (HyperCCD.run_out_of_line == 1 ){
+		  plan.status = P1S_RUN_OUT_OF_LINE;
+			}
+		}
+		if(!back_flag){
+			if (HyperCCD.run_out_of_line == 1 ){
+				plan.status = P1S_TURN_BACK;
+				back_flag  = 1;
+			}
+			}
+			if (HyperCCD.mark_line  == 1){
+			   plan.status = P1S_HIGH ;
+			}
+				if (HyperCCD_HasNewData()) {
+					status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
+						&pidRollE,
+						pidRollE_Expect,
+						HyperCCD.nav_position,
+						0,
+						HyperCCD.time
 					);
-	}
+				}
+			
+		 break;
+    case P1S_TURN_BACK:
+			  status_ctrl.expectedStatus.Yaw += 180;
+			  plan.status = P1S_FOLLOW_LINE;
+		break;
+		case P1S_HIGH:
+			status_ctrl.expectedStatus.Altitude = 80;
+			plan.status = P1S_FOLLOW_LINE;
+		break ;
+		case P1S_RUN_OUT_OF_LINE:
+       stopflying();
+		break;          //停止的问题再调。
+				
+	}  ////以上是巡线程序；
+	
+	
+} else if(Param.Mode == 4) // 模式4 的计划
+{
+switch (plan.status) {
+		case P1S_LIFT:
+			//status_ctrl.expectedStatus.Altitude = 40;
+			if (status.Altitude > 30) {
+				plan.status = P1S_FOLLOW_LINE;
+			}
+			break;
+			
+		case P1S_FOLLOW_LINE:
+		if (back_flag){
+		   if (HyperCCD.run_out_of_line == 1 ){
+				  plan.status = P1S_RUN_OUT_OF_LINE;
+			}
+		
+		}
+		if(!back_flag) {
+			if (HyperCCD.run_out_of_line == 1 ){
+				plan.status = P1S_SURF;
+				back_flag = 1;
+			}
+		}
+				if (HyperCCD_HasNewData()) {
+					status_ctrl.expectedStatus.Roll = Param.RFix + PID_Postion_Cal(
+						&pidRollE,
+						pidRollE_Expect,
+						HyperCCD.nav_position,
+						0,
+						HyperCCD.time
+					);
+				}
+			
+		 break;
+		case P1S_SURF:
+				status_ctrl.expectedStatus.Yaw += 180;
+			  plan.status = P1S_FOLLOW_LINE;
+		
+		break;
 
-}	
+		case P1S_RUN_OUT_OF_LINE:
+       stopflying();
+		break;          //停止的问题再调。
+				
+	}  ////以上是巡线程序；
+}
 
 }
 	
@@ -168,6 +248,7 @@ void stopflying(void){
 
 	Flight_Working = FWS_IDLE;
 	plan.isWorking = 0;
+	back_flag = 0 ;
 	plan.status = P1S_LIFT ;
 	
 }

@@ -52,9 +52,8 @@ void HyperCCD_Feed(uint8_t ch)
 		if (!(--HC_BytesLeft)) {
 			HyperCCD.nav_position = HyperCCD_DataGot.nav_position;
 			HyperCCD.run_out_of_line = HyperCCD_DataGot.run_out_of_line;
-			HyperCCD.turn_left = HyperCCD_DataGot.turn_left;
-			HyperCCD.turn_right = HyperCCD_DataGot.turn_right;
 			HyperCCD.time = HyperCCD_DataGot.time;
+			HyperCCD.mark_line = HyperCCD_DataGot.mark_line ; 
 			HC_hasNewData = 1;
 		}
 	}

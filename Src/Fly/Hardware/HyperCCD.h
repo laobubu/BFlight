@@ -9,8 +9,7 @@ typedef struct {
 	unsigned char nav_position;
 	unsigned char time;
   int run_out_of_line:1;
-	int turn_left:1;
-	int turn_right:1;
+  int mark_line:1;
 
 } HyperCCD_t;
 
