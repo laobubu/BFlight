@@ -19,11 +19,27 @@ typedef struct {
 	PLAN1_STATUS_TYPE status;
 	uint32_t time_since;
 	uint8_t isWorking;
+	
+	struct {
+		PID_Typedef follow_line;
+		float follow_line_expect;
+	} pid;
+	
+	union {
+		struct {
+			uint8_t out_of_line_counter;
+		} mode2;
+		struct {
+			uint8_t is_backing:1;
+		} mode3;
+	} aux;
 } Plan_t;
 
 extern Plan_t plan;
 
+void Plan_StartTime(void);
 uint32_t Plan_GetTime(void);
+
 void Plan_Init(void);
 void Plan_Start(void);
 void Plan_Process(void);
