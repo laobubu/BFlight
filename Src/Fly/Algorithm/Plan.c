@@ -45,7 +45,7 @@ static void plan_do_follow_line(void) {
 
 void Plan_Process(void) {
 	//如果现在不执行计划，则退出该函数
-	if (!plan.isWorking) return;
+	if (!plan.isWorking || Flight_Working != FWS_FLYING) return;
 	//在下面写计划就好了；
 
 
@@ -54,7 +54,7 @@ void Plan_Process(void) {
 	{
 		switch (plan.status) {
 			case P1S_LIFT:
-				if (status.Altitude > 40) {
+				if (status.Altitude > 20 && Plan_GetTime() > 0) {
 					plan.status = P1S_FOLLOW_LINE;
 				}
 				break;
@@ -79,7 +79,7 @@ void Plan_Process(void) {
 	{	
 		switch (plan.status) {
 		case P1S_LIFT:
-			if (status.Altitude > 30) {
+			if (status.Altitude > 30 ) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
@@ -124,7 +124,7 @@ void Plan_Process(void) {
 	{
 		switch (plan.status) {
 		case P1S_LIFT:
-			if (status.Altitude > 30) {
+			if (status.Altitude > 30 && Plan_GetTime() > 2000) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
@@ -165,7 +165,7 @@ void Plan_Process(void) {
 	{
 		switch (plan.status) {
 		case P1S_LIFT:
-			if (status.Altitude > 30) {
+			if (status.Altitude > 30 && Plan_GetTime() > 3000) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
@@ -220,7 +220,10 @@ uint32_t Plan_GetTime(void)
 
 void stopflying(void){
 
-	Flight_Working = FWS_LANDING;
+//	if (Flight_Working != FWS_FLYING)
+//		Flight_Working = FWS_LANDING;
+//	else
+		Flight_Working = FWS_IDLE;
 	plan.isWorking = 0;
 	
 }

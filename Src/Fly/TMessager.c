@@ -56,7 +56,7 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		
 		DP_SendPack.aux1 = HyperCCD.nav_position;
 		DP_SendPack.aux2 = HyperCCD.run_out_of_line; 
-		DP_SendPack.aux3 = HyperCCD.mark_line;
+		DP_SendPack.aux3 = Flight_Working * 10 + plan.status;
 		DP_SendPack.aux4 = status_ctrl.expectedStatus.Roll;
 		
 		/*
