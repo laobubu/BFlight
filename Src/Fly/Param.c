@@ -13,4 +13,7 @@ void Param_Reset(void)
 	Param.YFix = -0.0;
 	Param.BOff =  0.0;
 	Param.Mode =  0;
+	
+	Param.ThUp =  0.01f;
+	Param.ThDn =  0.03f;
 }

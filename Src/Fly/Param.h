@@ -10,6 +10,8 @@
 	DEFINE_PARAM(float,   PFix)		/* Pitch 零偏 */			\
 	DEFINE_PARAM(float,   BOff)		/* 避障时的角度变化量 */	\
 	DEFINE_PARAM(uint8_t, Mode)		/* 模式选择，具体看TNavigator */	\
+	DEFINE_PARAM(float,   ThUp)		/* 油门线性提高速度（用于起飞，时间单位5ms） */	\
+	DEFINE_PARAM(float,   ThDn)		/* 油门线性降低速度（用于降落，时间单位5ms） */	\
 
 	
 //定义结构体

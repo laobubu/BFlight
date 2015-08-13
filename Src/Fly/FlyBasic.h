@@ -15,7 +15,8 @@ typedef enum {
 	FWS_PREPARE = 1,
 	FWS_WARMING = 2,
 	FWS_FLYING = 3,
-	FWS_LANDING = 4
+	FWS_LANDING = 4,
+	FWS_LANDING_REAL
 } Flight_Working_Status;
 extern Flight_Working_Status Flight_Working;
 
