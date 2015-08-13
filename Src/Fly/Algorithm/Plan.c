@@ -52,7 +52,7 @@ void Plan_Process(void) {
 	{
 		switch (plan.status) {
 			case P1S_LIFT:
-				if (status.Altitude > 30) {
+				if (status.Altitude > 40) {
 					plan.status = P1S_FOLLOW_LINE;
 				}
 				break;
@@ -88,6 +88,7 @@ void Plan_Process(void) {
 				status_ctrl.expectedStatus.Roll -= Param.YFix ; 
 				status_ctrl.expectedStatus.Yaw -=  90;
 				plan.aux.mode2.out_of_line_counter ++;
+				Plan_StartTime();
 				plan.status = P1S_TURN_LEFT;
 			} else if (HyperCCD.mark_line == 1 && plan.aux.mode2.out_of_line_counter == 4 ) {
 				//扫描到标记线（粗线），且出线次数为4次
@@ -99,8 +100,9 @@ void Plan_Process(void) {
 			
 		case P1S_TURN_LEFT:
 			if (
-				(fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw ))< 5) || 
-				(HyperCCD.run_out_of_line == 0 )
+				(fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw ))< 5) && 
+				(HyperCCD.run_out_of_line == 0 ) &&
+				(Plan_GetTime() > 1000)
 			) {
 				//恢复到出线前
 				status_ctrl.expectedStatus.Roll += Param.YFix ; 

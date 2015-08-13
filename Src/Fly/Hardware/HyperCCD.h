@@ -8,9 +8,9 @@
 typedef struct {
 	unsigned char nav_position;
 	unsigned char time;
-  int run_out_of_line:1;
-  int mark_line:1;
-
+  uint8_t run_out_of_line:1;
+  uint8_t mark_line:1;
+  uint8_t width;
 } HyperCCD_t;
 
 extern HyperCCD_t HyperCCD;

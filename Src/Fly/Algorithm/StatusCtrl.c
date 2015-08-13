@@ -8,8 +8,8 @@
 #include "Hardware/XRotor.h"
 
 StatusCtrl_Typedef status_ctrl;
-int16_t ThroE = 25;   //模拟摇杆
-int counter = 0 ;
+//int16_t ThroE = 25;   //模拟摇杆
+//int counter = 0 ;
 
 
 void SCx_Init(void)
@@ -31,22 +31,22 @@ void SCx_ProcessOutput(void)
 
 	
 	//+ copter
-	if(status_ctrl.Thro > ThroE ){
-	       counter++;
-	}
-	if(status_ctrl.Thro < ThroE ){
-	      ThroE = status_ctrl.Thro ; 
-	}
-	if (counter == 10){
-					if(status_ctrl.Thro > ThroE ){
-							 ThroE += 1 ;
-					}
-					counter = 0;
-   }
-	status_ctrl.Motor_Out[0] = (int16_t)( 10.0f * (ThroE + status_ctrl.Alt - status_ctrl.Roll   - status_ctrl.Yaw ));
-	status_ctrl.Motor_Out[1] = (int16_t)( 10.0f * (ThroE + status_ctrl.Alt - status_ctrl.Pitch  + status_ctrl.Yaw ));  
-	status_ctrl.Motor_Out[2] = (int16_t)( 10.0f * (ThroE + status_ctrl.Alt + status_ctrl.Roll   - status_ctrl.Yaw ));  
-	status_ctrl.Motor_Out[3] = (int16_t)( 10.0f * (ThroE + status_ctrl.Alt + status_ctrl.Pitch  + status_ctrl.Yaw ));  
+//	if(status_ctrl.Thro > ThroE ){
+//	       counter++;
+//	}
+//	if(status_ctrl.Thro < ThroE ){
+//	      ThroE = status_ctrl.Thro ; 
+//	}
+//	if (counter == 10){
+//					if(status_ctrl.Thro > ThroE ){
+//							 ThroE += 1 ;
+//					}
+//					counter = 0;
+//   }
+	status_ctrl.Motor_Out[0] = (int16_t)( 10.0f * (status_ctrl.Thro + status_ctrl.Alt - status_ctrl.Roll   - status_ctrl.Yaw ));
+	status_ctrl.Motor_Out[1] = (int16_t)( 10.0f * (status_ctrl.Thro + status_ctrl.Alt - status_ctrl.Pitch  + status_ctrl.Yaw ));  
+	status_ctrl.Motor_Out[2] = (int16_t)( 10.0f * (status_ctrl.Thro + status_ctrl.Alt + status_ctrl.Roll   - status_ctrl.Yaw ));  
+	status_ctrl.Motor_Out[3] = (int16_t)( 10.0f * (status_ctrl.Thro + status_ctrl.Alt + status_ctrl.Pitch  + status_ctrl.Yaw ));  
 	
 	#define Motor_Macro_Limiter(x) if(x>1000)x=1000;else if(x<0)x=0;
 	Motor_Macro_Limiter(status_ctrl.Motor_Out[0]);
