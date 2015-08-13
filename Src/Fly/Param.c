@@ -16,4 +16,5 @@ void Param_Reset(void)
 	
 	Param.ThUp =  0.01f;
 	Param.ThDn =  0.03f;
+	Param.FAA1 =  1.0f;
 }

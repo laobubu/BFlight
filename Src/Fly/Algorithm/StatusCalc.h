@@ -17,6 +17,8 @@ void SC_PreSample_End(void);	//预采样结束后的调用函数
 
 void SC_Generate(void);		//生成新的姿态数据
 
+void SC_ResetYaw(void);
+
 void SC_Sample(void);
 
 void SC_Callback_DMP(void) ;

@@ -79,20 +79,21 @@ void Plan_Process(void) {
 	{	
 		switch (plan.status) {
 		case P1S_LIFT:
+			status_ctrl.expectedStatus.Pitch = Param.PFix;
 			if (status.Altitude > 30 ) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
 
 		case P1S_FOLLOW_LINE:
+			status_ctrl.expectedStatus.Pitch = Param.PiGo;
+			status_ctrl.expectedStatus.Roll  = Param.RFix;
 			if (HyperCCD.run_out_of_line == 1 && plan.aux.mode2.out_of_line_counter < 4 ) {
 				//出线，且次数小于4次
-				status_ctrl.expectedStatus.Roll -= Param.YFix ; 
-				status_ctrl.expectedStatus.Yaw -=  90;
 				plan.aux.mode2.out_of_line_counter ++;
 				Plan_StartTime();
-				plan.status = P1S_TURN_LEFT;
-			} else if (HyperCCD.mark_line == 1 && plan.aux.mode2.out_of_line_counter == 4 ) {
+				plan.status = P1S_TURN_LEFT_PRE;
+			} else if ((HyperCCD.mark_line || HyperCCD.run_out_of_line) && plan.aux.mode2.out_of_line_counter == 4 ) {
 				//扫描到标记线（粗线），且出线次数为4次
 				plan.status = P1S_RUN_OUT_OF_LINE ; 
 			} else {
@@ -100,16 +101,38 @@ void Plan_Process(void) {
 			}
 			break;
 			
+		case P1S_TURN_LEFT_PRE:
+			status_ctrl.expectedStatus.Pitch = Param.PiBk;
+			status_ctrl.expectedStatus.Roll  = Param.RFix;
+			if (Plan_GetTime() > 1500 || HyperCCD.run_out_of_line == 0) {
+				//Ready for Turn_Left
+				status_ctrl.expectedStatus.Yaw -=  90;
+				plan.status = P1S_TURN_LEFT;
+				Plan_StartTime();
+			}				
+			break;
+			
 		case P1S_TURN_LEFT:
+			status_ctrl.expectedStatus.Pitch = Param.PFix - Param.YFix;
+			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFix;
 			if (
 				(fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw ))< 5) && 
 				(HyperCCD.run_out_of_line == 0 ) &&
-				(Plan_GetTime() > 1000)
+				(Plan_GetTime() > 1500)
 			) {
-				//恢复到出线前
-				status_ctrl.expectedStatus.Roll += Param.YFix ; 
-				plan.status = P1S_FOLLOW_LINE;
+				//恢复到出线前 
+				plan.status = P1S_TURN_LEFT_POST;
+				Plan_StartTime();
 			} 
+			break;
+			
+		case P1S_TURN_LEFT_POST:
+			status_ctrl.expectedStatus.Pitch = Param.PiGo ;
+			status_ctrl.expectedStatus.Roll  = Param.RFix + Param.YFix;
+			plan_do_follow_line();
+			if (Plan_GetTime() > 1500) {
+				plan.status = P1S_FOLLOW_LINE;
+			}
 			break;
 				
 		case P1S_RUN_OUT_OF_LINE:
@@ -219,10 +242,12 @@ uint32_t Plan_GetTime(void)
 
 
 void stopflying(void){
-
-//	if (Flight_Working != FWS_FLYING)
-//		Flight_Working = FWS_LANDING;
-//	else
+	
+	status_ctrl.expectedStatus.Pitch -= Param.FAA1;
+	
+	if (Flight_Working == FWS_FLYING)
+		Flight_Working = FWS_LANDING;
+	else
 		Flight_Working = FWS_IDLE;
 	plan.isWorking = 0;
 	

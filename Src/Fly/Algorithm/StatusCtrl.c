@@ -21,6 +21,14 @@ void SCx_Init(void)
 	PID_Init(&status_ctrl.PID_alt, 		PID_MODE_DERIVATIV_CALC, 	0.005f);
 }
 
+void SCx_ResetPidIntg(void)
+{
+	pid_Reset_Integral(&status_ctrl.PID_pitch);
+	pid_Reset_Integral(&status_ctrl.PID_roll);
+	pid_Reset_Integral(&status_ctrl.PID_yaw);
+	pid_Reset_Integral(&status_ctrl.PID_alt);
+}
+
 void SCx_ProcessOutput(void)
 {
 //	//X copter

@@ -76,6 +76,8 @@ void DP_HandleParamUpdate(char name[4], float value)
 		} else {
 			//reset sensor
 			//PX4Flow_Reset();
+			SC_ResetYaw();
+			SCx_ResetPidIntg();
 		}
 		return;
 	}

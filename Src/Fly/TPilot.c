@@ -80,15 +80,23 @@ PT_THREAD(TPilot(struct pt *pt)) {
 			
 			case FWS_PREPARE:	// 1 -- 准备预热
 				realThro = status_ctrl.Thro;
-				realThrof = (float)realThro * 0.7f;
-				Throf = 0.0f;
-				init_until = millis() + 5000;
-				Flight_Working = FWS_WARMING;
+				realThrof = (float)realThro * 0.9f;
+				Throf = 25.0f;
+				init_until = millis() + 4000;
+				Flight_Working = FWS_PREWARMING;
+				break;
+			
+			case FWS_PREWARMING:
+				Motor_SetAllSpeed(250,250,250,250);
+				if (millis() >= init_until) {
+					init_until = millis() + 5000;
+					Flight_Working = FWS_WARMING;
+				}
 				break;
 			
 			case FWS_WARMING: // 2 -- 预热
 				Throf += Param.ThUp;
-				if (millis() >= init_until || Throf>=realThrof || status.Altitude>=0.7f*status_ctrl.expectedStatus.Altitude ) {
+				if (millis() >= init_until || Throf>=realThrof ) {
 					status_ctrl.Thro = realThro;
 					Plan_Start();
 					Flight_Working = FWS_FLYING;
@@ -115,10 +123,10 @@ PT_THREAD(TPilot(struct pt *pt)) {
 				Throf -= Param.ThDn;
 			
 				status_ctrl.expectedStatus.Altitude = 
-					fminf(status_ctrl.expectedStatus.Altitude , status.Altitude - 20.0f);
+					fminf(status_ctrl.expectedStatus.Altitude , status.Altitude - 4.0f);
 				status_ctrl.Thro = Throf;
 			
-				if (millis() >= init_until || status.Altitude < 40 || Throf <= 10.0f || status.Altitude <= 40) {
+				if (millis() >= init_until || status.Altitude < 10 || Throf <= 10.0f) {
 					Flight_Working = FWS_IDLE;
 				} else {
 					SCx_ProcessAngle();

@@ -29,5 +29,6 @@ void SCx_Init(void);
 void SCx_ProcessOutput(void);
 void SCx_ProcessAngle(void);
 void SCx_ProcessAlt(void);
+void SCx_ResetPidIntg(void);
 
 #endif
