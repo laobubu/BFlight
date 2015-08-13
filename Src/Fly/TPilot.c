@@ -71,7 +71,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		
 		switch (Flight_Working) {
 			case FWS_IDLE: // 0 -- 不动
-			  ThroE = 25; 
+			  //ThroE = 25; 
 				Motor_SetAllSpeed(0,0,0,0);
 				break;
 			case FWS_PREPARE:	// 1 -- 准备预热
