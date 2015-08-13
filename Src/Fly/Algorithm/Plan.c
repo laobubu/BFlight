@@ -18,13 +18,15 @@ Plan_t plan;
 void stopflying(void);
 
 void Plan_Init(void) {
-	//PID_Init(&pidRollE , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
+	PID_Init(&plan.pid.follow_line , 		PID_MODE_DERIVATIV_CALC, 	0.005f);
 }
 
 void Plan_Start(void) {
 	Plan_StartTime();
 	plan.isWorking = 1;
 	plan.status = (PLAN1_STATUS_TYPE)0;
+	
+	pid_Reset_Integral(&plan.pid.follow_line);
 	
 	memset(&plan.aux, 0, sizeof(plan.aux));
 }
@@ -36,7 +38,7 @@ static void plan_do_follow_line(void) {
 			plan.pid.follow_line_expect,
 			HyperCCD.nav_position,
 			0,
-			HyperCCD.time
+			(float)HyperCCD.time / 1000.0f
 		);
 	}
 }

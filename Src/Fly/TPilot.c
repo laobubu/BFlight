@@ -3,6 +3,7 @@
 #include "TPilot.h"
 #include "FlyBasic.h"
 
+#include "Algorithm/AlgorithmBasic.h"
 #include "Algorithm/StatusCalc.h"
 #include "Algorithm/StatusCtrl.h"
 #include "Algorithm/Plan.h"
@@ -89,7 +90,8 @@ PT_THREAD(TPilot(struct pt *pt)) {
 				SCx_ProcessOutput();
 				break;
 			case FWS_LANDING: // 4 -- 降落
-				status_ctrl.expectedStatus.Altitude = 10;
+				status_ctrl.expectedStatus.Altitude = 
+					fminf(status_ctrl.expectedStatus.Altitude , status.Altitude - 20.0f);
 				SCx_ProcessAngle();
 				SCx_ProcessOutput();
 				if (status.Altitude < 40 ){
