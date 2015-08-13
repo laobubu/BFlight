@@ -2,6 +2,7 @@
 
 #include "TPilot.h"
 #include "FlyBasic.h"
+#include "Param.h"
 
 #include "Algorithm/AlgorithmBasic.h"
 #include "Algorithm/StatusCalc.h"
@@ -12,7 +13,6 @@
 #include "Hardware/XRotor.h"
 #include "Hardware/Ultrasonic.h"
 
-extern int16_t ThroE ;
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
 
@@ -29,6 +29,10 @@ void Do_TPilot(void) {
 
 static pt_timer init_until;
 static uint8_t tp_initing = 0;
+
+static uint16_t realThro;
+static float realThrof;
+static float Throf;
 
 PT_THREAD(TPilot(struct pt *pt)) {
 	PT_BEGIN(pt);
@@ -71,32 +75,57 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		
 		switch (Flight_Working) {
 			case FWS_IDLE: // 0 -- 不动
-			  //ThroE = 25; 
 				Motor_SetAllSpeed(0,0,0,0);
 				break;
+			
 			case FWS_PREPARE:	// 1 -- 准备预热
-				Motor_SetAllSpeed(250,250,250,250);
-				init_until = millis() + 3000;
+				realThro = status_ctrl.Thro;
+				realThrof = (float)realThro * 0.7f;
+				Throf = 0.0f;
+				init_until = millis() + 5000;
 				Flight_Working = FWS_WARMING;
 				break;
+			
 			case FWS_WARMING: // 2 -- 预热
-				if (millis() >= init_until) {
-					Flight_Working = FWS_FLYING;
+				Throf += Param.ThUp;
+				if (millis() >= init_until || Throf>=realThrof || status.Altitude>=0.7f*status_ctrl.expectedStatus.Altitude ) {
+					status_ctrl.Thro = realThro;
 					Plan_Start();
+					Flight_Working = FWS_FLYING;
+				} else {
+					status_ctrl.Thro = Throf;
+					SCx_ProcessAngle();
+					SCx_ProcessOutput();
 				}
 				break;
+				
 			case FWS_FLYING: // 3 -- 普通飞行
 				SCx_ProcessAngle();
 				SCx_ProcessOutput();
 				break;
+			
 			case FWS_LANDING: // 4 -- 降落
+				Throf = realThro;
+				init_until = millis() + 5000;
+				Flight_Working = FWS_LANDING_REAL;
+				break;
+				
+			case FWS_LANDING_REAL:
+				
+				Throf -= Param.ThDn;
+			
 				status_ctrl.expectedStatus.Altitude = 
 					fminf(status_ctrl.expectedStatus.Altitude , status.Altitude - 20.0f);
-				SCx_ProcessAngle();
-				SCx_ProcessOutput();
-				if (status.Altitude < 40 ){
+				status_ctrl.Thro = Throf;
+			
+				if (millis() >= init_until || status.Altitude < 40 || Throf <= 10.0f || status.Altitude <= 40) {
 					Flight_Working = FWS_IDLE;
+				} else {
+					SCx_ProcessAngle();
+					SCx_ProcessOutput();
 				}
+				break;
+				
 		}
 		
 		PT_YIELD(pt);
