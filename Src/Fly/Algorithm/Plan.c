@@ -147,12 +147,14 @@ void Plan_Process(void) {
 	{
 		switch (plan.status) {
 		case P1S_LIFT:
-			if (status.Altitude > 30 && Plan_GetTime() > 2000) {
+			status_ctrl.expectedStatus.Pitch = Param.PiGo;  //试试看吧
+			if (status.Altitude > 20) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
 			
 		case P1S_FOLLOW_LINE:
+			status_ctrl.expectedStatus.Pitch = Param.PFix;
 			if (HyperCCD.run_out_of_line == 1 ) {
 				//如果出线了
 				if (plan.aux.mode3.is_backing == 0) {
@@ -168,6 +170,7 @@ void Plan_Process(void) {
 			break;
 				
 		case P1S_TURN_BACK:
+			status_ctrl.expectedStatus.Pitch = Param.PiGo;
 			if (
 				(fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw )) < 5) || 
 				(HyperCCD.run_out_of_line == 0 )
