@@ -59,6 +59,11 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.aux3 = Flight_Working * 10 + plan.status;
 		DP_SendPack.aux4 = status_ctrl.expectedStatus.Roll;
 		
+		DP_SendPack.aux5 = status_ctrl.expectedStatus.Pitch;
+		DP_SendPack.aux6 = status_ctrl.expectedStatus.Roll;
+		DP_SendPack.aux7 = status_ctrl.expectedStatus.Yaw;
+		DP_SendPack.aux8 = status_ctrl.expectedStatus.Altitude;
+		
 		/*
 		DP_SendPack.__ccdheader = 0xFF;
 		for(uint16_t xxx = 0; xxx != 128; xxx++)

@@ -10,6 +10,7 @@ typedef __packed struct {
 	float Pitch, Roll, Yaw, Alt;
 	uint8_t Motor[4];
 	float aux1, aux2, aux3, aux4;
+	float aux5, aux6, aux7, aux8;
 	
 	/*
 	char __ccdheader;

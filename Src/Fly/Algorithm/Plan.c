@@ -100,7 +100,7 @@ void Plan_Process(void) {
 
 		case P1S_FOLLOW_LINE:
 			status_ctrl.expectedStatus.Pitch = Param.PFix;
-			status_ctrl.expectedStatus.Roll  = Param.RFix;
+			//status_ctrl.expectedStatus.Roll  = Param.RFix;
 			if (HyperCCD.run_out_of_line == 1 && plan.aux.mode2.out_of_line_counter < 4 && 
 					(plan.aux.mode2.out_of_line_counter == 0 || Plan_GetTime() > 4000) ) {
 				//出线，且次数小于4次	
@@ -119,7 +119,7 @@ void Plan_Process(void) {
 		case P1S_TURN_LEFT_PRE:
 			status_ctrl.expectedStatus.Pitch = Param.PiBk;
 //			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFix;
-			if (Plan_GetTime() > 1500 || HyperCCD.run_out_of_line == 0) {
+			if (Plan_GetTime() > 500 || HyperCCD.run_out_of_line == 00) {
 				//Ready for Turn_Left
 				status_ctrl.expectedStatus.Yaw -=  90;
 				plan.status = P1S_TURN_LEFT;
@@ -142,10 +142,9 @@ void Plan_Process(void) {
 			break;
 			
 		case P1S_TURN_LEFT_POST:
-			status_ctrl.expectedStatus.Pitch = Param.PiGo ;
-			status_ctrl.expectedStatus.Roll  = Param.RFix;
-			plan_do_follow_line();
-			if (Plan_GetTime() > 1500) {
+			status_ctrl.expectedStatus.Pitch = Param.PFix;
+			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFix;
+			if (Plan_GetTime() > 1500 || HyperCCD.run_out_of_line == 0 ) {
 				plan.status = P1S_FOLLOW_LINE;
 			}
 			break;
