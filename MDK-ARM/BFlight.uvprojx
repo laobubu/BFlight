@@ -678,6 +678,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\Hardware\Magnet.c</FilePath>
             </File>
+            <File>
+              <FileName>oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Fly\Hardware\oled.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
