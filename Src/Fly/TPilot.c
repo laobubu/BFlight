@@ -82,6 +82,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 				realThro = status_ctrl.Thro;
 				realThrof = (float)realThro * 0.9f;
 				Throf = 25.0f;
+				Plan_Prestart();
 				init_until = millis() + 4000;
 				Flight_Working = FWS_PREWARMING;
 				break;
