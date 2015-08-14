@@ -13,8 +13,7 @@ typedef enum {
 	P1S_TURN_LEFT,
 	P1S_TURN_LEFT_POST,
 	P1S_RUN_OUT_OF_LINE,
-	P1S_HIGH,
-	P1S_TURN_BACK,
+	P1S_GET_LOWER,
 } PLAN1_STATUS_TYPE;
 
 typedef struct {
@@ -43,6 +42,7 @@ void Plan_StartTime(void);
 uint32_t Plan_GetTime(void);
 
 void Plan_Init(void);
+void Plan_Prestart(void);
 void Plan_Start(void);
 void Plan_Process(void);
 

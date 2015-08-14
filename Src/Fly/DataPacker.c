@@ -10,6 +10,7 @@
 #include "Algorithm/StatusCtrl.h"
 #include "Algorithm/Plan.h"
 #include "Hardware/XRotor.h"
+#include "Hardware/Magnet.h"
 //#include "Hardware/PX4Flow.h"
 
 #include "Param.h"
@@ -71,8 +72,8 @@ void DP_HandleParamUpdate(char name[4], float value)
 	if (DP_IS_PARAM_NAME("Work")) {	//总开关，为 0 表示不开
 		Flight_Working = value;
 		if (!Flight_Working) {
-	//		SCx_Init();
-  //	Motor_SetAllSpeed(0,0,0,0);
+			Motor_SetAllSpeed(0,0,0,0);
+			Magnet_Put();
 		} else {
 			//reset sensor
 			//PX4Flow_Reset();
