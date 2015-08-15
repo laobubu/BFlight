@@ -111,6 +111,10 @@ PT_THREAD(TPilot(struct pt *pt)) {
 			case FWS_FLYING: // 3 -- 普通飞行
 				SCx_ProcessAngle();
 				SCx_ProcessOutput();
+			  if (status.Pitch > 100.0f || status.Roll > 100.0f || status.Pitch < -100.0f || status.Roll < -100.0f) {
+					Flight_Working = FWS_IDLE;
+					Motor_SetAllSpeed(0,0,0,0);
+				}
 				break;
 			
 			case FWS_LANDING: // 4 -- 降落

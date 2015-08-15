@@ -13,6 +13,7 @@ typedef struct {
 	PID_Typedef PID_alt;
 	
 	Status_Typedef expectedStatus;
+	Status_Typedef ghostExpect;
 	
 	int16_t Pitch;
 	int16_t Roll;
@@ -29,6 +30,6 @@ void SCx_Init(void);
 void SCx_ProcessOutput(void);
 void SCx_ProcessAngle(void);
 void SCx_ProcessAlt(void);
-void SCx_ResetPidIntg(void);
+void SCx_BeforeFly(void);
 
 #endif

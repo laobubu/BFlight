@@ -21,8 +21,13 @@ void SCx_Init(void)
 	PID_Init(&status_ctrl.PID_alt, 		PID_MODE_DERIVATIV_CALC, 	0.005f);
 }
 
-void SCx_ResetPidIntg(void)
+void SCx_BeforeFly(void)
 {
+	status_ctrl.ghostExpect.Pitch = 0;
+	status_ctrl.ghostExpect.Roll  = 0;
+	status_ctrl.ghostExpect.Yaw   = 0;
+	status_ctrl.ghostExpect.Altitude = 0;
+	
 	pid_Reset_Integral(&status_ctrl.PID_pitch);
 	pid_Reset_Integral(&status_ctrl.PID_roll);
 	pid_Reset_Integral(&status_ctrl.PID_yaw);
@@ -86,7 +91,10 @@ void SCx_ProcessAlt(void)
 	SC_Generate();
 	
 	status_ctrl.Alt   = PID_Postion_Cal(&status_ctrl.PID_alt,	
-													fminf(status_ctrl.expectedStatus.Altitude, status.Altitude + 8)
+													fminf(
+															(status_ctrl.expectedStatus.Altitude + status_ctrl.ghostExpect.Altitude), 
+															status.Altitude + 8 + status_ctrl.ghostExpect.Altitude
+													)
 													, 	status.Altitude	,	0	, dt);
 	
 	//If the altitude value has problem...
@@ -107,14 +115,8 @@ void SCx_ProcessAngle(void)
 	lastPIDTime = millis();
 	
 	SC_Generate();
-	if (status_ctrl.expectedStatus.Yaw > 180){
-	     status_ctrl.expectedStatus.Yaw  -=360 ;
-	}
-	if (status_ctrl.expectedStatus.Yaw < -180){
-	     status_ctrl.expectedStatus.Yaw  +=360 ;
-	}
 	
-	status_ctrl.Pitch = PID_Postion_Cal(&status_ctrl.PID_pitch, angleNorm2(status_ctrl.expectedStatus.Pitch -	status.Pitch) 	, 0 ,	DMP_DATA.GYROy	, dt);
-	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  angleNorm2(status_ctrl.expectedStatus.Roll -	status.Roll	)	, 0 ,	DMP_DATA.GYROx	, dt);
-	status_ctrl.Yaw   = PID_Postion_Cal(&status_ctrl.PID_yaw,	angleNorm2( status_ctrl.expectedStatus.Yaw -	 status.Yaw), 0 ,	DMP_DATA.GYROz	, dt);
+	status_ctrl.Pitch = PID_Postion_Cal(&status_ctrl.PID_pitch, angleNorm2(status_ctrl.expectedStatus.Pitch + status_ctrl.ghostExpect.Pitch -	status.Pitch) 	, 0 ,	DMP_DATA.GYROy	, dt);
+	status_ctrl.Roll  = PID_Postion_Cal(&status_ctrl.PID_roll,  angleNorm2(status_ctrl.expectedStatus.Roll  + status_ctrl.ghostExpect.Roll  -	status.Roll	)		, 0 ,	DMP_DATA.GYROx	, dt);
+	status_ctrl.Yaw   = PID_Postion_Cal(&status_ctrl.PID_yaw,	  angleNorm2(status_ctrl.expectedStatus.Yaw   + status_ctrl.ghostExpect.Yaw   -	status.Yaw)			, 0 ,	DMP_DATA.GYROz	, dt);
 }
