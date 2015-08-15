@@ -195,7 +195,7 @@ switch (plan.status) {
 				status_ctrl.ghostExpect.Yaw = 90.0f;
 				plan.status = P1S_TURN_LEFT;
 				
-			} else if ((HyperCCD.mark_line || HyperCCD.run_out_of_line || Plan_GetTime() > 1000) && plan.aux.mode2.out_of_line_counter == 4 ) {
+			} else if ((HyperCCD.mark_line || HyperCCD.run_out_of_line || Plan_GetTime() > 500) && plan.aux.mode2.out_of_line_counter == 4 ) {
 				//扫描到标记线（粗线），且出线次数为4次
 				plan.status = P1S_RUN_OUT_OF_LINE ; 
 			} else {
@@ -223,7 +223,8 @@ switch (plan.status) {
 		
 			if (
 				((fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw ))< 30) && 
-				(HyperCCD.run_out_of_line == 0 ))
+				(HyperCCD.run_out_of_line == 0 )) ||
+			  (Plan_GetTime() > 2000)
 			) {
 				//恢复到出线前 
 				status_ctrl.ghostExpect.Yaw = Param.YaGh; 
@@ -284,7 +285,7 @@ switch (plan.status) {
 					//转身
 					plan.status = P1S_TURN_LEFT_PRE;
 				  status_ctrl.ghostExpect.Altitude = Param.SGGD;
-					Magnet_Put();
+					Magnet_Idle();
 				} else {
 					plan.status = P1S_RUN_OUT_OF_LINE;
 				}
@@ -299,21 +300,20 @@ switch (plan.status) {
 			if (Plan_GetTime() > 2000) {
 				Plan_StartTime();
 				plan.status = P1S_TURN_LEFT;
-				status_ctrl.Thro -=6;
 				status_ctrl.expectedStatus.Yaw += 180;
 			}
 			break;
 				
 		case P1S_TURN_LEFT:
 			status_ctrl.expectedStatus.Pitch = Param.PFix;
-			status_ctrl.expectedStatus.Roll = Param.RFix;
+			status_ctrl.expectedStatus.Roll = Param.RFix - Param.YFix;
 			if (HyperCCD.run_out_of_line == 0) {
 				plan_do_follow_line();
-			}
+			} 
 			if (
 				(
 				(fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw )) < 5) && 
-				(HyperCCD.run_out_of_line == 0 )
+					1 //				(HyperCCD.run_out_of_line == 0 )
 				) && 
 				(Plan_GetTime() > 2000)
 			) {
@@ -322,11 +322,13 @@ switch (plan.status) {
 				status_ctrl.ghostExpect.Altitude = 0.0f;
 				plan.aux.mode3.is_backing = 1;
 				plan.status = P1S_TURN_LEFT_POST;
+				Magnet_Put();
 			}
 			break;
 			
 		case P1S_TURN_LEFT_POST:
 			status_ctrl.expectedStatus.Pitch = Param.PFix;
+			status_ctrl.expectedStatus.Roll = Param.RFix;
 			if (HyperCCD.run_out_of_line == 0) {
 				plan_do_follow_line();
 			}
