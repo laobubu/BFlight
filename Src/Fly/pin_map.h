@@ -39,4 +39,11 @@ ES Pins Functions:
 #define Pin_LED_3			B,		13
 #define Pin_LED_4			B,		14
 
+#define Pin_KEY_1			D,		9
+#define Pin_KEY_2			D,		10
+#define Pin_KEY_3			D,		11
+
+#define Pin_OLED_SDA		A,		0
+#define Pin_OLED_SCL		A,		3
+
 #endif

@@ -1,7 +1,6 @@
 #include "FlyBasic.h"
+#include "sys.h"
 #include "oled.h"
-#include "IIC.h"
-
 #include "oled_codetable.h"
 
 #define XLevelL		0x00
@@ -13,10 +12,57 @@
 #define X_WIDTH 128
 #define Y_WIDTH 64
 
+void delay_us_iic(uint16_t us);
 #define I2C_OLED    0x78
+#define LED_SDA_1	ESP_Set(Pin_OLED_SDA);delay_us_iic(2)
+#define LED_SDA_0	ESP_Reset(Pin_OLED_SDA);delay_us_iic(2)
+#define LED_SCL_1	ESP_Set(Pin_OLED_SCL);delay_us_iic(2)
+#define LED_SCL_0	ESP_Reset(Pin_OLED_SCL);delay_us_iic(2)
 
-#define OLED_WrCmd(Cmd)		IICwriteByte(I2C_OLED, 0X00, Cmd)
-#define OLED_WrDat(Data)	IICwriteByte(I2C_OLED, 0X40, Data)
+ /**********************************************
+//IIC Start
+**********************************************/
+void OLED_IIC_Start()
+{
+   LED_SCL_1;       
+   LED_SDA_1;
+   LED_SDA_0;
+   LED_SCL_0;
+}
+
+/**********************************************
+//IIC Stop
+**********************************************/
+void OLED_IIC_Stop()
+{
+   LED_SCL_0;
+   LED_SDA_0;
+   LED_SCL_1;
+   LED_SDA_1;
+}
+/**********************************************
+// IIC Write byte
+**********************************************/
+void OLED_Write_Byte(unsigned char IIC_Byte)
+{
+    unsigned char i;
+    for(i=0;i<8;i++)        
+    {
+        if(IIC_Byte & 0x80) 
+		{LED_SDA_1;}
+        else
+		{LED_SDA_0;}
+        LED_SCL_1;
+        LED_SCL_0;
+        IIC_Byte<<=1; 
+    }
+    LED_SDA_1;
+    LED_SCL_1;
+    LED_SCL_0;
+}
+
+#define OLED_WrCmd(Cmd)		do{OLED_IIC_Start();OLED_Write_Byte(I2C_OLED);OLED_Write_Byte(0x00);OLED_Write_Byte(Cmd);}while(0)
+#define OLED_WrDat(Data)	do{OLED_IIC_Start();OLED_Write_Byte(I2C_OLED);OLED_Write_Byte(0x40);OLED_Write_Byte(Data);}while(0)
 #define OLED_DLY_ms(x)		delay_ms(x)
 
 /*********************LCD 设置坐标************************************/
