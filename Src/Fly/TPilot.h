@@ -5,6 +5,8 @@
 
 extern struct pt pTPilot;
 
+extern char systemReady;
+
 void Init_TPilot(void);
 void   Do_TPilot(void);
 

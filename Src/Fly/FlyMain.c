@@ -2,6 +2,11 @@
 #include "FlyMain.h"
 #include "Param.h"
 
+#define MENU_MODE
+#ifdef MENU_MODE
+#include "menu.h"
+#endif
+
 #include "TNavigator.h"
 #include "TMessager.h"
 #include "TPilot.h"
@@ -41,9 +46,17 @@ void FlyMain(void) {
 	
 	//Load Threads
 	Init_TPilot();
-	Init_MessagerThread();
 	Init_Navigator();
+	#ifdef MENU_MODE
+	Init_MessagerThread(0);
+	#else
+	Init_MessagerThread(1);
+	#endif
 	//Init_TCCD();
+	
+	#ifdef MENU_MODE
+	MENU_Init();
+	#endif
 	
 	//Coroutine the Threads
 	while(1) {

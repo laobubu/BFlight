@@ -5,7 +5,7 @@
 
 extern struct pt ptMessagerThread;
 
-void Init_MessagerThread(void);
+void Init_MessagerThread(uint8_t enableHeartbeat);
 void   Do_MessagerThread(void);
 
 #endif

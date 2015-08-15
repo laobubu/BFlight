@@ -26,12 +26,17 @@ extern UART_HandleTypeDef huart1;
 extern PID_Typedef  pidRollE;
 extern float pidRollE_Expect;
 
+static uint8_t HeartbeatMode;
+extern char systemReady;
+void MENU_Summon(void);
+
 struct pt ptMessagerThread;
 PT_THREAD(TMessagerThread(struct pt *pt));
 
-void Init_MessagerThread(void) {
+void Init_MessagerThread(uint8_t enableHeartbeat) {
 	PT_INIT(&ptMessagerThread);
 	DP_Init();
+	HeartbeatMode = enableHeartbeat;
 }
 
 void Do_MessagerThread(void) {
@@ -93,10 +98,21 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_Send();
 		
 		//失联检测
-		if (Flight_Working && ((DP_LastUpdate + 2000) < millis())) {
-			Flight_Working = 0;
-			SCx_Init();
-			Motor_SetAllSpeed(0,0,0,0);
+		if (HeartbeatMode) {
+			if (Flight_Working && ((DP_LastUpdate + 2000) < millis())) {
+				Flight_Working = 0;
+				SCx_Init();
+				Motor_SetAllSpeed(0,0,0,0);
+			}
+		} else {
+			//1 key 模式
+			GPIOE->ODR ^= 1;	//led1
+			if (systemReady > 2) {
+				systemReady--;
+			} else if (systemReady == 2) {
+				MENU_Summon();
+				systemReady = 1;
+			}
 		}
 		
 		PT_YIELD(pt);

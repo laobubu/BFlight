@@ -16,6 +16,8 @@
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
 
+char systemReady = 0;
+
 void Init_TPilot(void) {
 	PT_INIT(&pTPilot);
 	
@@ -28,11 +30,12 @@ void Do_TPilot(void) {
 }
 
 static pt_timer init_until;
-static uint8_t tp_initing = 0;
 
 static uint16_t realThro;
 static float realThrof;
 static float Throf;
+
+static uint32_t lastLEDLight = 0;
 
 PT_THREAD(TPilot(struct pt *pt)) {
 	PT_BEGIN(pt);
@@ -43,8 +46,24 @@ PT_THREAD(TPilot(struct pt *pt)) {
 		PT_TIMER_INTERVAL(pt, 10);
 		SC_PreSample();
 		
-		if (tp_initing & 0xF0) { LED_ON(2); } else { LED_OFF(2); }
-		tp_initing++;
+		//LED
+		if (lastLEDLight < millis()) {
+			lastLEDLight = init_until - millis();
+			if (lastLEDLight > 10000)
+				lastLEDLight = millis() + 1000;
+			else if (lastLEDLight > 8000)
+				lastLEDLight = millis() + 900;
+			else if (lastLEDLight > 6000)
+				lastLEDLight = millis() + 750;
+			else if (lastLEDLight > 4000)
+				lastLEDLight = millis() + 600;
+			else
+				lastLEDLight = millis() + 400;
+			
+			GPIOE->ODR ^= 0x03 << 1;
+			if (init_until - millis() < 5000)
+				GPIOB->ODR ^= 0x03 << 13;
+		}
 		
 		PT_YIELD(pt);
 	}
@@ -56,6 +75,8 @@ PT_THREAD(TPilot(struct pt *pt)) {
 	LED_OFF(4);
 	
 	Ultrasonic.callback = &SCx_ProcessAlt;
+	
+	systemReady = 10;
 	
 	//等到稳定下来以后，进入以下程序
 	while(1) {
