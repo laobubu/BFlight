@@ -53,22 +53,39 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_SendPack.Motor[1] = status_ctrl.Motor_Out[1];
 		DP_SendPack.Motor[2] = status_ctrl.Motor_Out[2];
 		DP_SendPack.Motor[3] = status_ctrl.Motor_Out[3];
+//		
+//		DP_SendPack.aux1 = HyperCCD.nav_position;
+//		DP_SendPack.aux2 = HyperCCD.run_out_of_line; 
+//		DP_SendPack.aux3 = Flight_Working * 10 + plan.status;
+//		DP_SendPack.aux4 = status_ctrl.ghostExpect.Yaw;
+//		DP_SendPack.aux1 = HyperCCD.nav_position;
+//		DP_SendPack.aux2 = HyperCCD.run_out_of_line; 
+//		DP_SendPack.aux3 = Flight_Working * 10 + plan.status;
+//		DP_SendPack.aux4 = status_ctrl.ghostExpect.Yaw;
+//		
+//		DP_SendPack.aux5 = status_ctrl.expectedStatus.Pitch;
+//		DP_SendPack.aux6 = status_ctrl.expectedStatus.Roll;
+//		DP_SendPack.aux7 = status_ctrl.expectedStatus.Yaw;
+//		DP_SendPack.aux8 = status_ctrl.expectedStatus.Altitude;
+		
 		
 		DP_SendPack.aux1 = HyperCCD.nav_position;
-		DP_SendPack.aux2 = HyperCCD.run_out_of_line; 
-		DP_SendPack.aux3 = Flight_Working * 10 + plan.status;
-		DP_SendPack.aux4 = status_ctrl.expectedStatus.Roll;
+		DP_SendPack.aux2 = status_ctrl.PID_roll.d_previous; 
+		DP_SendPack.aux3 = status_ctrl.PID_roll.error_previous;
+		DP_SendPack.aux4 = status_ctrl.PID_roll.integral;
 		
 		DP_SendPack.aux5 = status_ctrl.expectedStatus.Pitch;
 		DP_SendPack.aux6 = status_ctrl.expectedStatus.Roll;
 		DP_SendPack.aux7 = status_ctrl.expectedStatus.Yaw;
 		DP_SendPack.aux8 = status_ctrl.expectedStatus.Altitude;
 		
+		
 		/*
 		DP_SendPack.__ccdheader = 0xFF;
 		for(uint16_t xxx = 0; xxx != 128; xxx++)
 		{
-			DP_SendPack.__ccd[xxx] = (CCD.data[xxx]==0xFF)?0xFE:CCD.data[xxx];
+			DP_SendPack.__ccd[xxx] = (
+			CCD.data[xxx]==0xFF)?0xFE:CCD.data[xxx];
 		}
 		HAL_UART_Transmit_DMA(&huart1, (uint8_t*)&DP_SendPack.__ccdheader, 129);
 		*/

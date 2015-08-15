@@ -14,7 +14,18 @@
 	DEFINE_PARAM(float,   ThDn)		/* 油门线性降低速度（用于降落，时间单位5ms） */	\
 	DEFINE_PARAM(float,   FAA1)		/* Plan System Landing Pitch Fallback */	\
 	DEFINE_PARAM(float,   PiGo)		/* 前进时候的 Pitch */			\
+  DEFINE_PARAM(float,   PiG1)		/* 前进时候的 Pitch */			\
+	DEFINE_PARAM(float,   PiG2)		/* 前进时候的 Pitch (用于Mode2短线) */			\
+	DEFINE_PARAM(float,   PiG3)		/* 前进时候的 Pitch */			\
 	DEFINE_PARAM(float,   PiBk)		/* 后退时候的 Pitch */			\
+	DEFINE_PARAM(float,   SGGD)		/* 甩锅高度 */			\
+	DEFINE_PARAM(float,   YaDn)		/* Yaw 匀速变化速度 */			\
+	DEFINE_PARAM(float,   YaGh)		/* Yaw Ghost */		\
+	DEFINE_PARAM(float,   YFi1)			\
+  DEFINE_PARAM(float,   YFi2)			\
+  DEFINE_PARAM(float,   YFi3)			\
+	DEFINE_PARAM(float,   YFi4)			\
+		
 
 	
 //定义结构体

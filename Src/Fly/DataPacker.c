@@ -70,15 +70,15 @@ void DP_HandleParamUpdate(char name[4], float value)
 	}
 	
 	if (DP_IS_PARAM_NAME("Work")) {	//总开关，为 0 表示不开
-		Flight_Working = value;
+		Flight_Working = (Flight_Working_Status)value;
 		if (!Flight_Working) {
 			Motor_SetAllSpeed(0,0,0,0);
-			Magnet_Put();
+			Magnet_Idle();
 		} else {
 			//reset sensor
 			//PX4Flow_Reset();
 			SC_ResetYaw();
-			SCx_ResetPidIntg();
+			SCx_BeforeFly();
 		}
 		return;
 	}

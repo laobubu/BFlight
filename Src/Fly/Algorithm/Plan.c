@@ -88,64 +88,164 @@ void Plan_Process(void) {
 	} 
 	else if (Param.Mode == 2)	// 模式2 的计划
 	{	
-		switch (plan.status) {
+//		switch (plan.status) {
+//		case P1S_LIFT:
+//			status_ctrl.expectedStatus.Pitch = Param.PFix;
+//			status_ctrl.ghostExpect.Yaw = Param.YaGh;
+//	
+//			if (status.Altitude > 30 ) {
+//				plan.status = P1S_FOLLOW_LINE;
+//				Plan_StartTime();
+//			}
+//			break;
+
+//		case P1S_FOLLOW_LINE:
+//			status_ctrl.expectedStatus.Pitch = Param.PFix;
+//			if (HyperCCD.run_out_of_line == 1 && plan.aux.mode2.out_of_line_counter < 4 && 
+//					(plan.aux.mode2.out_of_line_counter == 0 || Plan_GetTime() > 2500) ) {
+//				//出线，且次数小于4次	
+//				plan.aux.mode2.out_of_line_counter ++; 
+//				Plan_StartTime();
+//				status_ctrl.expectedStatus.Yaw -=  95.0f;
+//				status_ctrl.ghostExpect.Yaw = 95.0f;
+//				plan.status = P1S_TURN_LEFT;
+//				
+//			} else if ((HyperCCD.mark_line || HyperCCD.run_out_of_line || Plan_GetTime() > 5000) && plan.aux.mode2.out_of_line_counter == 4 ) {
+//				//扫描到标记线（粗线），且出线次数为4次
+//				plan.status = P1S_RUN_OUT_OF_LINE ; 
+//			} else {
+//				plan_do_follow_line();
+//			}
+//			break;
+//			
+////		case P1S_TURN_LEFT_PRE:
+////			status_ctrl.expectedStatus.Pitch = Param.PiBk;
+//////			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFix;
+////			if (Plan_GetTime() > 500 || HyperCCD.run_out_of_line == 00) {
+////				//Ready for Turn_Left
+////				status_ctrl.expectedStatus.Yaw -=  90;
+////				plan.status = P1S_TURN_LEFT;
+////				Plan_StartTime();
+////			}
+////			break;
+//			
+//		case P1S_TURN_LEFT:
+//			status_ctrl.expectedStatus.Pitch = Param.PiBk;
+//			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFix;
+//			
+//			status_ctrl.ghostExpect.Yaw -= Param.YaDn;
+//			if (status_ctrl.ghostExpect.Yaw < Param.YaGh) {
+//				status_ctrl.ghostExpect.Yaw = Param.YaGh; 
+//			}
+//		
+//			if (
+//				((fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw ))< 5) && 
+//				(HyperCCD.run_out_of_line == 0 ))
+//			) {
+//				//恢复到出线前 
+//				status_ctrl.ghostExpect.Yaw = Param.YaGh; 
+//				plan.status = P1S_TURN_LEFT_POST;
+//				status_ctrl.expectedStatus.Roll  = Param.RFix;
+//				Plan_StartTime();
+//			} 
+//			break;
+//			
+//		case P1S_TURN_LEFT_POST:
+//			status_ctrl.expectedStatus.Pitch = 
+//				(plan.aux.mode2.out_of_line_counter == 2 || plan.aux.mode2.out_of_line_counter == 4) ? Param.PiG2 : Param.PiGo;
+//			if (HyperCCD.run_out_of_line == 0)
+//				plan_do_follow_line();
+//			if (Plan_GetTime() > 500) {
+//				plan.status = P1S_FOLLOW_LINE;
+//				Plan_StartTime();
+//			}
+//			break;
+//				
+//		case P1S_RUN_OUT_OF_LINE:
+//			stopflying();
+//			break; 
+
+
+//		}
+switch (plan.status) {
+
 		case P1S_LIFT:
-			status_ctrl.expectedStatus.Pitch = Param.PiGo;
+			status_ctrl.expectedStatus.Pitch = Param.PFix;//稳住起飞；
+			status_ctrl.ghostExpect.Yaw = Param.YaGh;
 	
 			if (status.Altitude > 30 ) {
 				plan.status = P1S_FOLLOW_LINE;
 				Plan_StartTime();
 			}
 			break;
-
-		case P1S_FOLLOW_LINE:
-			status_ctrl.expectedStatus.Pitch = Param.PFix;
-			//status_ctrl.expectedStatus.Roll  = Param.RFix;
+			case P1S_FOLLOW_LINE:
+			//status_ctrl.expectedStatus.Pitch = Param.PFix;
 			if (HyperCCD.run_out_of_line == 1 && plan.aux.mode2.out_of_line_counter < 4 && 
-					(plan.aux.mode2.out_of_line_counter == 0 || Plan_GetTime() > 4000) ) {
+					(plan.aux.mode2.out_of_line_counter == 0 || Plan_GetTime() > 2500) ) {
 				//出线，且次数小于4次	
-				plan.aux.mode2.out_of_line_counter ++;
+				plan.aux.mode2.out_of_line_counter ++; 
 				Plan_StartTime();
-				plan.status = P1S_TURN_LEFT_PRE;
+				status_ctrl.expectedStatus.Yaw -=  90.0f;
+				status_ctrl.ghostExpect.Yaw = 90.0f;
+				plan.status = P1S_TURN_LEFT;
 				
-			} else if ((HyperCCD.mark_line || HyperCCD.run_out_of_line) && plan.aux.mode2.out_of_line_counter == 4 ) {
+			} else if ((HyperCCD.mark_line || HyperCCD.run_out_of_line || Plan_GetTime() > 5000) && plan.aux.mode2.out_of_line_counter == 4 ) {
 				//扫描到标记线（粗线），且出线次数为4次
 				plan.status = P1S_RUN_OUT_OF_LINE ; 
 			} else {
 				plan_do_follow_line();
 			}
 			break;
+     	case P1S_TURN_LEFT:
+				if (plan.aux.mode2.out_of_line_counter ==1){
+			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFi1;
+				}
+       if (plan.aux.mode2.out_of_line_counter ==2){
+			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFi2;
+				}
+	    	if (plan.aux.mode2.out_of_line_counter ==3){
+			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFi3;
+				}
+	      if (plan.aux.mode2.out_of_line_counter ==4){
+			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFi4;
+				}
 			
-		case P1S_TURN_LEFT_PRE:
-			status_ctrl.expectedStatus.Pitch = Param.PiBk;
-//			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFix;
-			if (Plan_GetTime() > 500 || HyperCCD.run_out_of_line == 00) {
-				//Ready for Turn_Left
-				status_ctrl.expectedStatus.Yaw -=  90;
-				plan.status = P1S_TURN_LEFT;
-				Plan_StartTime();
+			status_ctrl.ghostExpect.Yaw -= Param.YaDn;
+			if (status_ctrl.ghostExpect.Yaw < Param.YaGh) {
+				status_ctrl.ghostExpect.Yaw = Param.YaGh; 
 			}
-			break;
-			
-		case P1S_TURN_LEFT:
-			status_ctrl.expectedStatus.Pitch = Param.PFix;
-			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFix;
+		
 			if (
-				((fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw ))< 5) && 
-				(HyperCCD.run_out_of_line == 0 )) ||
-				(Plan_GetTime() > 1000)
+				((fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw ))< 30) && 
+				(HyperCCD.run_out_of_line == 0 ))
 			) {
 				//恢复到出线前 
+				status_ctrl.ghostExpect.Yaw = Param.YaGh; 
 				plan.status = P1S_TURN_LEFT_POST;
+				status_ctrl.expectedStatus.Roll  = Param.RFix;
 				Plan_StartTime();
 			} 
 			break;
-			
 		case P1S_TURN_LEFT_POST:
-			status_ctrl.expectedStatus.Pitch = Param.PFix;
-			status_ctrl.expectedStatus.Roll  = Param.RFix - Param.YFix;
-			if (Plan_GetTime() > 1500 || HyperCCD.run_out_of_line == 0 ) {
+			//status_ctrl.expectedStatus.Pitch = 
+			//	(plan.aux.mode2.out_of_line_counter == 2 || plan.aux.mode2.out_of_line_counter == 4) ? Param.PiG2 : Param.PiGo;
+		  if (plan.aux.mode2.out_of_line_counter ==1){
+		   status_ctrl.expectedStatus.Pitch = Param.PiGo;
+				}
+       if (plan.aux.mode2.out_of_line_counter ==2){
+		  	status_ctrl.expectedStatus.Roll  = Param.PiG1 ;
+				}
+	    	if (plan.aux.mode2.out_of_line_counter ==3){
+			 status_ctrl.expectedStatus.Pitch = Param.PiG2 ;
+				}
+	      if (plan.aux.mode2.out_of_line_counter ==4){
+		  status_ctrl.expectedStatus.Pitch = Param.PiG3;
+				}
+			if (HyperCCD.run_out_of_line == 0)
+				plan_do_follow_line();
+			if (Plan_GetTime() > 500) {
 				plan.status = P1S_FOLLOW_LINE;
+				Plan_StartTime();
 			}
 			break;
 				
@@ -153,8 +253,11 @@ void Plan_Process(void) {
 			stopflying();
 			break; 
 
+			
+			
 
-		}
+
+}
 
 	}
 	else if (Param.Mode == 3) // 模式3 的计划
@@ -190,11 +293,13 @@ void Plan_Process(void) {
 				Plan_StartTime();
 				plan.status = P1S_TURN_LEFT;
 				status_ctrl.expectedStatus.Yaw += 180;
+				status_ctrl.ghostExpect.Altitude = Param.SGGD;
 			}
 			break;
 				
 		case P1S_TURN_LEFT:
 			status_ctrl.expectedStatus.Pitch = Param.PFix;
+			status_ctrl.expectedStatus.Roll = Param.RFix;
 			if (HyperCCD.run_out_of_line == 0) {
 				plan_do_follow_line();
 			}
@@ -207,6 +312,7 @@ void Plan_Process(void) {
 			) {
 				//恢复到出线前
 				Plan_StartTime();
+				status_ctrl.ghostExpect.Altitude = 0.0f;
 				plan.aux.mode3.is_backing = 1;
 				plan.status = P1S_TURN_LEFT_POST;
 			}
@@ -248,7 +354,7 @@ uint32_t Plan_GetTime(void)
 
 void stopflying(void){
 	
-	Magnet_Put();
+	Magnet_Idle();
 	
 	status_ctrl.expectedStatus.Pitch -= Param.FAA1;
 	
