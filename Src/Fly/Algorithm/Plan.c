@@ -187,7 +187,7 @@ switch (plan.status) {
 			case P1S_FOLLOW_LINE:
 			//status_ctrl.expectedStatus.Pitch = Param.PFix;
 			if (HyperCCD.run_out_of_line == 1 && plan.aux.mode2.out_of_line_counter < 4 && 
-					(plan.aux.mode2.out_of_line_counter == 0 || Plan_GetTime() > 2500) ) {
+					(plan.aux.mode2.out_of_line_counter == 0 || Plan_GetTime() > 1000) ) {
 				//出线，且次数小于4次	
 				plan.aux.mode2.out_of_line_counter ++; 
 				Plan_StartTime();
@@ -195,7 +195,7 @@ switch (plan.status) {
 				status_ctrl.ghostExpect.Yaw = 90.0f;
 				plan.status = P1S_TURN_LEFT;
 				
-			} else if ((HyperCCD.mark_line || HyperCCD.run_out_of_line || Plan_GetTime() > 5000) && plan.aux.mode2.out_of_line_counter == 4 ) {
+			} else if ((HyperCCD.mark_line || HyperCCD.run_out_of_line || Plan_GetTime() > 1000) && plan.aux.mode2.out_of_line_counter == 4 ) {
 				//扫描到标记线（粗线），且出线次数为4次
 				plan.status = P1S_RUN_OUT_OF_LINE ; 
 			} else {
@@ -277,12 +277,13 @@ switch (plan.status) {
 			break;
 			
 		case P1S_FOLLOW_LINE:
-			status_ctrl.expectedStatus.Pitch = Param.PiGo;
+			status_ctrl.expectedStatus.Pitch = plan.aux.mode3.is_backing ? Param.PiG2 : Param.PiGo;
 			if (HyperCCD.run_out_of_line == 1 ) {
 				//如果出线了
 				if (plan.aux.mode3.is_backing == 0) {
 					//转身
 					plan.status = P1S_TURN_LEFT_PRE;
+				  status_ctrl.ghostExpect.Altitude = Param.SGGD;
 					Magnet_Put();
 				} else {
 					plan.status = P1S_RUN_OUT_OF_LINE;
@@ -298,8 +299,8 @@ switch (plan.status) {
 			if (Plan_GetTime() > 2000) {
 				Plan_StartTime();
 				plan.status = P1S_TURN_LEFT;
+				status_ctrl.Thro -=6;
 				status_ctrl.expectedStatus.Yaw += 180;
-				status_ctrl.ghostExpect.Altitude = Param.SGGD;
 			}
 			break;
 				
@@ -311,7 +312,7 @@ switch (plan.status) {
 			}
 			if (
 				(
-				(fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw )) < 5) || 
+				(fabsf(angleNorm2(status.Yaw - status_ctrl.expectedStatus.Yaw )) < 5) && 
 				(HyperCCD.run_out_of_line == 0 )
 				) && 
 				(Plan_GetTime() > 2000)
@@ -325,7 +326,7 @@ switch (plan.status) {
 			break;
 			
 		case P1S_TURN_LEFT_POST:
-			status_ctrl.expectedStatus.Pitch = Param.PiGo;
+			status_ctrl.expectedStatus.Pitch = Param.PFix;
 			if (HyperCCD.run_out_of_line == 0) {
 				plan_do_follow_line();
 			}
