@@ -719,6 +719,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Fly\Algorithm\Filters.c</FilePath>
             </File>
+            <File>
+              <FileName>Copycat.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Fly\Algorithm\Copycat.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
