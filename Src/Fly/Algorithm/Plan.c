@@ -267,7 +267,7 @@ switch (plan.status) {
 }
 
 	}
-	else if (Param.Mode == 3) // 模式3 的计划
+	else if (Param.Mode == 3 || Param.Mode == 4) // 模式3 的计划 和 模式 4
 	{
 		switch (plan.status) {
 		case P1S_LIFT:
@@ -285,7 +285,7 @@ switch (plan.status) {
 					//转身
 					plan.status = P1S_TURN_LEFT_PRE;
 				  status_ctrl.ghostExpect.Altitude = Param.SGGD;
-					Magnet_Idle();
+					if (Param.Mode == 3) Magnet_Idle();
 				} else {
 					plan.status = P1S_RUN_OUT_OF_LINE;
 				}
@@ -322,7 +322,7 @@ switch (plan.status) {
 				status_ctrl.ghostExpect.Altitude = 0.0f;
 				plan.aux.mode3.is_backing = 1;
 				plan.status = P1S_TURN_LEFT_POST;
-				Magnet_Put();
+				if (Param.Mode == 3) Magnet_Put();
 			}
 			break;
 			
@@ -342,9 +342,6 @@ switch (plan.status) {
 					
 		}
 	} 
-	else if(Param.Mode == 4) // 模式4 的计划
-	{
-	}
 
 }
 
