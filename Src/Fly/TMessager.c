@@ -27,7 +27,7 @@ extern PID_Typedef  pidRollE;
 extern float pidRollE_Expect;
 
 static uint8_t HeartbeatMode;
-extern char systemReady;
+extern uint32_t systemReady;
 void MENU_Summon(void);
 
 struct pt ptMessagerThread;
@@ -97,11 +97,9 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		} else {
 			//1 key 模式
 			GPIOE->ODR ^= 1;	//led1
-			if (systemReady > 2) {
-				systemReady--;
-			} else if (systemReady == 2) {
-				MENU_Summon();
+			if (systemReady > 2 && systemReady < millis()) {
 				systemReady = 1;
+				MENU_Summon();
 			}
 		}
 		

@@ -16,7 +16,7 @@
 struct pt pTPilot;
 PT_THREAD(TPilot(struct pt *pt));
 
-char systemReady = 0;
+uint32_t systemReady = 0;
 
 void Init_TPilot(void) {
 	PT_INIT(&pTPilot);
@@ -76,7 +76,7 @@ PT_THREAD(TPilot(struct pt *pt)) {
 	
 	Ultrasonic.callback = &SCx_ProcessAlt;
 	
-	systemReady = 10;
+	systemReady = millis() + 5000;
 	
 	//等到稳定下来以后，进入以下程序
 	while(1) {

@@ -47,7 +47,7 @@ ParamItem table1[] = {
 	{"gal", 20},
 	{"ThUp", 0.2},
 	{"ThDn", 0.1},
-	{"Thro", 44},
+	{"Thro", 54},
 	{"Work", 1},
 };
 
@@ -295,6 +295,4 @@ void MENU_Summon(void)
 		
 		tablePtr++;
 	}
-	
-	USART1->CR1 &= ~USART_CR1_RE;
 }

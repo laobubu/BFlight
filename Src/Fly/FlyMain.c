@@ -2,10 +2,7 @@
 #include "FlyMain.h"
 #include "Param.h"
 
-#define MENU_MODE
-#ifdef MENU_MODE
 #include "menu.h"
-#endif
 
 #include "TNavigator.h"
 #include "TMessager.h"
@@ -35,28 +32,30 @@ void FlyMain(void) {
 	LED_ON(3);
 	LED_ON(4);
 	
+	GPIOA->PUPDR &= ~0x7e00;
+	GPIOA->PUPDR |=  0x2a00;
+	
 	delay_ms(100);
 	
-	//Special Modes
-	if (!ESP_Read(Pin_MODE1)) Mode1Main();	//Key1 and goes debug mode 1
-	if (!ESP_Read(Pin_MODE2)) Mode2Main();	//Key2 and goes debug mode 2
-	
+//	//Special Modes
+//	if (!ESP_Read(Pin_MODE1)) Mode1Main();	//Key1 and goes debug mode 1
+//	if (!ESP_Read(Pin_MODE2)) Mode2Main();	//Key2 and goes debug mode 2
+//	
 	//For Secure
 	Motor_SetAllSpeed(0,0,0,0);
 	
 	//Load Threads
 	Init_TPilot();
 	Init_Navigator();
-	#ifdef MENU_MODE
-	Init_MessagerThread(0);
-	#else
-	Init_MessagerThread(1);
-	#endif
+	//#ifdef MENU_MODE
+	if (ESP_Read(Pin_KEY_1)) 
+		Init_MessagerThread(0);
+	else
+		Init_MessagerThread(1);
 	//Init_TCCD();
 	
-	#ifdef MENU_MODE
+	if (ESP_Read(Pin_KEY_1)) 
 	MENU_Init();
-	#endif
 	
 	//Coroutine the Threads
 	while(1) {
