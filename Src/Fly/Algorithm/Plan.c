@@ -13,7 +13,7 @@
 
 
 Plan_t plan;
-
+static uint32_t realPlanStartTime = 0;
 
 void stopflying(void);
 
@@ -26,6 +26,7 @@ void Plan_Start(void) {
 	Plan_StartTime();
 	plan.isWorking = 1;
 	plan.status = (PLAN1_STATUS_TYPE)0;
+	realPlanStartTime = millis();
 	
 	pid_Reset_Integral(&plan.pid.follow_line);
 	
@@ -56,6 +57,11 @@ void Plan_Process(void) {
 	if (!plan.isWorking || Flight_Working != FWS_FLYING) return;
 	//在下面写计划就好了；
 
+	
+	if (Param.Tmot != 0 && (millis() - realPlanStartTime) >= Param.Tmot) {
+		stopflying();
+		return;
+	}
 
 
 	if (Param.Mode == 1)	// 模式1 的计划 
@@ -363,5 +369,7 @@ void stopflying(void){
 	else
 		Flight_Working = FWS_IDLE;
 	plan.isWorking = 0;
+	
+	Param.Tmot = 0;
 	
 }

@@ -25,6 +25,7 @@
   DEFINE_PARAM(float,   YFi2)			\
   DEFINE_PARAM(float,   YFi3)			\
 	DEFINE_PARAM(float,   YFi4)			\
+	DEFINE_PARAM(uint32_t,Tmot)		/* 最长飞行时间 */	\
 		
 
 	
