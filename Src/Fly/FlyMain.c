@@ -2,8 +2,6 @@
 #include "FlyMain.h"
 #include "Param.h"
 
-#include "menu.h"
-
 #include "TNavigator.h"
 #include "TMessager.h"
 #include "TPilot.h"
@@ -47,15 +45,7 @@ void FlyMain(void) {
 	//Load Threads
 	Init_TPilot();
 	Init_Navigator();
-	//#ifdef MENU_MODE
-	if (ESP_Read(Pin_KEY_1)) 
-		Init_MessagerThread(0);
-	else
-		Init_MessagerThread(1);
-	//Init_TCCD();
-	
-	if (ESP_Read(Pin_KEY_1)) 
-	MENU_Init();
+	Init_MessagerThread(1);
 	
 	//Coroutine the Threads
 	while(1) {

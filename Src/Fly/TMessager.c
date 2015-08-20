@@ -7,6 +7,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "DataPacker.h"
+#include "sys.h"
 
 #include "Algorithm/StatusCtrl.h"
 #include "Algorithm/plan.h"
@@ -17,6 +18,7 @@
 #include "Hardware/MS5611_I2C.h"
 #include "Hardware/PX4Flow.h"
 #include "Hardware/Laser.h"
+#include "Hardware/LED.h"
 #include "Hardware/HyperCCD.h"
 #include "Hardware/ADNS3080.h"
 
@@ -27,8 +29,8 @@ extern PID_Typedef  pidRollE;
 extern float pidRollE_Expect;
 
 static uint8_t HeartbeatMode;
-extern uint32_t systemReady;
-void MENU_Summon(void);
+uint32_t start_Work1_since = 0;
+void DP_HandleParamUpdate(char name[4], float value);
 
 struct pt ptMessagerThread;
 PT_THREAD(TMessagerThread(struct pt *pt));
@@ -88,19 +90,28 @@ PT_THREAD(TMessagerThread(struct pt *pt)) {
 		DP_Send();
 		
 		//失联检测
-		if (HeartbeatMode) {
-			if (Flight_Working && ((DP_LastUpdate + 2000) < millis())) {
-				Flight_Working = 0;
-				SCx_Init();
-				Motor_SetAllSpeed(0,0,0,0);
+		if (Flight_Working && ((DP_LastUpdate + 2000) < millis())) {
+			Flight_Working = 0;
+			SCx_Init();
+			Motor_SetAllSpeed(0,0,0,0);
+		}
+		if (start_Work1_since == 0) {
+			if (!ESP_Read(Pin_KEY_1)) {
+				start_Work1_since = millis() + 5000;
+				LED_ON(1);
+				LED_ON(2);
+				LED_ON(3);
+				LED_ON(4);
 			}
-		} else {
-			//1 key 模式
-			GPIOE->ODR ^= 1;	//led1
-			if (systemReady > 2 && systemReady < millis()) {
-				systemReady = 1;
-				MENU_Summon();
-			}
+		} else if (start_Work1_since == 1) {
+			
+		} else if (start_Work1_since < millis()) {
+			start_Work1_since = 1;
+			DP_HandleParamUpdate("Work", 1.0f);
+				LED_OFF(1);
+				LED_OFF(2);
+				LED_OFF(3);
+				LED_OFF(4);
 		}
 		
 		PT_YIELD(pt);

@@ -65,7 +65,7 @@ void DP_HandleParamUpdate(char name[4], float value)
 	
 	if (DP_IS_PARAM_NAME("Thro")) {	//油门
 		status_ctrl.Thro = value;
-		Motor_SetAllSpeed(value * 10, value * 10, value * 10, value * 10);
+		//Motor_SetAllSpeed(value * 10, value * 10, value * 10, value * 10);
 		return;
 	}
 	
