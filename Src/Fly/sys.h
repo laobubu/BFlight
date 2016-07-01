@@ -87,11 +87,11 @@ void ESC_SysTick(void);
 #define _ESP_Set(GROUP, PORT)		(GPIO##GROUP)->BSRR = (1<<PORT)
 #define _ESP_Reset(GROUP, PORT)		(GPIO##GROUP)->BRR = (1<<PORT)
 #define _ESP_SetOut(GROUP, PORT) \
-	if (PORT<=7) { (GROUP)->CRL = ((GROUP)->CRL & ~(0XFUL<<((PORT&0x7)<<2))) | 0x3UL<<((PORT&0x7)<<2);  } \
-	else         { (GROUP)->CRH = ((GROUP)->CRH & ~(0XFUL<<((PORT - 8)<<2))) | 0x3UL<<((PORT - 8)<<2);  }
+	if (PORT<=7) { (GPIO##GROUP)->CRL = ((GPIO##GROUP)->CRL & ~(0XFUL<<((PORT&0x7)<<2))) | 0x3UL<<((PORT&0x7)<<2);  } \
+	else         { (GPIO##GROUP)->CRH = ((GPIO##GROUP)->CRH & ~(0XFUL<<((PORT - 8)<<2))) | 0x3UL<<((PORT - 8)<<2);  }
 #define _ESP_SetIn(GROUP, PORT) \
-	if (PORT<=7) { (GROUP)->CRL = ((GROUP)->CRL & ~(0XFUL<<((PORT&0x7)<<2))) | 0x8UL<<((PORT&0x7)<<2);  } \
-	else         { (GROUP)->CRH = ((GROUP)->CRH & ~(0XFUL<<((PORT - 8)<<2))) | 0x8UL<<((PORT - 8)<<2);  }
+	if (PORT<=7) { (GPIO##GROUP)->CRL = ((GPIO##GROUP)->CRL & ~(0XFUL<<((PORT&0x7)<<2))) | 0x8UL<<((PORT&0x7)<<2);  } \
+	else         { (GPIO##GROUP)->CRH = ((GPIO##GROUP)->CRH & ~(0XFUL<<((PORT - 8)<<2))) | 0x8UL<<((PORT - 8)<<2);  }
 
 
 #elif defined(RL78)
